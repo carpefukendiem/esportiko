@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-navy: #0b1221;
+  --color-navy-mid: #111827;
+  --color-navy-light: #1a2640;
+  --color-slate: #253352;
+  --color-blue-accent: #2563eb;
+  --color-blue-light: #3b82f6;
+  --color-blue-muted: #1e3a6e;
+  --color-white: #ffffff;
+  --color-off-white: #f0f4f8;
+  --color-gray-soft: #94a3b8;
+  --color-gray-muted: #475569;
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+}
+
+@layer base {
+  * {
+    @apply border-slate;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-navy font-sans text-off-white antialiased;
+  }
+
+  h1,
+  .font-display-h1 {
+    @apply font-display text-h1 font-bold uppercase tracking-tight text-white;
+  }
+
+  h2 {
+    @apply font-display text-h2 font-semibold uppercase tracking-tight text-white;
+  }
+
+  h3 {
+    @apply font-display text-h3 font-semibold text-white;
+  }
+
+  h4 {
+    @apply font-display text-lg font-semibold text-white md:text-xl;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    @apply outline-none ring-2 ring-blue-accent ring-offset-2 ring-offset-navy;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-texture-dark {
+    background-color: var(--color-navy);
+    background-image: url("/textures/noise.svg");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+
+  .bg-texture-navy-mid {
+    background-color: var(--color-navy-mid);
+    background-image: url("/textures/noise.svg");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+
+  .bg-texture-navy-light {
+    background-color: var(--color-navy-light);
+    background-image: url("/textures/noise.svg");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+
+  .geometric-bg {
+    background-image: linear-gradient(
+        135deg,
+        rgba(26, 38, 64, 0.35) 0%,
+        transparent 45%
+      ),
+      linear-gradient(
+        -25deg,
+        rgba(26, 38, 64, 0.25) 0%,
+        transparent 40%
+      ),
+      linear-gradient(
+        75deg,
+        rgba(37, 51, 82, 0.2) 20%,
+        transparent 55%
+      );
+  }
+}
