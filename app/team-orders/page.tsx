@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { FAQAccordion } from "@/components/ui/FAQAccordion";
@@ -8,6 +9,35 @@ import { Button } from "@/components/ui/button";
 import { TrustChip } from "@/components/ui/TrustChip";
 import { getFaqsByCategoryId } from "@/lib/data/faq";
 import { buildMetadata } from "@/lib/seo";
+import { media } from "@/lib/data/media";
+
+const garmentExamples: { label: string; src: string; alt: string }[] = [
+  {
+    label: "Jerseys",
+    src: media.portfolio.jerseyBack,
+    alt: "Custom team jersey with names and numbers for league or school programs",
+  },
+  {
+    label: "Shorts / pants",
+    src: media.portfolio.teamUniformsGraphic,
+    alt: "Coordinated team bottoms and uniform packages",
+  },
+  {
+    label: "Hoodies",
+    src: media.portfolio.hoodieDark,
+    alt: "Team and school hoodies with custom screen print or embroidery",
+  },
+  {
+    label: "Hats",
+    src: media.portfolio.hat,
+    alt: "Structured caps and team headwear with logo decoration",
+  },
+  {
+    label: "Warmup jackets",
+    src: media.portfolio.hoodieBlue,
+    alt: "Warmup and sideline outerwear with branded decoration",
+  },
+];
 
 export function generateMetadata(): Metadata {
   return buildMetadata({
@@ -97,16 +127,26 @@ export default function TeamOrdersPage() {
             the quote so every item shares consistent decoration and timeline.
           </p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {["Jerseys", "Shorts / pants", "Hoodies", "Hats", "Warmup jackets"].map(
-              (item) => (
-                <div
-                  key={item}
-                  className="flex aspect-[4/3] items-center justify-center rounded-xl border border-slate bg-navy-light/60 font-display text-lg font-semibold text-gray-soft"
-                >
-                  {item}
+            {garmentExamples.map((item) => (
+              <figure
+                key={item.label}
+                className="overflow-hidden rounded-xl border border-slate bg-navy-light/40"
+              >
+                <div className="relative aspect-[4/3] w-full">
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                    loading="lazy"
+                  />
                 </div>
-              )
-            )}
+                <figcaption className="px-3 py-3 text-center font-display text-lg font-semibold text-off-white">
+                  {item.label}
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </div>
       </SectionContainer>

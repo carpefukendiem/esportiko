@@ -1,3 +1,5 @@
+import { media } from "@/lib/data/media";
+
 export interface Service {
   id: string;
   name: string;
@@ -20,7 +22,7 @@ export const services: Service[] = [
     longDescription:
       "High-opacity inks, consistent registration, and production workflows built for volume — ideal for team sets, event merch, and bold graphics on tees and hoodies.",
     icon: "print",
-    image: "/images/services/screen-printing.svg",
+    image: media.services.screenPrinting,
     ctaLabel: "Explore screen printing",
     ctaHref: "/screen-printing",
   },
@@ -33,7 +35,7 @@ export const services: Service[] = [
     longDescription:
       "Dimensional thread work that reads professional up close — structured caps, polos, outerwear, and staff uniforms with placement guidance.",
     icon: "needle",
-    image: "/images/services/embroidery.svg",
+    image: media.services.embroidery,
     ctaLabel: "Explore embroidery",
     ctaHref: "/embroidery",
   },
@@ -46,7 +48,7 @@ export const services: Service[] = [
     longDescription:
       "Roster-aware ordering with names, numbers, and size breakdowns — fewer emails, cleaner handoffs, predictable timelines.",
     icon: "users",
-    image: "/images/services/team-uniforms.svg",
+    image: media.services.teamUniforms,
     ctaLabel: "Plan a team order",
     ctaHref: "/team-orders",
   },
@@ -59,7 +61,7 @@ export const services: Service[] = [
     longDescription:
       "From restaurant polos to company swag — garment selection, decoration method, and quantity guidance aligned to how your brand shows up daily.",
     icon: "briefcase",
-    image: "/images/services/branded-apparel.svg",
+    image: media.services.brandedApparel,
     ctaLabel: "Start a brand project",
     ctaHref: "/business-apparel",
   },

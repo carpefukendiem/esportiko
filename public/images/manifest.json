@@ -1,0 +1,106 @@
+[
+  {
+    "file": "hero-bg-right-gear.webp",
+    "source": "hero-background-without-text.png",
+    "target_size": {
+      "width": 2016,
+      "height": 638
+    }
+  },
+  {
+    "file": "team-order-option.webp",
+    "source": "team:uniforms-option-no-text.png",
+    "target_size": {
+      "width": 1167,
+      "height": 480
+    }
+  },
+  {
+    "file": "screen-printing-service.webp",
+    "source": "screeprit-graphic.png",
+    "target_size": {
+      "width": 756,
+      "height": 500
+    }
+  },
+  {
+    "file": "embroidery-service.webp",
+    "source": "embroydery-graphic.png",
+    "target_size": {
+      "width": 776,
+      "height": 500
+    }
+  },
+  {
+    "file": "team-uniforms-service.webp",
+    "source": "team-uniforms-graphic.png",
+    "target_size": {
+      "width": 768,
+      "height": 504
+    }
+  },
+  {
+    "file": "branded-apparel-service.webp",
+    "source": "branded-apparel-graphic.png",
+    "target_size": {
+      "width": 776,
+      "height": 504
+    }
+  },
+  {
+    "file": "upload-logo-widget.webp",
+    "source": "upload-your-logo-graphic.png",
+    "target_size": {
+      "width": 600,
+      "height": 414
+    }
+  },
+  {
+    "file": "team-ordering-ui.webp",
+    "source": "team-ordering-ui-graphic.png",
+    "target_size": {
+      "width": 1338,
+      "height": 585
+    }
+  },
+  {
+    "file": "portfolio-hat.webp",
+    "source": "branded-hat-graphic.png",
+    "target_size": {
+      "width": 580,
+      "height": 440
+    }
+  },
+  {
+    "file": "portfolio-jersey-back.webp",
+    "source": "custom-team-jersey-back-graphic.png",
+    "target_size": {
+      "width": 612,
+      "height": 440
+    }
+  },
+  {
+    "file": "portfolio-hoodie-dark.webp",
+    "source": "branded-sweater-graphic.png",
+    "target_size": {
+      "width": 688,
+      "height": 440
+    }
+  },
+  {
+    "file": "portfolio-polo.webp",
+    "source": "emoroidered-shirt-graphic.png",
+    "target_size": {
+      "width": 612,
+      "height": 436
+    }
+  },
+  {
+    "file": "portfolio-hoodie-blue.webp",
+    "source": "braded-sweater-graphic.png",
+    "target_size": {
+      "width": 572,
+      "height": 436
+    }
+  }
+]

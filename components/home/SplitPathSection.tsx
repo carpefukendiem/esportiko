@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { PathCard } from "@/components/ui/PathCard";
 import { fadeInUp } from "@/lib/utils/motion";
+import { media } from "@/lib/data/media";
 
 export function SplitPathSection() {
   return (
@@ -30,8 +31,8 @@ export function SplitPathSection() {
               description="Roster entry, names and numbers, size breakdowns, and organized apparel — built for coaches, managers, and school programs."
               href="/start-team-order"
               ctaLabel="Start Team Order"
-              decorativeSrc="/images/services/team-uniforms.svg"
-              decorativeAlt="Decorative team jersey graphic suggesting uniform orders"
+              decorativeSrc={media.pathCards.team}
+              decorativeAlt="Team and uniform order option graphic with jerseys and coordinated apparel"
             />
           </motion.div>
           <motion.div
@@ -45,8 +46,8 @@ export function SplitPathSection() {
               description="Logo uploads, garment selection, placement previews, and quantity-based pricing for businesses, restaurants, nonprofits, and events."
               href="/start-business-order"
               ctaLabel="Start Business Order"
-              decorativeSrc="/images/services/branded-apparel.svg"
-              decorativeAlt="Decorative branded hat graphic suggesting business apparel"
+              decorativeSrc={media.pathCards.business}
+              decorativeAlt="Branded business hat and headwear for company apparel programs"
             />
           </motion.div>
         </div>

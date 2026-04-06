@@ -31,7 +31,7 @@ export function PathCard({
           <Link href={href}>{ctaLabel}</Link>
         </Button>
       </div>
-      <div className="pointer-events-none absolute -bottom-6 -right-4 h-48 w-40 opacity-25 md:h-56 md:w-48">
+      <div className="pointer-events-none absolute -bottom-6 -right-4 h-48 w-40 opacity-[0.38] md:h-56 md:w-48">
         <Image
           src={decorativeSrc}
           alt={decorativeAlt}

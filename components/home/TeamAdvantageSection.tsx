@@ -1,11 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Button } from "@/components/ui/button";
 import { fadeInUp } from "@/lib/utils/motion";
+import { media } from "@/lib/data/media";
 
 const steps = [
   "Choose Garments",
@@ -80,50 +82,15 @@ export function TeamAdvantageSection() {
                   team-order.esportiko
                 </span>
               </div>
-              <div className="grid gap-3 p-4 md:grid-cols-3">
-                {["Jerseys", "Hoodies", "Hats"].map((g) => (
-                  <div
-                    key={g}
-                    className="rounded-md border border-slate bg-navy px-2 py-3 text-center font-sans text-body-sm text-gray-soft"
-                  >
-                    {g}
-                  </div>
-                ))}
-              </div>
-              <div className="border-t border-slate p-4">
-                <p className="mb-2 font-sans text-label font-medium uppercase tracking-wider text-gray-soft">
-                  Roster preview
-                </p>
-                <div className="overflow-hidden rounded-md border border-slate">
-                  <div className="grid grid-cols-4 gap-px bg-slate text-body-sm">
-                    <div className="bg-navy-light px-2 py-2 font-medium text-off-white">
-                      Player
-                    </div>
-                    <div className="bg-navy-light px-2 py-2 font-medium text-off-white">
-                      #
-                    </div>
-                    <div className="bg-navy-light px-2 py-2 font-medium text-off-white">
-                      Size
-                    </div>
-                    <div className="bg-navy-light px-2 py-2 font-medium text-off-white">
-                      Qty
-                    </div>
-                    {[
-                      ["Rivera", "25", "L", "2"],
-                      ["Chen", "7", "M", "1"],
-                      ["Patel", "14", "XL", "1"],
-                    ].map((row, ri) =>
-                      row.map((cell, ci) => (
-                        <div
-                          key={`${ri}-${ci}`}
-                          className="bg-navy px-2 py-2 text-gray-soft"
-                        >
-                          {cell}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
+              <div className="relative aspect-[1338/585] w-full bg-navy">
+                <Image
+                  src={media.teamOrderingUi}
+                  alt="Esportiko team order intake: garment selection, roster fields, and organized quote flow"
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  loading="lazy"
+                />
               </div>
             </div>
           </motion.div>
