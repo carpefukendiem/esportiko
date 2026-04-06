@@ -25,10 +25,8 @@ export function SiteHeader() {
     <>
       <header
         className={cn(
-          "sticky top-0 z-40 h-[60px] border-b border-transparent transition-colors md:h-[68px]",
-          scrolled
-            ? "border-slate/80 bg-navy/95 backdrop-blur-md"
-            : "bg-transparent"
+          "sticky top-0 z-40 h-[60px] border-b border-slate/50 bg-navy/98 backdrop-blur-md transition-colors md:h-[68px]",
+          scrolled && "border-slate/80 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.35)]"
         )}
       >
         <div className="mx-auto flex h-full max-w-content items-center justify-between gap-4 px-6 md:px-8 lg:px-12">
@@ -37,7 +35,10 @@ export function SiteHeader() {
             className="flex items-center gap-2 text-white focus-visible:outline-none"
             aria-label="Esportiko home"
           >
-            <EsportikoLogo className="h-7 w-auto text-white md:h-8" />
+            <EsportikoLogo
+              className="h-7 w-auto md:h-8"
+              priority
+            />
           </Link>
           <nav
             aria-label="Primary"

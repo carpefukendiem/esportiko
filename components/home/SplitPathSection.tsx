@@ -2,23 +2,29 @@
 
 import { motion } from "framer-motion";
 import { SectionContainer } from "@/components/ui/SectionContainer";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { PathCard } from "@/components/ui/PathCard";
 import { fadeInUp } from "@/lib/utils/motion";
 import { media } from "@/lib/data/media";
 
 export function SplitPathSection() {
   return (
-    <section className="border-y border-slate bg-texture-navy-mid">
+    <section className="border-y border-navy/10 bg-texture-light">
       <SectionContainer>
-        <motion.h2
-          className="mb-12 text-center font-display text-h2 font-semibold uppercase tracking-tight text-white"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={fadeInUp}
-        >
-          What Are You Ordering?
-        </motion.h2>
+        <div className="mb-10 text-center md:mb-12">
+          <SectionLabel variant="light" className="mb-4">
+            Get started
+          </SectionLabel>
+          <motion.h2
+            className="font-display text-h2 font-bold uppercase tracking-tight text-navy"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={fadeInUp}
+          >
+            What Are You Ordering?
+          </motion.h2>
+        </div>
         <div className="grid gap-6 lg:grid-cols-2">
           <motion.div
             initial="hidden"

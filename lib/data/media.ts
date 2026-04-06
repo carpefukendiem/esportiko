@@ -2,6 +2,12 @@
  * Production image assets in /public/images/ (WebP).
  * Update paths here when filenames change.
  */
+export const brandLogo = {
+  src: "/images/logo/esportiko-logo.png",
+  width: 554,
+  height: 162,
+} as const;
+
 export const media = {
   hero: {
     /** Wide hero composition — use no-text variant to avoid duplicating page headline */

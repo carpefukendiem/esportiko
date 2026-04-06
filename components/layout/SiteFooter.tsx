@@ -9,7 +9,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-content px-6 py-14 md:px-8 md:py-16 lg:px-12">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <EsportikoLogo className="mb-4 h-8 w-auto text-white" />
+            <EsportikoLogo className="mb-4 h-8 w-auto max-w-[220px]" />
             <p className="mb-3 font-display text-sm font-semibold uppercase tracking-wide text-gray-soft">
               Premium custom apparel
             </p>

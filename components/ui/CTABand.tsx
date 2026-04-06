@@ -16,17 +16,35 @@ export function CTABand({
   secondaryLabel?: string;
 }) {
   return (
-    <section className="border-y border-blue-muted/40 bg-blue-muted/25 bg-texture-dark py-16 md:py-20">
-      <SectionContainer as="div" className="py-0 md:py-0">
+    <section className="relative overflow-hidden border-y border-white/10 bg-blue-accent py-16 md:py-20">
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(255,255,255,0.18),transparent)]"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.12] geometric-bg"
+        aria-hidden
+      />
+      <SectionContainer as="div" className="relative py-0 md:py-0">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="mb-6 font-display text-h2 font-semibold uppercase tracking-tight text-white">
+          <h2 className="mb-6 font-display text-h2 font-bold uppercase tracking-tight text-white drop-shadow-sm">
             {headline}
           </h2>
           <div className="flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center sm:justify-center">
-            <Button asChild variant="primary" width="full" className="sm:w-auto">
+            <Button
+              asChild
+              variant="secondary"
+              width="full"
+              className="sm:w-auto border-white bg-white text-navy hover:bg-off-white hover:text-navy"
+            >
               <Link href={primaryHref}>{primaryLabel}</Link>
             </Button>
-            <Button asChild variant="secondary" width="full" className="sm:w-auto">
+            <Button
+              asChild
+              variant="secondary"
+              width="full"
+              className="sm:w-auto border-white/90 bg-transparent text-white hover:bg-white/10"
+            >
               <Link href={secondaryHref}>{secondaryLabel}</Link>
             </Button>
           </div>

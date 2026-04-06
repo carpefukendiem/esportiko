@@ -18,7 +18,7 @@ export function PortfolioPreviewSection() {
         <div className="mx-auto mb-10 max-w-3xl text-center">
           <SectionLabel className="mb-4">OUR WORK</SectionLabel>
           <motion.h2
-            className="font-display text-h2 font-semibold uppercase tracking-tight text-white"
+            className="font-display text-h2 font-bold uppercase tracking-tight text-white"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
@@ -27,11 +27,11 @@ export function PortfolioPreviewSection() {
             Work That Earns the Second Look
           </motion.h2>
         </div>
-        <div className="mb-10 flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory md:grid md:grid-cols-5 md:overflow-visible md:pb-0 md:snap-none">
+        <div className="mb-10 flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-5 md:gap-4 md:overflow-visible md:pb-0 md:snap-none [&::-webkit-scrollbar]:hidden">
           {preview.map((item, i) => (
             <motion.div
               key={item.id}
-              className="relative aspect-[3/4] w-[72vw] max-w-[280px] flex-shrink-0 snap-center overflow-hidden rounded-xl border border-slate bg-navy sm:w-64 md:w-auto md:max-w-none"
+              className="relative aspect-[3/4] w-[min(72vw,220px)] flex-shrink-0 snap-center overflow-hidden rounded-xl border border-slate/80 bg-navy shadow-lg md:w-auto md:min-w-0 md:max-w-none"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-40px" }}

@@ -25,8 +25,8 @@ const config: Config = {
         warning: "var(--color-warning)",
       },
       fontFamily: {
-        display: ["var(--font-barlow-condensed)", "system-ui", "sans-serif"],
-        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+        display: ["var(--font-montserrat)", "system-ui", "sans-serif"],
+        sans: ["var(--font-open-sans)", "system-ui", "sans-serif"],
       },
       fontSize: {
         display: [

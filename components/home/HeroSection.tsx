@@ -23,9 +23,9 @@ export function HeroSection() {
 
   return (
     <section className="relative overflow-hidden bg-texture-dark geometric-bg">
-      <div className="mx-auto flex max-w-content flex-col gap-12 px-6 pb-16 pt-10 md:px-8 md:pb-20 md:pt-14 lg:flex-row lg:items-center lg:gap-10 lg:px-12">
-        <div className="w-full lg:w-[55%] lg:max-w-[55%]">
-          <h1 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-white">
+      <div className="mx-auto flex max-w-content flex-col gap-12 px-6 pb-16 pt-10 md:px-8 md:pb-20 md:pt-14 lg:flex-row lg:items-center lg:gap-12 lg:px-12">
+        <div className="w-full lg:w-[52%] lg:max-w-[52%]">
+          <h1 className="mb-6 font-display text-display font-extrabold tracking-tight text-white normal-case">
             <span className="block">
               {wordsA.map((w) => {
                 const i = idx++;
@@ -40,7 +40,7 @@ export function HeroSection() {
                 );
               })}
             </span>
-            <span className="mt-1 block text-blue-accent">
+            <span className="mt-1 block text-blue-light">
               {wordsB.map((w) => {
                 const i = idx++;
                 return (
@@ -56,7 +56,7 @@ export function HeroSection() {
             </span>
           </h1>
           <motion.p
-            className="mb-8 max-w-xl text-body text-off-white"
+            className="mb-8 max-w-xl text-body font-medium leading-relaxed text-off-white/95"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.45, duration: 0.5 }}
@@ -98,63 +98,108 @@ export function HeroSection() {
         </div>
 
         <div className="relative w-full flex-1 lg:mx-0 lg:max-w-none">
-          <div className="relative flex flex-col gap-5 lg:gap-6">
-            <div className="relative mx-auto aspect-[16/10] w-full max-w-xl overflow-hidden rounded-xl border border-slate shadow-2xl lg:mx-0 lg:max-w-none lg:aspect-[2016/638]">
+          <div className="relative mx-auto mt-2 h-[min(400px,68vw)] w-full max-w-xl sm:h-[460px] lg:mx-0 lg:mt-0 lg:h-[min(540px,52vh)] lg:max-w-none">
+            <div
+              className="pointer-events-none absolute left-1/2 top-[46%] h-[78%] w-[92%] -translate-x-1/2 -translate-y-1/2 rounded-[50%] bg-blue-accent/20 blur-[64px]"
+              aria-hidden
+            />
+
+            <div className="absolute left-[2%] top-[10%] z-[2] aspect-[3/4] w-[min(46%,240px)] rotate-[-7deg] shadow-[0_28px_56px_-12px_rgba(0,0,0,0.55)] sm:left-[4%] sm:w-[min(44%,280px)]">
               <Image
-                src={media.hero.gear}
-                alt="Custom Esportiko apparel: hats, jerseys, and hoodies with screen printing and embroidery for the Central Coast"
+                src={media.portfolio.jerseyBack}
+                alt="Custom team jersey with name and number decoration"
                 fill
-                className="object-cover object-center"
+                className="rounded-xl object-cover"
+                sizes="(max-width: 1024px) 46vw, 280px"
                 priority
-                sizes="(max-width: 1024px) 100vw, 45vw"
               />
             </div>
-            <motion.div
-              className="relative z-[4] w-full max-w-md rounded-xl border border-slate bg-navy-mid/95 p-4 shadow-xl backdrop-blur-sm lg:absolute lg:bottom-4 lg:right-2 lg:max-w-[min(100%,300px)] lg:shadow-2xl"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{
-                opacity: 1,
-                y: [0, -6, 0],
-              }}
-              transition={{
-                opacity: { delay: 0.6, duration: 0.5 },
-                y: {
-                  delay: 1.1,
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                },
-              }}
-            >
-              <div className="relative mb-3 h-24 w-full sm:h-28">
-                <Image
-                  src={media.hero.uploadWidget}
-                  alt=""
-                  fill
-                  className="object-contain object-left"
-                  sizes="300px"
-                />
-              </div>
-              <ul className="space-y-3 font-sans text-body-sm text-off-white">
-                <li className="flex items-center gap-2">
-                  <Upload className="h-4 w-4 shrink-0 text-blue-accent" aria-hidden />
-                  Upload Your Logo
-                </li>
-                <li className="flex items-center gap-2">
-                  <Shirt className="h-4 w-4 shrink-0 text-blue-accent" aria-hidden />
-                  Name / Number
-                </li>
-                <li className="flex items-center gap-2">
-                  <ListChecks className="h-4 w-4 shrink-0 text-blue-accent" aria-hidden />
-                  Rivera — 23 Players · 4 Sizes
-                </li>
-                <li className="flex items-center gap-2 text-gray-soft">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden />
-                  Quote Requested
-                </li>
-              </ul>
-            </motion.div>
+
+            <div className="absolute right-[4%] top-[6%] z-[1] aspect-[3/4] w-[min(40%,200px)] rotate-[6deg] shadow-[0_22px_44px_-10px_rgba(0,0,0,0.5)] sm:right-[6%] sm:w-[min(38%,220px)]">
+              <Image
+                src={media.portfolio.hoodieDark}
+                alt="Dark hoodie with custom front branding"
+                fill
+                className="rounded-xl object-cover"
+                sizes="(max-width: 1024px) 40vw, 220px"
+                priority
+              />
+            </div>
+
+            <div className="absolute bottom-[8%] right-[8%] z-[3] aspect-square w-[min(34%,150px)] rotate-[11deg] shadow-[0_18px_36px_-8px_rgba(0,0,0,0.45)] sm:bottom-[10%] sm:right-[10%] sm:w-[min(32%,168px)]">
+              <Image
+                src={media.portfolio.hat}
+                alt="Custom embroidered baseball cap"
+                fill
+                className="rounded-xl object-cover"
+                sizes="(max-width: 1024px) 34vw, 168px"
+                priority
+              />
+            </div>
+
+            <div className="absolute right-[4%] top-[22%] z-[4] hidden flex-col items-end gap-2 sm:flex">
+              <span className="glass-chip">Logo uploaded</span>
+              <span className="glass-chip">Roster ready</span>
+            </div>
           </div>
+
+          <motion.div
+            className="glass-panel relative z-[5] mx-auto mt-6 w-full max-w-[min(100%,320px)] p-4 sm:p-5 lg:absolute lg:bottom-[2%] lg:left-0 lg:mt-0"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{
+              opacity: 1,
+              y: [0, -5, 0],
+            }}
+            transition={{
+              opacity: { delay: 0.55, duration: 0.5 },
+              y: {
+                delay: 1.05,
+                duration: 4.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              },
+            }}
+          >
+            <div className="relative mb-3 h-24 w-full sm:h-[7.25rem]">
+              <Image
+                src={media.hero.uploadWidget}
+                alt=""
+                fill
+                className="object-contain object-left drop-shadow-md"
+                sizes="320px"
+              />
+            </div>
+            <ul className="space-y-2.5 font-sans text-body-sm text-white">
+              <li className="flex items-center gap-2">
+                <Upload
+                  className="h-4 w-4 shrink-0 text-blue-light"
+                  aria-hidden
+                />
+                Upload Your Logo
+              </li>
+              <li className="flex items-center gap-2">
+                <Shirt
+                  className="h-4 w-4 shrink-0 text-blue-light"
+                  aria-hidden
+                />
+                Name / Number
+              </li>
+              <li className="flex items-center gap-2">
+                <ListChecks
+                  className="h-4 w-4 shrink-0 text-blue-light"
+                  aria-hidden
+                />
+                Rivera — 23 players · 4 sizes
+              </li>
+              <li className="flex items-center gap-2 text-white/75">
+                <CheckCircle2
+                  className="h-4 w-4 shrink-0 text-success"
+                  aria-hidden
+                />
+                Quote requested
+              </li>
+            </ul>
+          </motion.div>
         </div>
       </div>
     </section>
