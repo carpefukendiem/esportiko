@@ -61,14 +61,48 @@
     text-wrap: balance;
   }
 
-  .bg-texture-dark,
-  .bg-texture-navy-mid,
-  .bg-texture-navy-light {
+  /* Hero only — full textured photo background */
+  .bg-texture-dark {
     background-color: var(--color-navy);
     background-image: url("/images/background-blue.webp");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+  }
+
+  /* Mid-tone solid navy with subtle radial accent */
+  .bg-texture-navy-mid {
+    background-color: var(--color-navy-mid);
+    background-image:
+      radial-gradient(
+        ellipse 60% 50% at 50% 0%,
+        rgba(37, 99, 235, 0.08),
+        transparent 70%
+      ),
+      url("/textures/noise.svg");
+    background-repeat: no-repeat, repeat;
+    background-size: cover, 220px 220px;
+    background-blend-mode: normal, soft-light;
+  }
+
+  /* Darker solid navy with corner glow */
+  .bg-texture-navy-light {
+    background-color: var(--color-navy-light);
+    background-image:
+      radial-gradient(
+        ellipse 50% 60% at 100% 0%,
+        rgba(30, 64, 175, 0.12),
+        transparent 65%
+      ),
+      radial-gradient(
+        ellipse 50% 60% at 0% 100%,
+        rgba(37, 99, 235, 0.08),
+        transparent 65%
+      ),
+      url("/textures/noise.svg");
+    background-repeat: no-repeat, no-repeat, repeat;
+    background-size: cover, cover, 220px 220px;
+    background-blend-mode: normal, normal, soft-light;
   }
 
   .geometric-bg {

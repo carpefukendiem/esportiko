@@ -13,7 +13,7 @@ const preview = portfolioItems.slice(0, 5);
 
 export function PortfolioPreviewSection() {
   return (
-    <section className="bg-texture-navy-mid border-y border-slate/60">
+    <section className="bg-texture-navy-light border-y border-slate/60">
       <SectionContainer>
         <div className="mx-auto mb-10 max-w-3xl text-center">
           <SectionLabel className="mb-4">OUR WORK</SectionLabel>

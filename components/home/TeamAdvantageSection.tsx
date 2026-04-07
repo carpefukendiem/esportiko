@@ -19,7 +19,7 @@ const steps = [
 
 export function TeamAdvantageSection() {
   return (
-    <section className="bg-navy bg-texture-dark">
+    <section className="bg-texture-navy-mid border-y border-slate/60">
       <SectionContainer>
         <SectionLabel className="mb-6">FOR TEAMS & COACHES</SectionLabel>
         <div className="mb-12 flex flex-wrap items-center justify-center gap-x-1 gap-y-4 px-1 sm:gap-x-0">
