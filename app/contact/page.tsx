@@ -80,9 +80,9 @@ export default function ContactPage() {
       <CTABand
         headline="Ready for a structured quote instead?"
         primaryHref="/request-a-quote"
-        primaryLabel="Request a Quote"
-        secondaryHref="/start-team-order"
-        secondaryLabel="Start Team Order"
+        primaryLabel="Get a Quote"
+        secondaryHref="/our-work"
+        secondaryLabel="View Our Work"
       />
     </>
   );

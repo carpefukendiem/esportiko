@@ -61,25 +61,15 @@
     text-wrap: balance;
   }
 
-  .bg-texture-dark {
-    background-color: var(--color-navy);
-    background-image: url("/textures/noise.svg");
-    background-repeat: repeat;
-    background-size: 200px 200px;
-  }
-
-  .bg-texture-navy-mid {
-    background-color: var(--color-navy-mid);
-    background-image: url("/textures/noise.svg");
-    background-repeat: repeat;
-    background-size: 200px 200px;
-  }
-
+  .bg-texture-dark,
+  .bg-texture-navy-mid,
   .bg-texture-navy-light {
-    background-color: var(--color-navy-light);
-    background-image: url("/textures/noise.svg");
-    background-repeat: repeat;
-    background-size: 200px 200px;
+    background-color: var(--color-navy);
+    background-image: url("/images/background-blue.webp");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
   }
 
   .geometric-bg {

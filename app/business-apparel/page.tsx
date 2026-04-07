@@ -37,7 +37,7 @@ export default function BusinessApparelPage() {
             in the wild.
           </p>
           <Button asChild variant="primary">
-            <Link href="/start-business-order">Start Business Order</Link>
+            <Link href="/request-a-quote?path=business">Get a Business Quote</Link>
           </Button>
         </div>
       </SectionContainer>

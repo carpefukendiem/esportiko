@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
 import { businessOrderLeadApiSchema } from "@/lib/schemas/businessOrderSchema";
 import type { BusinessOrderLead } from "@/lib/types";
-
-// TODO: GoHighLevel Integration
-// 1. Create a webhook or contact form in GHL subaccount
-// 2. Set GHL_WEBHOOK_URL_BUSINESS_ORDER in Vercel environment variables
-// 3. Replace the console.log below with a fetch() POST to the GHL webhook URL
-// 4. Map fields: email → email, phone → phone, businessName → custom field, etc.
-// Docs: https://highlevel.stoplight.io/docs/integrations/
+import { sendToGHL } from "@/lib/ghl";
 
 export async function POST(request: Request) {
   try {
@@ -26,14 +20,14 @@ export async function POST(request: Request) {
     }
 
     const payload: BusinessOrderLead = parsed.data;
-    console.log("[lead:business-order]", JSON.stringify(payload, null, 2));
-
-    const webhookUrl = process.env.GHL_WEBHOOK_URL_BUSINESS_ORDER;
-    void webhookUrl;
+    await sendToGHL(
+      "business-order",
+      payload as unknown as Record<string, unknown>
+    );
 
     return NextResponse.json({
       success: true,
-      message: "Business order request received.",
+      message: "Business quote request received. We'll be in touch shortly.",
     });
   } catch {
     return NextResponse.json(

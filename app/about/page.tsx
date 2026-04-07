@@ -49,7 +49,7 @@ export default function AboutPage() {
             timeline and scope are a fit.
           </p>
           <Button asChild variant="primary">
-            <Link href="/request-a-quote">Start Your Project</Link>
+            <Link href="/request-a-quote">Get a Quote</Link>
           </Button>
         </div>
       </SectionContainer>

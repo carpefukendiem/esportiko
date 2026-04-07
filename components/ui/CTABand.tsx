@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 export function CTABand({
   headline = "Let's Build Your Next Apparel Order",
   primaryHref = "/request-a-quote",
-  primaryLabel = "Start Your Project",
-  secondaryHref = "/request-a-quote",
-  secondaryLabel = "Request a Quote",
+  primaryLabel = "Get a Quote",
+  secondaryHref = "/our-work",
+  secondaryLabel = "View Our Work",
 }: {
   headline?: string;
   primaryHref?: string;

@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
 import { teamOrderLeadApiSchema } from "@/lib/schemas/teamOrderSchema";
 import type { TeamOrderLead } from "@/lib/types";
-
-// TODO: GoHighLevel Integration
-// 1. Create a webhook or contact form in GHL subaccount
-// 2. Set GHL_WEBHOOK_URL_TEAM_ORDER in Vercel environment variables
-// 3. Replace the console.log below with a fetch() POST to the GHL webhook URL
-// 4. Map fields: email → email, phone → phone, teamName → custom field, etc.
-// Docs: https://highlevel.stoplight.io/docs/integrations/
+import { sendToGHL } from "@/lib/ghl";
 
 export async function POST(request: Request) {
   try {
@@ -26,16 +20,14 @@ export async function POST(request: Request) {
     }
 
     const payload: TeamOrderLead = parsed.data;
-    console.log("[lead:team-order]", JSON.stringify(payload, null, 2));
-
-    const webhookUrl = process.env.GHL_WEBHOOK_URL_TEAM_ORDER;
-    const apiKey = process.env.GHL_API_KEY;
-    void webhookUrl;
-    void apiKey;
+    await sendToGHL(
+      "team-order",
+      payload as unknown as Record<string, unknown>
+    );
 
     return NextResponse.json({
       success: true,
-      message: "Team order request received.",
+      message: "Team quote request received. We'll be in touch shortly.",
     });
   } catch {
     return NextResponse.json(

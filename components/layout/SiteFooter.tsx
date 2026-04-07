@@ -79,7 +79,7 @@ export function SiteFooter() {
               Hours: Monday–Friday, 9:00 a.m.–5:00 p.m. PT (by appointment)
             </p>
             <Button asChild variant="primary" className="w-full sm:w-auto">
-              <Link href="/request-a-quote">Request a Quote</Link>
+              <Link href="/request-a-quote">Get a Quote</Link>
             </Button>
           </div>
         </div>

@@ -9,7 +9,7 @@ import { media } from "@/lib/data/media";
 
 export function SplitPathSection() {
   return (
-    <section className="border-y border-navy/10 bg-texture-light">
+    <section className="relative border-y border-navy/10 bg-section-white bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/white-background-img.png')" }}>
       <SectionContainer>
         <div className="mb-10 text-center md:mb-12">
           <SectionLabel variant="light" className="mb-4">
@@ -34,11 +34,11 @@ export function SplitPathSection() {
           >
             <PathCard
               title="Team / Uniform Orders"
-              description="Roster entry, names and numbers, size breakdowns, and organized apparel — built for coaches, managers, and school programs."
-              href="/start-team-order"
-              ctaLabel="Start Team Order"
+              description="Roster entry, names and numbers, size breakdowns, and organized team apparel — built for coaches, managers, and school programs."
+              href="/request-a-quote?path=team"
+              ctaLabel="Get a Team Quote"
               decorativeSrc={media.pathCards.team}
-              decorativeAlt="Team and uniform order option graphic with jerseys and coordinated apparel"
+              decorativeAlt="Stacked custom team jerseys and uniforms"
             />
           </motion.div>
           <motion.div
@@ -50,10 +50,10 @@ export function SplitPathSection() {
             <PathCard
               title="Business / Brand Orders"
               description="Logo uploads, garment selection, placement previews, and quantity-based pricing for businesses, restaurants, nonprofits, and events."
-              href="/start-business-order"
-              ctaLabel="Start Business Order"
+              href="/request-a-quote?path=business"
+              ctaLabel="Get a Business Quote"
               decorativeSrc={media.pathCards.business}
-              decorativeAlt="Branded business hat and headwear for company apparel programs"
+              decorativeAlt="Branded shirt and cap for business apparel programs"
             />
           </motion.div>
         </div>

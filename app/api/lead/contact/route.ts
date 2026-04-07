@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
 import { contactLeadApiSchema } from "@/lib/schemas/contactSchema";
 import type { ContactLead } from "@/lib/types";
-
-// TODO: GoHighLevel Integration
-// 1. Create a webhook or contact form in GHL subaccount
-// 2. Set GHL_WEBHOOK_URL_CONTACT in Vercel environment variables
-// 3. Replace the console.log below with a fetch() POST to the GHL webhook URL
-// 4. Map fields: email → email, phone → phone, message → custom field, etc.
-// Docs: https://highlevel.stoplight.io/docs/integrations/
+import { sendToGHL } from "@/lib/ghl";
 
 export async function POST(request: Request) {
   try {
@@ -26,14 +20,11 @@ export async function POST(request: Request) {
     }
 
     const payload: ContactLead = parsed.data;
-    console.log("[lead:contact]", JSON.stringify(payload, null, 2));
-
-    const webhookUrl = process.env.GHL_WEBHOOK_URL_CONTACT;
-    void webhookUrl;
+    await sendToGHL("contact", payload as unknown as Record<string, unknown>);
 
     return NextResponse.json({
       success: true,
-      message: "Contact message received.",
+      message: "Contact message received. We'll reply soon.",
     });
   } catch {
     return NextResponse.json(

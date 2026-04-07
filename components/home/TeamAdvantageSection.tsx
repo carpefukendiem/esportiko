@@ -1,14 +1,12 @@
 "use client";
 
 import { Fragment } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Button } from "@/components/ui/button";
 import { fadeInUp } from "@/lib/utils/motion";
-import { media } from "@/lib/data/media";
 
 const steps = [
   "Choose Garments",
@@ -62,18 +60,18 @@ export function TeamAdvantageSection() {
               back-and-forth.
             </p>
             <Button asChild variant="primary">
-              <Link href="/start-team-order">Try the Project Builder</Link>
+              <Link href="/request-a-quote?path=team">Get a Team Quote</Link>
             </Button>
           </motion.div>
           <motion.div
-            className="rounded-xl border border-slate bg-navy-mid p-3 shadow-xl"
+            className="rounded-xl border border-white/10 bg-gradient-to-br from-navy-light/90 to-navy-mid/90 p-3 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.6)] backdrop-blur-sm"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
             variants={fadeInUp}
           >
-            <div className="overflow-hidden rounded-lg bg-navy-light">
-              <div className="flex items-center gap-2 border-b border-slate px-3 py-2">
+            <div className="overflow-hidden rounded-lg border border-white/10 bg-navy">
+              <div className="flex items-center gap-2 border-b border-white/10 bg-navy-mid/80 px-3 py-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-error/90" />
                 <span className="h-2.5 w-2.5 rounded-full bg-warning/90" />
                 <span className="h-2.5 w-2.5 rounded-full bg-success/90" />
@@ -81,15 +79,58 @@ export function TeamAdvantageSection() {
                   team-order.esportiko
                 </span>
               </div>
-              <div className="relative aspect-[1338/585] w-full bg-navy">
-                <Image
-                  src={media.teamOrderingUi}
-                  alt="Esportiko team order intake: garment selection, roster fields, and organized quote flow"
-                  fill
-                  className="object-cover object-top"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  loading="lazy"
-                />
+              <div className="grid grid-cols-[140px_1fr_180px] gap-4 p-5">
+                <div className="flex flex-col gap-2">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`block aspect-square rounded ${
+                          i === 0
+                            ? "bg-blue-light"
+                            : i % 3 === 0
+                            ? "bg-blue-accent/70"
+                            : "bg-white/10"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <div className="mt-2 space-y-1.5">
+                    <span className="block h-1.5 w-full rounded-full bg-white/15" />
+                    <span className="block h-1.5 w-3/4 rounded-full bg-white/10" />
+                    <span className="block h-1.5 w-2/3 rounded-full bg-white/10" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-center">
+                  <div className="relative aspect-[3/4] w-full max-w-[160px] rounded-lg bg-gradient-to-br from-navy-light to-navy-mid shadow-inner">
+                    <span className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-light/30 blur-2xl" />
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-2xl font-bold text-white/80">
+                      ✦
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="grid grid-cols-3 gap-2 text-[0.55rem] font-semibold uppercase tracking-wide text-gray-soft">
+                    <span>Player</span>
+                    <span>Size</span>
+                    <span>Qty</span>
+                  </div>
+                  {[
+                    ["Sam", "M", "1"],
+                    ["Marie", "S", "1"],
+                    ["Dale", "L", "1"],
+                    ["Sam", "XL", "1"],
+                  ].map(([n, s, q], i) => (
+                    <div
+                      key={i}
+                      className="grid grid-cols-3 gap-2 rounded bg-white/5 px-2 py-1 text-[0.65rem] text-white/75"
+                    >
+                      <span>{n}</span>
+                      <span>{s}</span>
+                      <span>{q}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>

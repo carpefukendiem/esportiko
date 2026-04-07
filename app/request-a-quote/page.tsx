@@ -1,79 +1,151 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Shirt, Briefcase, MessageCircle } from "lucide-react";
+import Image from "next/image";
+import { Users, Briefcase, Check } from "lucide-react";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { Button } from "@/components/ui/button";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { buildMetadata } from "@/lib/seo";
+import { media } from "@/lib/data/media";
 
 export function generateMetadata(): Metadata {
   return buildMetadata({
-    title: "Request a Quote",
+    title: "Get a Quote",
     description:
-      "Choose team uniforms, business apparel, or a general inquiry to start your custom quote with Esportiko on the Central Coast.",
+      "Two streamlined quote funnels — Team/Uniform Orders or Business/Brand Orders. Submit project details and receive a detailed quote from Esportiko.",
     path: "/request-a-quote",
   });
 }
 
-const cards = [
+const funnels = [
   {
-    title: "Team / Uniform Order",
+    id: "team",
+    icon: Users,
+    title: "Team / Uniform Quote",
+    kicker: "For coaches, managers, and school programs",
     description:
-      "Roster-aware programs with names, numbers, and organized garment packages.",
+      "Roster entry, names and numbers, size breakdowns, and organized team apparel packages.",
+    bullets: [
+      "Roster-aware intake",
+      "Names, numbers, sizes",
+      "Multi-garment packages",
+      "Production timeline guidance",
+    ],
     href: "/start-team-order",
-    cta: "Start Team Order",
-    icon: Shirt,
+    cta: "Start Team Quote",
+    image: media.pathCards.team,
   },
   {
-    title: "Business / Brand Order",
-    description:
-      "Staff uniforms, event merch, and branded apparel with clear project intake.",
-    href: "/start-business-order",
-    cta: "Start Business Order",
+    id: "business",
     icon: Briefcase,
-  },
-  {
-    title: "Not Sure Yet / General Inquiry",
+    title: "Business / Brand Quote",
+    kicker: "For businesses, restaurants, nonprofits, events",
     description:
-      "Tell us what you are exploring and we will point you to the right path.",
-    href: "/contact",
-    cta: "Contact Us",
-    icon: MessageCircle,
+      "Logo uploads, garment selection, placement previews, and quantity-based pricing for branded programs.",
+    bullets: [
+      "Logo + art intake",
+      "Garment + color selection",
+      "Placement guidance",
+      "Quantity-based pricing",
+    ],
+    href: "/start-business-order",
+    cta: "Start Business Quote",
+    image: media.pathCards.business,
   },
 ] as const;
 
 export default function RequestAQuotePage() {
   return (
     <SectionContainer className="bg-texture-dark">
-      <div className="mx-auto max-w-content text-center">
-        <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
-          Request a Quote
-        </h1>
-        <p className="mx-auto mb-14 max-w-2xl text-body text-gray-soft">
-          Select the path that best matches your project. Each option opens a
-          structured intake so we can respond with clarity — not guesswork.
-        </p>
-        <div className="grid gap-6 lg:grid-cols-3">
-          {cards.map((card) => (
+      <div className="mx-auto max-w-content">
+        <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
+          <SectionLabel className="mb-4">Get a Quote</SectionLabel>
+          <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
+            Two Funnels. One Smooth Quote.
+          </h1>
+          <p className="mx-auto max-w-2xl text-body text-off-white/80">
+            Pick the path that matches your project. Each funnel captures
+            exactly what we need to send back a detailed quote — no
+            back-and-forth.
+          </p>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          {funnels.map((f) => (
             <article
-              key={card.title}
-              className="flex flex-col rounded-xl border border-slate bg-navy-light/80 p-8 text-left transition-colors hover:border-blue-accent/40"
+              key={f.id}
+              id={f.id}
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-navy-light via-navy to-navy-mid p-8 shadow-[0_30px_70px_-20px_rgba(8,12,24,0.55)] md:p-10"
             >
-              <card.icon
-                className="mb-6 h-10 w-10 text-blue-accent"
+              <div
+                className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-blue-accent/20 blur-3xl"
                 aria-hidden
               />
-              <h2 className="mb-3 font-display text-xl font-semibold text-white">
-                {card.title}
-              </h2>
-              <p className="mb-8 flex-1 text-body-sm text-gray-soft">
-                {card.description}
-              </p>
-              <Button asChild variant="primary" width="full">
-                <Link href={card.href}>{card.cta}</Link>
-              </Button>
+              <div
+                className="pointer-events-none absolute inset-0 opacity-25 mix-blend-overlay"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%)",
+                }}
+                aria-hidden
+              />
+
+              <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center">
+                <div className="flex-1">
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-white/15 bg-blue-accent/20 text-blue-light shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+                    <f.icon className="h-5 w-5" aria-hidden />
+                  </div>
+                  <p className="mb-2 font-sans text-body-sm font-semibold uppercase tracking-wider text-blue-light">
+                    {f.kicker}
+                  </p>
+                  <h2 className="mb-3 font-display text-2xl font-bold tracking-tight text-white md:text-[1.7rem]">
+                    {f.title}
+                  </h2>
+                  <p className="mb-5 max-w-md text-body text-off-white/75">
+                    {f.description}
+                  </p>
+                  <ul className="mb-7 space-y-2">
+                    {f.bullets.map((b) => (
+                      <li
+                        key={b}
+                        className="flex items-center gap-2 text-body-sm text-off-white/80"
+                      >
+                        <Check
+                          className="h-4 w-4 text-blue-light"
+                          aria-hidden
+                        />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button asChild variant="primary" className="w-full sm:w-auto">
+                    <Link href={f.href}>{f.cta}</Link>
+                  </Button>
+                </div>
+                <div className="relative hidden aspect-square w-40 shrink-0 md:block lg:w-44">
+                  <Image
+                    src={f.image}
+                    alt=""
+                    fill
+                    className="object-contain transition-transform duration-500 group-hover:scale-105"
+                    sizes="180px"
+                  />
+                </div>
+              </div>
             </article>
           ))}
         </div>
+
+        <p className="mx-auto mt-10 max-w-xl text-center text-body-sm text-off-white/60">
+          Not sure which to pick?{" "}
+          <Link
+            href="/contact"
+            className="text-blue-light underline underline-offset-4 hover:text-white"
+          >
+            Send us a quick message
+          </Link>{" "}
+          and we&rsquo;ll point you to the right path.
+        </p>
       </div>
     </SectionContainer>
   );

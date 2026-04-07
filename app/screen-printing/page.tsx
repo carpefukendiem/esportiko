@@ -34,10 +34,10 @@ export default function ScreenPrintingPage() {
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button asChild variant="primary">
-              <Link href="/start-business-order">Start Business Order</Link>
+              <Link href="/request-a-quote?path=business">Get a Quote</Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link href="/request-a-quote">Request a Quote</Link>
+              <Link href="/our-work">View Our Work</Link>
             </Button>
           </div>
         </div>
@@ -134,10 +134,10 @@ export default function ScreenPrintingPage() {
         </div>
       </SectionContainer>
       <CTABand
-        primaryHref="/start-business-order"
-        primaryLabel="Start Business Order"
-        secondaryHref="/request-a-quote"
-        secondaryLabel="Request a Quote"
+        primaryHref="/request-a-quote?path=business"
+        primaryLabel="Get a Quote"
+        secondaryHref="/our-work"
+        secondaryLabel="View Our Work"
       />
     </>
   );
