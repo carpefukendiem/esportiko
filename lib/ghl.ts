@@ -5,6 +5,7 @@
  *   GHL_WEBHOOK_URL_TEAM_ORDER
  *   GHL_WEBHOOK_URL_BUSINESS_ORDER
  *   GHL_WEBHOOK_URL_CONTACT
+ *   GHL_WEBHOOK_URL_TEAM_ROSTER_DETAILS (final jersey names/numbers after quote)
  *
  * Each should be an "Inbound Webhook" URL from a GHL Workflow. We POST the
  * parsed lead payload as JSON — map fields inside the GHL workflow trigger.
@@ -14,12 +15,17 @@
  * observability and you can add Sentry/Logtail later.
  */
 
-type LeadKind = "team-order" | "business-order" | "contact";
+type LeadKind =
+  | "team-order"
+  | "business-order"
+  | "contact"
+  | "team-roster-details";
 
 const ENV_KEYS: Record<LeadKind, string> = {
   "team-order": "GHL_WEBHOOK_URL_TEAM_ORDER",
   "business-order": "GHL_WEBHOOK_URL_BUSINESS_ORDER",
   contact: "GHL_WEBHOOK_URL_CONTACT",
+  "team-roster-details": "GHL_WEBHOOK_URL_TEAM_ROSTER_DETAILS",
 };
 
 export async function sendToGHL(

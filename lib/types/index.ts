@@ -17,12 +17,36 @@ export interface UploadedAssetMeta {
 
 export interface LeadSourceMeta {
   sourcePage: string;
-  formType: "team-order" | "business-order" | "contact";
+  formType:
+    | "team-order"
+    | "business-order"
+    | "contact"
+    | "team-roster-details";
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
   landingPage?: string;
   submissionTimestamp: string;
+}
+
+export interface JerseyRosterRow {
+  id: string;
+  number: string;
+  lastName: string;
+  size: string;
+  quantity: number;
+}
+
+export interface TeamRosterDetailsLead extends LeadSourceMeta {
+  formType: "team-roster-details";
+  contactName: string;
+  email: string;
+  phone: string;
+  teamName: string;
+  quoteReference?: string;
+  roleOrTitle?: string;
+  additionalNotes?: string;
+  roster: JerseyRosterRow[];
 }
 
 export interface TeamOrderLead extends LeadSourceMeta {

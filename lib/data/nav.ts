@@ -27,4 +27,5 @@ export const footerCompany: NavItem[] = [
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
   { label: "Request a Quote", href: "/request-a-quote" },
+  { label: "Submit team roster", href: "/submit-team-roster" },
 ];

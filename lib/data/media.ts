@@ -14,7 +14,6 @@ export const media = {
     gear: "/images/hero-bg-right-gear-no-text.webp",
     /** Product stack — right column hero (WebP) */
     apparelStack: "/images/hero-apparel-stack.webp",
-    uploadWidget: "/images/upload-logo-widget.webp",
   },
   pathCards: {
     /** Large PNGs for full-bleed path cards */
