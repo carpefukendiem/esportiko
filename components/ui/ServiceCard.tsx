@@ -1,16 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Printer, Shirt, Users, Briefcase } from "lucide-react";
 import type { Service } from "@/lib/data/services";
-const icons = {
-  print: Printer,
-  needle: Shirt,
-  users: Users,
-  briefcase: Briefcase,
-} as const;
 
 export function ServiceCard({ service }: { service: Service }) {
-  const Icon = icons[service.icon];
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-slate bg-navy-light/80">
       <div className="relative aspect-[4/3] w-full bg-navy">
@@ -22,9 +14,6 @@ export function ServiceCard({ service }: { service: Service }) {
           sizes="(max-width: 768px) 100vw, 25vw"
           loading="lazy"
         />
-        <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-lg bg-navy/80 text-blue-accent ring-1 ring-slate">
-          <Icon className="h-5 w-5" aria-hidden />
-        </div>
       </div>
       <div className="flex flex-1 flex-col p-6">
         <h3 className="mb-2 font-display text-xl font-semibold text-white">

@@ -16,37 +16,17 @@ import { RadioGroupField } from "@/components/forms/fields/RadioGroupField";
 import { SwitchField } from "@/components/forms/fields/SwitchField";
 import { UploadField } from "@/components/forms/fields/UploadField";
 import { RosterTable } from "@/components/forms/RosterTable";
-import { FormSuccess } from "@/components/forms/FormSuccess";
+import { motion } from "framer-motion";
 import {
   teamOrderFormSchema,
   type TeamOrderFormValues,
 } from "@/lib/schemas/teamOrderSchema";
-import { filesToAssetMetaList } from "@/lib/utils/formatPayload";
 import { captureLeadMeta } from "@/lib/utils/leadMeta";
-import type { TeamOrderLead } from "@/lib/types";
-
-const SPORT_OPTIONS = [
-  { value: "Football", label: "Football" },
-  { value: "Baseball", label: "Baseball" },
-  { value: "Softball", label: "Softball" },
-  { value: "Basketball", label: "Basketball" },
-  { value: "Soccer", label: "Soccer" },
-  { value: "Volleyball", label: "Volleyball" },
-  { value: "Wrestling", label: "Wrestling" },
-  { value: "Track & Field", label: "Track & Field" },
-  { value: "Cheer", label: "Cheer" },
-  { value: "Lacrosse", label: "Lacrosse" },
-  { value: "Hockey", label: "Hockey" },
-  { value: "Other", label: "Other" },
-];
-
-const SEASON_OPTIONS = [
-  { value: "Spring 2026", label: "Spring 2026" },
-  { value: "Summer 2026", label: "Summer 2026" },
-  { value: "Fall 2026", label: "Fall 2026" },
-  { value: "Winter 2026/27", label: "Winter 2026/27" },
-  { value: "Other", label: "Other" },
-];
+import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
+import {
+  SPORT_OPTIONS,
+  SEASON_OPTIONS,
+} from "@/lib/data/teamIntakeOptions";
 
 const ROLE_OPTIONS = [
   { value: "coach", label: "Coach" },
@@ -83,16 +63,21 @@ const STEP_LABELS = [
 
 const stepFieldGroups: (keyof TeamOrderFormValues)[][] = [
   ["teamName", "sport", "season"],
-  ["contactName", "role", "email", "phone", "preferredContact"],
+  ["firstName", "lastName", "role", "email", "phone", "preferredContact"],
   ["apparelItems", "decorationType", "estimatedPlayers"],
 ];
+
+const TEAM_QUOTE_ERROR =
+  "Something went wrong. Please try again or call us at (805) 335-2239.";
 
 export function TeamOrderForm() {
   const pathname = usePathname();
   const [step, setStep] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [sending, setSending] = useState(false);
+  const { submit, isLoading, isSuccess, isError } = useFormSubmit();
+  const [thanks, setThanks] = useState<{
+    firstName: string;
+    teamName: string;
+  } | null>(null);
 
   const form = useForm<TeamOrderFormValues>({
     resolver: zodResolver(teamOrderFormSchema) as Resolver<TeamOrderFormValues>,
@@ -102,7 +87,8 @@ export function TeamOrderForm() {
       season: "",
       dueDate: "",
       notes: "",
-      contactName: "",
+      firstName: "",
+      lastName: "",
       role: "coach",
       email: "",
       phone: "",
@@ -140,8 +126,6 @@ export function TeamOrderForm() {
   const goBack = () => setStep((s) => Math.max(s - 1, 0));
 
   const onSubmit = async (values: TeamOrderFormValues) => {
-    setSubmitError(null);
-    setSending(true);
     const meta = captureLeadMeta(pathname, "team-order");
     const files = values.logoFiles as File[] | File | undefined;
     const fileList = files
@@ -149,61 +133,71 @@ export function TeamOrderForm() {
         ? files
         : [files]
       : [];
-    const uploadedAssets = filesToAssetMetaList(fileList);
+    const logoUpload = fileList[0]?.name ?? "";
 
-    const payload: TeamOrderLead = {
+    const garments = values.apparelItems.join(", ");
+    const rosterLines =
+      values.rosterReady && values.roster?.length
+        ? values.roster
+            .map(
+              (r) =>
+                `${r.playerName} #${r.number} ${r.size} ×${r.quantity}`
+            )
+            .join("; ")
+        : "";
+    const notesParts = [
+      values.notes?.trim(),
+      `Role: ${values.role}`,
+      `Preferred contact: ${values.preferredContact}`,
+      `Decoration: ${values.decorationType}`,
+      values.needsNamesNumbers ? "Needs names & numbers: yes" : null,
+      values.needsGarmentSourcing ? "Needs garment sourcing: yes" : null,
+      values.rosterReady
+        ? `Roster provided (${values.roster?.length ?? 0} rows): ${rosterLines}`
+        : "Roster: to follow / not attached",
+    ].filter(Boolean);
+
+    const payload: Record<string, unknown> = {
       ...meta,
-      orderType: "team",
-      teamName: values.teamName,
+      formType: "team-order",
+      firstName: values.firstName.trim(),
+      lastName: values.lastName.trim(),
+      email: values.email.trim(),
+      phone: values.phone.trim(),
+      teamName: values.teamName.trim(),
       sport: values.sport,
       season: values.season,
-      contactName: values.contactName,
-      role: values.role,
-      email: values.email,
-      phone: values.phone,
-      preferredContact: values.preferredContact,
-      dueDate: values.dueDate || undefined,
-      apparelItems: values.apparelItems,
-      decorationType: values.decorationType,
-      estimatedPlayers: values.estimatedPlayers,
-      needsNamesNumbers: values.needsNamesNumbers,
-      needsGarmentSourcing: values.needsGarmentSourcing,
-      rosterReady: values.rosterReady,
-      roster:
-        values.rosterReady && values.roster?.length
-          ? values.roster
-          : undefined,
-      notes: values.notes || undefined,
-      uploadedAssets: uploadedAssets.length ? uploadedAssets : undefined,
+      deadline: values.dueDate?.trim() ?? "",
+      garments,
+      quantity: values.estimatedPlayers,
+      logoUpload,
+      notes: notesParts.length ? notesParts.join("\n") : "",
     };
 
-    try {
-      const res = await fetch("/api/lead/team-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+    const ok = await submit(payload);
+    if (ok) {
+      setThanks({
+        firstName: values.firstName.trim(),
+        teamName: values.teamName.trim(),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        setSubmitError(
-          data.error ??
-            "Something went wrong. Please try again or contact us directly."
-        );
-        setSending(false);
-        return;
-      }
-      setSubmitted(true);
-    } catch {
-      setSubmitError(
-        "Something went wrong. Please try again or contact us directly."
-      );
-    } finally {
-      setSending(false);
     }
   };
 
-  if (submitted) {
-    return <FormSuccess />;
+  if (isSuccess && thanks) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="mx-auto max-w-3xl rounded-xl border border-slate bg-navy-mid/80 px-6 py-10 text-center md:px-10"
+        role="status"
+      >
+        <p className="text-body text-off-white">
+          Thanks {thanks.firstName} — we got your team order request for{" "}
+          {thanks.teamName} and will follow up within 1 business day.
+        </p>
+      </motion.div>
+    );
   }
 
   return (
@@ -272,11 +266,10 @@ export function TeamOrderForm() {
           <p className="font-sans text-label font-semibold uppercase tracking-wider text-gray-soft">
             Primary contact
           </p>
-          <TextField
-            name="contactName"
-            label="Contact name"
-            control={control}
-          />
+          <div className="grid gap-6 sm:grid-cols-2">
+            <TextField name="firstName" label="First name" control={control} />
+            <TextField name="lastName" label="Last name" control={control} />
+          </div>
           <SelectField
             name="role"
             label="Your role"
@@ -398,9 +391,9 @@ export function TeamOrderForm() {
         </div>
       ) : null}
 
-      {submitError ? (
+      {isError ? (
         <p className="text-body-sm text-error" role="alert">
-          {submitError}
+          {TEAM_QUOTE_ERROR}
         </p>
       ) : null}
 
@@ -410,7 +403,7 @@ export function TeamOrderForm() {
             type="button"
             variant="secondary"
             onClick={goBack}
-            disabled={sending}
+            disabled={isLoading}
           >
             Back
           </Button>
@@ -423,8 +416,8 @@ export function TeamOrderForm() {
               Next
             </Button>
           ) : (
-            <Button type="submit" variant="primary" disabled={sending}>
-              {sending ? "Sending..." : "Submit Team Order Request"}
+            <Button type="submit" variant="primary" disabled={isLoading}>
+              {isLoading ? "Sending..." : "Submit Team Order Request"}
             </Button>
           )}
         </div>

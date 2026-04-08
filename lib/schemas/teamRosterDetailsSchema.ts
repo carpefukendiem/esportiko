@@ -12,15 +12,22 @@ const jerseyRowSchema = z.object({
 });
 
 export const teamRosterDetailsFormSchema = z.object({
-  contactName: z.string().min(1, "Your name is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Enter a valid email"),
   phone: z
     .string()
     .min(1, "Phone is required")
     .regex(/^[\d\s\-+().]{10,}$/, "Enter a valid phone number"),
   teamName: z.string().min(1, "Team or school name is required"),
+  sport: z.string().min(1, "Select a sport"),
+  season: z.string().min(1, "Select a season"),
+  deadline: z.string().optional(),
+  garments: z.string().min(1, "Describe garments for this roster"),
+  quantity: z.string().min(1, "Quantity or size summary is required"),
   quoteReference: z.string().optional(),
   roleOrTitle: z.string().optional(),
+  artworkNotes: z.string().optional(),
   additionalNotes: z.string().optional(),
   roster: z.array(jerseyRowSchema).min(1, "Add at least one player row"),
 });
@@ -29,16 +36,3 @@ export type TeamRosterDetailsFormValues = z.infer<
   typeof teamRosterDetailsFormSchema
 >;
 
-const teamRosterDetailsLeadMetaSchema = z.object({
-  sourcePage: z.string(),
-  formType: z.literal("team-roster-details"),
-  utmSource: z.string().optional(),
-  utmMedium: z.string().optional(),
-  utmCampaign: z.string().optional(),
-  landingPage: z.string().optional(),
-  submissionTimestamp: z.string(),
-});
-
-/** Full POST body from the client (form fields + UTM / page meta). */
-export const teamRosterDetailsApiSchema =
-  teamRosterDetailsFormSchema.merge(teamRosterDetailsLeadMetaSchema);

@@ -18,7 +18,7 @@ export function PathCard({
   decorativeAlt: string;
 }) {
   return (
-    <article className="group grid min-h-[300px] overflow-hidden rounded-2xl border border-navy/10 bg-white shadow-[0_24px_60px_-20px_rgba(18,24,38,0.18)] transition-shadow duration-300 hover:shadow-[0_28px_70px_-18px_rgba(18,24,38,0.22)] md:min-h-[min(440px,54vw)] md:grid-cols-[minmax(0,1fr)_minmax(280px,54%)] lg:min-h-[min(480px,48vh)]">
+    <article className="group grid h-full min-h-[300px] overflow-hidden rounded-2xl border border-navy/10 bg-white shadow-[0_24px_60px_-20px_rgba(18,24,38,0.18)] transition-shadow duration-300 hover:shadow-[0_28px_70px_-18px_rgba(18,24,38,0.22)] md:min-h-[min(440px,54vw)] md:grid-cols-[minmax(0,1fr)_minmax(280px,54%)] lg:min-h-[min(480px,48vh)]">
       <div className="relative z-10 order-2 flex flex-col justify-center px-6 py-8 md:order-1 md:px-8 md:py-10 lg:px-10">
         <span
           className="mb-4 block h-1 w-11 rounded-full bg-blue-accent"

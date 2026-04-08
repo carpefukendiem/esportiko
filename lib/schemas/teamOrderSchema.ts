@@ -19,7 +19,8 @@ export const teamOrderFormSchema = z
     season: z.string().min(1, "Select a season"),
     dueDate: z.string().optional(),
     notes: z.string().optional(),
-    contactName: z.string().min(1, "Contact name is required"),
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
     role: z.enum(["coach", "manager", "parent", "admin", "other"]),
     email: z.string().email("Enter a valid email"),
     phone: z

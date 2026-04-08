@@ -31,20 +31,20 @@ export function SiteHeader() {
             : "bg-transparent"
         )}
       >
-        <div className="mx-auto flex h-full max-w-content items-center justify-between gap-4 px-6 md:px-8 lg:px-12">
+        <div className="mx-auto flex h-full max-w-content items-center justify-between gap-4 px-4 md:px-6 lg:px-8">
           <Link
             href="/"
             className="flex items-center gap-2 text-white focus-visible:outline-none"
             aria-label="Esportiko home"
           >
             <EsportikoLogo
-              className="h-[52px] w-auto max-w-[min(78vw,440px)] md:h-[68px] md:max-w-[min(52vw,520px)]"
+              className="h-[44px] w-auto max-w-[min(78vw,440px)] md:h-[52px] md:max-w-[min(52vw,520px)]"
               priority
             />
           </Link>
           <nav
             aria-label="Primary"
-            className="hidden items-center gap-6 lg:flex lg:gap-7"
+            className="hidden items-center gap-5 lg:flex lg:gap-6"
           >
             {primaryNav.map((item) => (
               <NavLink key={item.href} href={item.href}>

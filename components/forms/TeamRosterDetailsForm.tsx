@@ -13,13 +13,17 @@ import { TextField } from "@/components/forms/fields/TextField";
 import { EmailField } from "@/components/forms/fields/EmailField";
 import { PhoneField } from "@/components/forms/fields/PhoneField";
 import { TextareaField } from "@/components/forms/fields/TextareaField";
-import { FormSuccess } from "@/components/forms/FormSuccess";
 import {
   teamRosterDetailsFormSchema,
   type TeamRosterDetailsFormValues,
 } from "@/lib/schemas/teamRosterDetailsSchema";
 import { captureLeadMeta } from "@/lib/utils/leadMeta";
-import type { TeamRosterDetailsLead } from "@/lib/types";
+import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
+import { SelectField } from "@/components/forms/fields/SelectField";
+import {
+  SPORT_OPTIONS,
+  SEASON_OPTIONS,
+} from "@/lib/data/teamIntakeOptions";
 
 function newRow(): TeamRosterDetailsFormValues["roster"][number] {
   return {
@@ -31,23 +35,35 @@ function newRow(): TeamRosterDetailsFormValues["roster"][number] {
   };
 }
 
+const ROSTER_ERROR =
+  "Something went wrong. Please try again or call us at (805) 335-2239.";
+
 export function TeamRosterDetailsForm() {
   const pathname = usePathname();
-  const [submitted, setSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [sending, setSending] = useState(false);
+  const { submit, isLoading, isSuccess, isError } = useFormSubmit();
+  const [thanks, setThanks] = useState<{
+    firstName: string;
+    teamName: string;
+  } | null>(null);
 
   const form = useForm<TeamRosterDetailsFormValues>({
     resolver: zodResolver(
       teamRosterDetailsFormSchema
     ) as Resolver<TeamRosterDetailsFormValues>,
     defaultValues: {
-      contactName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       phone: "",
       teamName: "",
+      sport: "",
+      season: "",
+      deadline: "",
+      garments: "",
+      quantity: "",
       quoteReference: "",
       roleOrTitle: "",
+      artworkNotes: "",
       additionalNotes: "",
       roster: [newRow()],
     },
@@ -62,60 +78,77 @@ export function TeamRosterDetailsForm() {
   const { errors } = formState;
 
   const onSubmit = async (values: TeamRosterDetailsFormValues) => {
-    setSubmitError(null);
-    setSending(true);
-    const meta = captureLeadMeta(pathname, "team-roster-details");
+    const meta = captureLeadMeta(pathname, "team-roster");
 
-    const payload: TeamRosterDetailsLead = {
+    const rosterQtyLines = values.roster
+      .map(
+        (r) =>
+          `${r.lastName.trim()} / #${r.number.trim()} / ${r.size.trim()} / qty ${r.quantity}`
+      )
+      .join("\n");
+
+    const artworkNotes = [
+      values.artworkNotes?.trim(),
+      `Per-row quantities:\n${rosterQtyLines}`,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    const notes = [
+      values.roleOrTitle?.trim() && `Role: ${values.roleOrTitle.trim()}`,
+      values.quoteReference?.trim() &&
+        `Quote ref: ${values.quoteReference.trim()}`,
+      values.additionalNotes?.trim(),
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const payload: Record<string, unknown> = {
       ...meta,
-      formType: "team-roster-details",
-      contactName: values.contactName.trim(),
+      formType: "team-roster",
+      firstName: values.firstName.trim(),
+      lastName: values.lastName.trim(),
       email: values.email.trim(),
       phone: values.phone.trim(),
       teamName: values.teamName.trim(),
-      quoteReference: values.quoteReference?.trim() || undefined,
-      roleOrTitle: values.roleOrTitle?.trim() || undefined,
-      additionalNotes: values.additionalNotes?.trim() || undefined,
-      roster: values.roster.map((r) => ({
-        id: r.id,
+      sport: values.sport,
+      season: values.season,
+      deadline: values.deadline?.trim() ?? "",
+      garments: values.garments.trim(),
+      quantity: values.quantity.trim(),
+      rosterEntries: values.roster.map((r) => ({
+        playerName: r.lastName.trim(),
         number: r.number.trim(),
-        lastName: r.lastName.trim(),
         size: r.size.trim(),
-        quantity: r.quantity,
       })),
+      artworkNotes,
+      notes,
     };
 
-    try {
-      const res = await fetch("/api/lead/team-roster-details", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+    const ok = await submit(payload);
+    if (ok) {
+      setThanks({
+        firstName: values.firstName.trim(),
+        teamName: values.teamName.trim(),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        setSubmitError(
-          data.error ??
-            "Something went wrong. Please try again or email us directly."
-        );
-        setSending(false);
-        return;
-      }
-      setSubmitted(true);
-    } catch {
-      setSubmitError(
-        "Something went wrong. Please try again or email us directly."
-      );
-    } finally {
-      setSending(false);
     }
   };
 
-  if (submitted) {
+  if (isSuccess && thanks) {
     return (
-      <FormSuccess
-        title="Roster details received."
-        body="We have your jersey numbers, names, sizes, and quantities. Our team will match this to your approved quote and follow up if anything needs clarification."
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="rounded-xl border border-slate bg-navy-mid/80 px-6 py-10 text-center md:px-8"
+        role="status"
+      >
+        <p className="text-body text-off-white">
+          Thanks {thanks.firstName} — we received the roster for {thanks.teamName}.
+          We&apos;ll review everything and follow up before anything goes to
+          production.
+        </p>
+      </motion.div>
     );
   }
 
@@ -125,9 +158,12 @@ export function TeamRosterDetailsForm() {
       className="space-y-10"
       noValidate
     >
-      {submitError ? (
-        <p className="rounded-lg border border-error/50 bg-error/10 px-4 py-3 text-body-sm text-error">
-          {submitError}
+      {isError ? (
+        <p
+          className="rounded-lg border border-error/50 bg-error/10 px-4 py-3 text-body-sm text-error"
+          role="alert"
+        >
+          {ROSTER_ERROR}
         </p>
       ) : null}
 
@@ -149,9 +185,15 @@ export function TeamRosterDetailsForm() {
         <div className="grid gap-6 md:grid-cols-2">
           <TextField
             control={control}
-            name="contactName"
-            label="Full name"
-            placeholder="Jordan Smith"
+            name="firstName"
+            label="First name"
+            placeholder="Jordan"
+          />
+          <TextField
+            control={control}
+            name="lastName"
+            label="Last name"
+            placeholder="Smith"
           />
           <TextField
             control={control}
@@ -175,6 +217,50 @@ export function TeamRosterDetailsForm() {
               name="quoteReference"
               label="Quote or order reference (optional)"
               placeholder="Invoice #, email subject, or “March 2026 reorder”"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-slate bg-navy-mid/90 p-6 md:p-8">
+        <h2 className="mb-6 font-display text-xl font-semibold text-white md:text-2xl">
+          Program &amp; order summary
+        </h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <SelectField
+            control={control}
+            name="sport"
+            label="Sport"
+            options={[...SPORT_OPTIONS]}
+            placeholder="Select"
+          />
+          <SelectField
+            control={control}
+            name="season"
+            label="Season"
+            options={[...SEASON_OPTIONS]}
+            placeholder="Select"
+          />
+          <TextField
+            control={control}
+            name="deadline"
+            label="In-hands deadline (optional)"
+            type="date"
+            description="Approximate is fine."
+          />
+          <TextField
+            control={control}
+            name="quantity"
+            label="Overall quantity / size summary"
+            placeholder="e.g. 24 jerseys, mixed sizes Adult S–XL"
+          />
+          <div className="md:col-span-2">
+            <TextareaField
+              control={control}
+              name="garments"
+              label="Garments for this roster"
+              placeholder="Jersey style, hoodies, hats — what this roster line-up applies to."
+              rows={3}
             />
           </div>
         </div>
@@ -388,9 +474,19 @@ export function TeamRosterDetailsForm() {
       <section className="rounded-2xl border border-slate bg-navy-mid/90 p-6 md:p-8">
         <TextareaField
           control={control}
+          name="artworkNotes"
+          label="Artwork &amp; decoration notes"
+          placeholder="Logo placement, name font, two-sided prints, etc."
+          rows={3}
+        />
+      </section>
+
+      <section className="rounded-2xl border border-slate bg-navy-mid/90 p-6 md:p-8">
+        <TextareaField
+          control={control}
           name="additionalNotes"
           label="Anything else we should know?"
-          placeholder="e.g. Two jerseys per player, captain patches, alternate spelling…"
+          placeholder="e.g. Captain patches, alternate spelling, shipping split…"
           rows={4}
         />
       </section>
@@ -400,8 +496,13 @@ export function TeamRosterDetailsForm() {
           Submitting confirms the details above match your approved quote. We may
           reach out to confirm totals before production.
         </p>
-        <Button type="submit" variant="primary" disabled={sending} className="min-w-[200px]">
-          {sending ? "Sending…" : "Submit roster"}
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={isLoading}
+          className="min-w-[200px]"
+        >
+          {isLoading ? "Sending..." : "Submit roster"}
         </Button>
       </div>
     </form>

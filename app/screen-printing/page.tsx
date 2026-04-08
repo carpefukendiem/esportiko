@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { FAQAccordion } from "@/components/ui/FAQAccordion";
 import { CTABand } from "@/components/ui/CTABand";
 import { ProcessStep } from "@/components/ui/ProcessStep";
-import { Button } from "@/components/ui/button";
+import { ServiceHero } from "@/components/ui/ServiceHero";
+import { ServiceTwoCol } from "@/components/ui/ServiceTwoCol";
 import { getFaqsByCategoryId } from "@/lib/data/faq";
+import { media } from "@/lib/data/media";
 import { buildMetadata } from "@/lib/seo";
 
 export function generateMetadata(): Metadata {
@@ -22,31 +23,19 @@ const faqItems = getFaqsByCategoryId("screen-printing");
 export default function ScreenPrintingPage() {
   return (
     <>
-      <SectionContainer className="bg-texture-dark">
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
-            Screen Printing Built for Real Wear
-          </h1>
-          <p className="mb-8 text-body text-gray-soft">
-            Bold color, consistent coverage, and production discipline for team
-            sets, school programs, fundraisers, and business merch across the
-            Central Coast.
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Button asChild variant="primary">
-              <Link href="/start-business-order">Start Business Order</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link href="/request-a-quote">Request a Quote</Link>
-            </Button>
-          </div>
-        </div>
-      </SectionContainer>
-      <SectionContainer className="bg-texture-navy-mid border-y border-slate/60">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="mb-4 font-display text-h2 font-semibold text-white">
-            What screen printing is — and when it wins
-          </h2>
+      <ServiceHero
+        backgroundImage="/images/screen-printing-bg2.png"
+        heading="Screen Printing Built for Real Wear"
+        subheading="Bold color, consistent coverage, and production discipline for team sets, school programs, fundraisers, and business merch across the Central Coast."
+        ctaLabel="Get A Free Quote"
+        ctaHref="/request-a-quote"
+      />
+      <SectionContainer className="border-y border-slate/60 bg-texture-navy-mid">
+        <ServiceTwoCol
+          heading="What screen printing is — and when it wins"
+          image={media.services.screenPrinting}
+          imageAlt="Screen printed custom apparel with bold graphics for teams and businesses"
+        >
           <p className="mb-4 text-body text-gray-soft">
             Screen printing pushes ink through mesh screens to lay down solid,
             vibrant graphics on apparel and select accessories. It is the default
@@ -58,7 +47,7 @@ export default function ScreenPrintingPage() {
             programs where repeat reordering is likely — we keep separations and
             production notes organized so the second run matches the first.
           </p>
-        </div>
+        </ServiceTwoCol>
       </SectionContainer>
       <SectionContainer className="bg-texture-dark">
         <div className="mx-auto max-w-3xl">
@@ -74,7 +63,7 @@ export default function ScreenPrintingPage() {
           </p>
         </div>
       </SectionContainer>
-      <SectionContainer className="bg-texture-navy-mid border-y border-slate/60">
+      <SectionContainer className="border-y border-slate/60 bg-texture-navy-mid">
         <div className="mx-auto max-w-3xl">
           <h2 className="mb-6 font-display text-h2 font-semibold text-white">
             Garments we print most often
@@ -125,7 +114,7 @@ export default function ScreenPrintingPage() {
           </div>
         </div>
       </SectionContainer>
-      <SectionContainer className="bg-texture-navy-mid border-y border-slate/60">
+      <SectionContainer className="border-y border-slate/60 bg-texture-navy-mid">
         <div className="mx-auto max-w-3xl">
           <h2 className="mb-6 font-display text-h2 font-semibold text-white">
             Screen printing FAQs

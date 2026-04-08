@@ -21,9 +21,9 @@ export function HeroSection() {
   let idx = 0;
 
   return (
-    <section className="relative overflow-x-hidden bg-texture-dark geometric-bg">
+    <section className="relative overflow-hidden bg-texture-dark geometric-bg">
       <div className="mx-auto flex max-w-content flex-col gap-10 px-6 pb-16 pt-10 md:px-8 md:pb-20 md:pt-14 lg:flex-row lg:items-start lg:gap-8 lg:px-12">
-        <div className="w-full lg:w-[50%] lg:max-w-[50%] lg:shrink-0">
+        <div className="w-full min-w-0 lg:w-[50%] lg:max-w-[50%] lg:shrink-0">
           <h1 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-white">
             <span className="block">
               {wordsA.map((w) => {
@@ -96,21 +96,21 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <div className="relative w-full flex-1 lg:-mt-2 lg:min-h-[min(520px,calc(100vh-10rem))]">
+        <div className="relative w-full min-w-0 flex-1 overflow-hidden lg:min-h-[min(400px,52vh)]">
           <div
-            className="pointer-events-none absolute left-[45%] top-[28%] z-0 h-[70%] w-[90%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-accent/20 blur-[100px] lg:top-[22%]"
+            className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[65%] w-full max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-accent/20 blur-[100px] lg:left-[55%] lg:h-[70%] lg:w-[95%]"
             aria-hidden
           />
 
-          <div className="relative z-[1] mx-auto w-full lg:absolute lg:inset-0 lg:mx-0 lg:flex lg:items-start lg:justify-end lg:overflow-visible lg:pt-0">
-            <div className="relative h-[min(420px,78vw)] w-full sm:h-[min(480px,70vw)] lg:h-[min(640px,calc(100vh-8rem))] lg:max-w-[min(920px,58vw)] lg:translate-y-[-4%]">
+          <div className="relative z-[1] mx-auto h-full w-full max-w-full lg:flex lg:items-center lg:justify-end">
+            <div className="relative mx-auto aspect-[4/3] w-full max-w-full sm:aspect-[5/4] lg:aspect-auto lg:h-[min(520px,58vh)] lg:max-h-[620px] lg:w-full lg:max-w-[min(100%,520px)]">
               <Image
                 src={media.hero.apparelStack}
                 alt="Custom Esportiko apparel — hoodie, jersey, and caps ready for screen printing and embroidery"
                 fill
                 priority
-                sizes="(max-width: 1024px) 100vw, 58vw"
-                className="object-contain object-bottom drop-shadow-[0_40px_80px_rgba(0,0,0,0.45)] sm:object-center lg:origin-top-right lg:scale-[2.25] lg:object-right lg:object-top"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-contain object-bottom drop-shadow-[0_40px_80px_rgba(0,0,0,0.45)] sm:object-center lg:object-right"
               />
             </div>
           </div>

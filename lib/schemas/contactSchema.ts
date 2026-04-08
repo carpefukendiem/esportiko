@@ -1,19 +1,44 @@
 import { z } from "zod";
+import {
+  hasValidLeadEmail,
+  hasValidLeadPhone,
+} from "@/lib/schemas/submitLeadSchema";
 
-export const contactFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Enter a valid email"),
-  phone: z
-    .string()
-    .optional()
-    .refine(
-      (val) => !val || val.length === 0 || /^[\d\s\-+().]{10,}$/.test(val),
-      { message: "Use digits and common separators; at least 10 characters." }
-    ),
-  subject: z.string().min(1, "Subject is required"),
-  message: z.string().min(10, "Please add a bit more detail (10+ characters)"),
-  serviceInterest: z.string().optional(),
-});
+export const contactFormSchema = z
+  .object({
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    email: z.string(),
+    phone: z.string(),
+    subject: z.string().min(1, "Subject is required"),
+    message: z.string().min(10, "Please add a bit more detail (10+ characters)"),
+    serviceInterest: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const email = data.email.trim();
+    const phone = data.phone.trim();
+    if (email && !z.string().email().safeParse(email).success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Enter a valid email",
+        path: ["email"],
+      });
+    }
+    if (phone && !/^[\d\s\-+().]{10,}$/.test(phone)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Use digits and common separators; at least 10 characters.",
+        path: ["phone"],
+      });
+    }
+    if (!hasValidLeadEmail(email) && !hasValidLeadPhone(phone)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Enter a valid email or phone number",
+        path: ["email"],
+      });
+    }
+  });
 
 export type ContactFormValues = z.infer<typeof contactFormSchema>;
 

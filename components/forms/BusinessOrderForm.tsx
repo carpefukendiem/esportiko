@@ -14,14 +14,13 @@ import { SelectField } from "@/components/forms/fields/SelectField";
 import { RadioGroupField } from "@/components/forms/fields/RadioGroupField";
 import { SwitchField } from "@/components/forms/fields/SwitchField";
 import { UploadField } from "@/components/forms/fields/UploadField";
-import { FormSuccess } from "@/components/forms/FormSuccess";
+import { motion } from "framer-motion";
 import {
   businessOrderFormSchema,
   type BusinessOrderFormValues,
 } from "@/lib/schemas/businessOrderSchema";
-import { filesToAssetMetaList } from "@/lib/utils/formatPayload";
 import { captureLeadMeta } from "@/lib/utils/leadMeta";
-import type { BusinessOrderLead } from "@/lib/types";
+import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
 
 const PROJECT_TYPES = [
   { value: "Staff Uniforms", label: "Staff Uniforms" },
@@ -50,15 +49,20 @@ const stepFieldGroups: (keyof BusinessOrderFormValues)[][] = [
     "decorationType",
     "estimatedQuantity",
   ],
-  ["contactName", "email", "phone", "preferredContact"],
+  ["firstName", "lastName", "email", "phone", "preferredContact"],
 ];
+
+const BUSINESS_QUOTE_ERROR =
+  "Something went wrong. Please try again or call us at (805) 335-2239.";
 
 export function BusinessOrderForm() {
   const pathname = usePathname();
   const [step, setStep] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [sending, setSending] = useState(false);
+  const { submit, isLoading, isSuccess, isError } = useFormSubmit();
+  const [thanks, setThanks] = useState<{
+    firstName: string;
+    businessName: string;
+  } | null>(null);
 
   const form = useForm<BusinessOrderFormValues>({
     resolver: zodResolver(
@@ -73,7 +77,8 @@ export function BusinessOrderForm() {
       deadline: "",
       projectDescription: "",
       placementNotes: "",
-      contactName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       phone: "",
       preferredContact: "email",
@@ -96,8 +101,6 @@ export function BusinessOrderForm() {
   const goBack = () => setStep(0);
 
   const onSubmit = async (values: BusinessOrderFormValues) => {
-    setSubmitError(null);
-    setSending(true);
     const meta = captureLeadMeta(pathname, "business-order");
     const files = values.logoFiles as File[] | File | undefined;
     const fileList = files
@@ -105,56 +108,58 @@ export function BusinessOrderForm() {
         ? files
         : [files]
       : [];
-    const uploadedAssets = filesToAssetMetaList(fileList);
+    const logoUpload = fileList[0]?.name ?? "";
 
-    const payload: BusinessOrderLead = {
+    const notesParts = [
+      values.notes?.trim(),
+      `Project type: ${values.projectType}`,
+      values.projectDescription?.trim(),
+      values.deadline?.trim() && `Deadline: ${values.deadline}`,
+      `Preferred contact: ${values.preferredContact}`,
+      values.isRepeatOrder ? "Repeat order: yes" : null,
+      values.needsGarmentSourcing ? "Needs garment sourcing: yes" : null,
+    ].filter(Boolean);
+
+    const payload: Record<string, unknown> = {
       ...meta,
-      orderType: "business",
-      businessName: values.businessName,
-      contactName: values.contactName,
-      email: values.email,
-      phone: values.phone,
-      projectType: values.projectType,
-      garmentsNeeded: values.garmentsNeeded,
+      formType: "business-order",
+      firstName: values.firstName.trim(),
+      lastName: values.lastName.trim(),
+      email: values.email.trim(),
+      phone: values.phone.trim(),
+      businessName: values.businessName.trim(),
       decorationType: values.decorationType,
-      estimatedQuantity: values.estimatedQuantity,
-      deadline: values.deadline || undefined,
-      projectDescription: values.projectDescription || undefined,
-      placementNotes: values.placementNotes || undefined,
-      preferredContact: values.preferredContact,
-      isRepeatOrder: values.isRepeatOrder,
-      needsGarmentSourcing: values.needsGarmentSourcing,
-      notes: values.notes || undefined,
-      uploadedAssets: uploadedAssets.length ? uploadedAssets : undefined,
+      garments: values.garmentsNeeded.trim(),
+      quantity: values.estimatedQuantity,
+      placement: (values.placementNotes ?? "").trim(),
+      logoUpload,
+      notes: notesParts.length ? notesParts.join("\n") : "",
     };
 
-    try {
-      const res = await fetch("/api/lead/business-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+    const ok = await submit(payload);
+    if (ok) {
+      setThanks({
+        firstName: values.firstName.trim(),
+        businessName: values.businessName.trim(),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        setSubmitError(
-          data.error ??
-            "Something went wrong. Please try again or contact us directly."
-        );
-        setSending(false);
-        return;
-      }
-      setSubmitted(true);
-    } catch {
-      setSubmitError(
-        "Something went wrong. Please try again or contact us directly."
-      );
-    } finally {
-      setSending(false);
     }
   };
 
-  if (submitted) {
-    return <FormSuccess />;
+  if (isSuccess && thanks) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="mx-auto max-w-3xl rounded-xl border border-slate bg-navy-mid/80 px-6 py-10 text-center md:px-10"
+        role="status"
+      >
+        <p className="text-body text-off-white">
+          Thanks {thanks.firstName} — we received your request for{" "}
+          {thanks.businessName} and will be in touch within 1 business day.
+        </p>
+      </motion.div>
+    );
   }
 
   return (
@@ -243,11 +248,10 @@ export function BusinessOrderForm() {
           <p className="font-sans text-label font-semibold uppercase tracking-wider text-gray-soft">
             Contact
           </p>
-          <TextField
-            name="contactName"
-            label="Contact name"
-            control={control}
-          />
+          <div className="grid gap-6 sm:grid-cols-2">
+            <TextField name="firstName" label="First name" control={control} />
+            <TextField name="lastName" label="Last name" control={control} />
+          </div>
           <EmailField name="email" label="Email" control={control} />
           <PhoneField name="phone" label="Phone" control={control} />
           <RadioGroupField
@@ -280,9 +284,9 @@ export function BusinessOrderForm() {
         </div>
       ) : null}
 
-      {submitError ? (
+      {isError ? (
         <p className="text-body-sm text-error" role="alert">
-          {submitError}
+          {BUSINESS_QUOTE_ERROR}
         </p>
       ) : null}
 
@@ -292,7 +296,7 @@ export function BusinessOrderForm() {
             type="button"
             variant="secondary"
             onClick={goBack}
-            disabled={sending}
+            disabled={isLoading}
           >
             Back
           </Button>
@@ -305,8 +309,8 @@ export function BusinessOrderForm() {
               Next
             </Button>
           ) : (
-            <Button type="submit" variant="primary" disabled={sending}>
-              {sending ? "Sending..." : "Submit Business Order Request"}
+            <Button type="submit" variant="primary" disabled={isLoading}>
+              {isLoading ? "Sending..." : "Submit Business Order Request"}
             </Button>
           )}
         </div>

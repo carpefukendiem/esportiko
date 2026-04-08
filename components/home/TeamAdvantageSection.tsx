@@ -63,7 +63,7 @@ export function TeamAdvantageSection() {
               back-and-forth.
             </p>
             <Button asChild variant="primary">
-              <Link href="/start-team-order">Start Team Order</Link>
+              <Link href="/request-a-quote?path=team">Get A Team Quote</Link>
             </Button>
           </motion.div>
           <motion.div
@@ -82,7 +82,7 @@ export function TeamAdvantageSection() {
                   team-order.esportiko
                 </span>
               </div>
-              <div className="relative aspect-[1338/585] w-full bg-navy">
+              <div className="relative aspect-video min-h-[220px] w-full bg-navy sm:min-h-[280px] md:aspect-[16/9] md:min-h-[320px] lg:min-h-[380px]">
                 <Image
                   src={media.teamOrderingUi}
                   alt="Esportiko team order intake: garment selection, roster fields, and organized quote flow"

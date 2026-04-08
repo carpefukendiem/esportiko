@@ -12,7 +12,8 @@ export const businessOrderFormSchema = z.object({
   deadline: z.string().optional(),
   projectDescription: z.string().optional(),
   placementNotes: z.string().optional(),
-  contactName: z.string().min(1, "Contact name is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Enter a valid email"),
   phone: z
     .string()
