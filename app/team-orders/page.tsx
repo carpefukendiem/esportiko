@@ -91,10 +91,10 @@ export default function TeamOrdersPage() {
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button asChild variant="primary">
-              <Link href="/request-a-quote?path=team">Get a Team Quote</Link>
+              <Link href="/start-team-order">Start Your Team Order</Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link href="/our-work">View Our Work</Link>
+              <Link href="/request-a-quote">Request a Quote First</Link>
             </Button>
           </div>
         </div>
@@ -247,10 +247,10 @@ export default function TeamOrdersPage() {
         </div>
       </SectionContainer>
       <CTABand
-        primaryHref="/request-a-quote?path=team"
-        primaryLabel="Get a Team Quote"
-        secondaryHref="/our-work"
-        secondaryLabel="View Our Work"
+        primaryHref="/start-team-order"
+        primaryLabel="Start Your Team Order"
+        secondaryHref="/request-a-quote"
+        secondaryLabel="Request a Quote"
       />
     </>
   );

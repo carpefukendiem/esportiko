@@ -25,13 +25,13 @@ const config: Config = {
         warning: "var(--color-warning)",
       },
       fontFamily: {
-        display: ["var(--font-montserrat)", "system-ui", "sans-serif"],
-        sans: ["var(--font-open-sans)", "system-ui", "sans-serif"],
+        display: ["var(--font-barlow-condensed)", "system-ui", "sans-serif"],
+        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
       },
       fontSize: {
         display: [
-          "clamp(2.25rem, 4.8vw, 3.75rem)",
-          { lineHeight: "1.08", letterSpacing: "-0.02em" },
+          "clamp(3rem, 8vw, 5rem)",
+          { lineHeight: "1.05", letterSpacing: "-0.02em" },
         ],
         h1: [
           "clamp(2.25rem, 5vw, 3.75rem)",

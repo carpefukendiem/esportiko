@@ -13,12 +13,12 @@ const preview = portfolioItems.slice(0, 5);
 
 export function PortfolioPreviewSection() {
   return (
-    <section className="bg-texture-navy-light border-y border-slate/60">
+    <section className="bg-texture-navy-mid border-y border-slate/60">
       <SectionContainer>
         <div className="mx-auto mb-10 max-w-3xl text-center">
           <SectionLabel className="mb-4">OUR WORK</SectionLabel>
           <motion.h2
-            className="font-display text-h2 font-bold uppercase tracking-tight text-white"
+            className="font-display text-h2 font-semibold uppercase tracking-tight text-white"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
@@ -27,28 +27,24 @@ export function PortfolioPreviewSection() {
             Work That Earns the Second Look
           </motion.h2>
         </div>
-        <div className="mb-10 flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-5 md:gap-4 md:overflow-visible md:pb-0 md:snap-none [&::-webkit-scrollbar]:hidden">
+        <div className="mb-10 flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory md:grid md:grid-cols-5 md:overflow-visible md:pb-0 md:snap-none">
           {preview.map((item, i) => (
             <motion.div
               key={item.id}
-              className="group relative aspect-[3/4] w-[min(72vw,220px)] flex-shrink-0 snap-center overflow-hidden rounded-xl border border-white/10 bg-navy shadow-[0_18px_40px_-15px_rgba(0,0,0,0.6)] md:w-auto md:min-w-0 md:max-w-none"
+              className="relative aspect-[3/4] w-[72vw] max-w-[280px] flex-shrink-0 snap-center overflow-hidden rounded-xl border border-slate bg-navy sm:w-64 md:w-auto md:max-w-none"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-40px" }}
               variants={fadeInUp}
-              transition={{ delay: i * 0.05 }}
+              transition={{ delay: i * 0.04 }}
             >
               <Image
                 src={item.image}
                 alt={item.alt}
                 fill
-                className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                className="object-cover transition-transform duration-300 hover:scale-[1.03]"
                 sizes="(max-width: 768px) 72vw, 20vw"
                 loading={i < 2 ? undefined : "lazy"}
-              />
-              <div
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent"
-                aria-hidden
               />
             </motion.div>
           ))}

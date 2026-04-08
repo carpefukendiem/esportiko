@@ -34,10 +34,10 @@ export default function EmbroideryPage() {
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button asChild variant="primary">
-              <Link href="/request-a-quote?path=business">Get a Quote</Link>
+              <Link href="/start-business-order">Start Business Order</Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link href="/our-work">View Our Work</Link>
+              <Link href="/request-a-quote">Request a Quote</Link>
             </Button>
           </div>
         </div>
@@ -119,10 +119,10 @@ export default function EmbroideryPage() {
         </div>
       </SectionContainer>
       <CTABand
-        primaryHref="/request-a-quote?path=business"
-        primaryLabel="Get a Quote"
-        secondaryHref="/our-work"
-        secondaryLabel="View Our Work"
+        primaryHref="/start-business-order"
+        primaryLabel="Start Business Order"
+        secondaryHref="/request-a-quote"
+        secondaryLabel="Request a Quote"
       />
     </>
   );

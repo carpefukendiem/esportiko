@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { Montserrat, Open_Sans } from "next/font/google";
+import { Barlow_Condensed, DM_Sans } from "next/font/google";
 import "@/styles/globals.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Toaster } from "@/components/ui/toaster";
 
-const montserrat = Montserrat({
+const barlowCondensed = Barlow_Condensed({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-montserrat",
+  weight: ["600", "700"],
+  variable: "--font-barlow-condensed",
   display: "swap",
 });
 
-const openSans = Open_Sans({
+const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-open-sans",
+  variable: "--font-dm-sans",
   display: "swap",
 });
 
@@ -57,7 +57,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${montserrat.variable} ${openSans.variable}`}>
+    <html
+      lang="en"
+      className={`${barlowCondensed.variable} ${dmSans.variable}`}
+    >
       <body className="min-h-screen font-sans antialiased">
         <a
           href="#main-content"

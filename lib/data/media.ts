@@ -3,25 +3,20 @@
  * Update paths here when filenames change.
  */
 export const brandLogo = {
-  src: "/images/logo/esportiko-logo.png",
-  width: 554,
-  height: 162,
+  src: "/images/logo/esportiko-modern-logo.png",
+  width: 1536,
+  height: 1024,
 } as const;
 
 export const media = {
   hero: {
-    background: "/images/background-blue.webp",
-    whiteBackdrop: "/images/white-background-img.png",
-    apparelStack: "/images/hero-apparel-stack.png",
-    uiSnippet: "/images/ui-hero-snippet.png",
-    /** legacy (unused) */
+    /** Wide hero composition — use no-text variant to avoid duplicating page headline */
     gear: "/images/hero-bg-right-gear-no-text.webp",
     uploadWidget: "/images/upload-logo-widget.webp",
   },
   pathCards: {
-    team: "/images/team-uniform-order-image.png",
-    business: "/images/branded-shirt.png",
-    businessAlt: "/images/isolated-basebal-cap.png",
+    team: "/images/team-order-option.webp",
+    business: "/images/business-brand-hat-isolated.webp",
   },
   services: {
     screenPrinting: "/images/screen-printing-service.webp",

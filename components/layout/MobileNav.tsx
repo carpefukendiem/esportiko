@@ -74,13 +74,13 @@ export function MobileNav({
             </ul>
             <div className="mt-8 flex flex-col gap-3 border-t border-slate pt-8">
               <Button asChild variant="primary" width="full">
-                <Link href="/request-a-quote?path=team" onClick={onClose}>
-                  Get a Team Quote
+                <Link href="/start-team-order" onClick={onClose}>
+                  Start Team Order
                 </Link>
               </Button>
               <Button asChild variant="secondary" width="full">
-                <Link href="/request-a-quote?path=business" onClick={onClose}>
-                  Get a Business Quote
+                <Link href="/start-business-order" onClick={onClose}>
+                  Start Business Order
                 </Link>
               </Button>
               <Button asChild variant="ghost" width="full" className="justify-center">

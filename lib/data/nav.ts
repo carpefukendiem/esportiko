@@ -9,6 +9,7 @@ export const primaryNav: NavItem[] = [
   { label: "Team Orders", href: "/team-orders" },
   { label: "Business Apparel", href: "/business-apparel" },
   { label: "Our Work", href: "/our-work" },
+  { label: "Browse Apparel", href: "/apparel" },
   { label: "FAQ", href: "/faq" },
 ];
 
@@ -18,6 +19,7 @@ export const footerServices: NavItem[] = [
   { label: "Team Orders", href: "/team-orders" },
   { label: "Business Apparel", href: "/business-apparel" },
   { label: "Our Work", href: "/our-work" },
+  { label: "Browse Apparel", href: "/apparel" },
 ];
 
 export const footerCompany: NavItem[] = [

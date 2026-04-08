@@ -25,7 +25,7 @@ export function NavLink({
       onClick={onNavigate}
       className={cn(
         "font-sans text-body font-medium text-off-white transition-colors hover:text-blue-light",
-        active && "text-blue-accent",
+        active && "text-blue-light",
         className
       )}
     >

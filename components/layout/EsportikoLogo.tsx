@@ -16,7 +16,7 @@ export function EsportikoLogo({
       alt="Esportiko"
       width={brandLogo.width}
       height={brandLogo.height}
-      className={cn("h-auto w-auto", className)}
+      className={cn("h-auto w-auto max-w-[220px]", className)}
       priority={priority}
     />
   );

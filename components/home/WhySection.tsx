@@ -31,7 +31,7 @@ const points = [
 
 export function WhySection() {
   return (
-    <section className="bg-texture-navy-mid border-y border-slate/60">
+    <section className="bg-navy bg-texture-dark">
       <SectionContainer>
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <SectionLabel className="mb-4">WHY ESPORTIKO</SectionLabel>

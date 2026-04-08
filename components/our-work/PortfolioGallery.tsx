@@ -63,7 +63,7 @@ export function PortfolioGallery() {
       </div>
       <div className="mt-12 text-center">
         <Button asChild variant="primary">
-          <Link href="/request-a-quote">Get a Quote</Link>
+          <Link href="/request-a-quote">Start Your Project</Link>
         </Button>
       </div>
     </div>

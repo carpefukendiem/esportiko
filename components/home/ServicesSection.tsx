@@ -9,7 +9,7 @@ import { fadeInUp } from "@/lib/utils/motion";
 
 export function ServicesSection() {
   return (
-    <section className="bg-texture-navy-light border-y border-slate/60">
+    <section className="bg-texture-dark border-y border-slate/60">
       <SectionContainer>
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <SectionLabel className="mb-4">WHAT WE DO</SectionLabel>
