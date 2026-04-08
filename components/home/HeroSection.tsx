@@ -21,9 +21,10 @@ export function HeroSection() {
   let idx = 0;
 
   return (
-    <section className="relative overflow-hidden bg-texture-dark geometric-bg">
-      <div className="mx-auto flex max-w-content flex-col gap-10 px-6 pb-16 pt-10 md:px-8 md:pb-20 md:pt-14 lg:flex-row lg:items-start lg:gap-8 lg:px-12">
-        <div className="w-full min-w-0 lg:w-[50%] lg:max-w-[50%] lg:shrink-0">
+    <section className="relative overflow-hidden bg-texture-dark geometric-bg min-h-[600px] lg:min-h-[680px]">
+      <div className="mx-auto flex max-w-content flex-col lg:flex-row lg:items-center px-6 md:px-8 lg:px-12 py-12 md:py-16 lg:py-0 lg:min-h-[680px] gap-8 lg:gap-0">
+        {/* Left column — text */}
+        <div className="w-full lg:w-[52%] lg:shrink-0 lg:py-16 relative z-10">
           <h1 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-white">
             <span className="block">
               {wordsA.map((w) => {
@@ -96,24 +97,26 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <div className="relative w-full flex-1 lg:min-h-[620px]">
+        {/* Right column — image, absolutely fills the right half */}
+        <div className="relative w-full h-[360px] sm:h-[440px] lg:absolute lg:right-0 lg:top-0 lg:bottom-0 lg:w-[52%] lg:h-full">
+          {/* Glow */}
           <div
-            className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[65%] w-full max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-accent/20 blur-[100px] lg:left-[55%] lg:h-[70%] lg:w-[95%]"
+            className="pointer-events-none absolute inset-0 z-0 bg-blue-accent/10 blur-[80px]"
             aria-hidden
           />
-
-          <div className="relative z-[1] mx-auto h-full w-full max-w-full lg:flex lg:h-full lg:items-center lg:justify-end">
-            <div className="relative h-[min(480px,82vw)] w-full sm:h-[min(560px,72vw)] lg:h-full lg:min-h-[600px] lg:w-full">
-              <Image
-                src={media.hero.apparelStack}
-                alt="Custom Esportiko apparel — hoodie, jersey, and caps ready for screen printing and embroidery"
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-contain object-center drop-shadow-[0_40px_80px_rgba(0,0,0,0.45)] lg:object-right lg:object-center"
-              />
-            </div>
-          </div>
+          {/* Gradient fade on left edge so it blends into text column */}
+          <div
+            className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-gradient-to-r from-[#0a0f1e] to-transparent lg:w-48"
+            aria-hidden
+          />
+          <Image
+            src={media.hero.apparelStack}
+            alt="Custom Esportiko apparel — hoodie, jersey, and caps ready for screen printing and embroidery"
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 52vw"
+            className="object-contain object-center lg:object-right lg:object-center"
+          />
         </div>
       </div>
     </section>
