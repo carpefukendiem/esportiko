@@ -3,6 +3,7 @@ import { SectionContainer } from "@/components/ui/SectionContainer";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { CTABand } from "@/components/ui/CTABand";
 import { buildMetadata } from "@/lib/seo";
+import { sitePhone } from "@/lib/data/site";
 
 export function generateMetadata(): Metadata {
   return buildMetadata({
@@ -44,10 +45,10 @@ export default function ContactPage() {
               </h2>
               <p className="mb-2 text-body-sm">
                 <a
-                  href="tel:+18055550123"
+                  href={sitePhone.telHref}
                   className="text-blue-accent hover:text-blue-light hover:underline"
                 >
-                  (805) 555-0123
+                  {sitePhone.display}
                 </a>
               </p>
               <p className="text-body-sm">

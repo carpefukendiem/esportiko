@@ -15,7 +15,7 @@ export function PhoneField<T extends FieldValues>(props: {
       {...props}
       type="tel"
       autoComplete="tel"
-      placeholder={props.placeholder ?? "(805) 555-0123"}
+      placeholder={props.placeholder ?? "+1 805-335-2239"}
       description={
         props.description ??
         "Include area code. Digits and common separators are accepted."

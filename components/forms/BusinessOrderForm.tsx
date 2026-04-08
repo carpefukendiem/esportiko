@@ -21,6 +21,7 @@ import {
 } from "@/lib/schemas/businessOrderSchema";
 import { captureLeadMeta } from "@/lib/utils/leadMeta";
 import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
+import { formSubmitErrorMessage } from "@/lib/data/site";
 
 const PROJECT_TYPES = [
   { value: "Staff Uniforms", label: "Staff Uniforms" },
@@ -52,8 +53,7 @@ const stepFieldGroups: (keyof BusinessOrderFormValues)[][] = [
   ["firstName", "lastName", "email", "phone", "preferredContact"],
 ];
 
-const BUSINESS_QUOTE_ERROR =
-  "Something went wrong. Please try again or call us at (805) 335-2239.";
+const BUSINESS_QUOTE_ERROR = formSubmitErrorMessage;
 
 export function BusinessOrderForm() {
   const pathname = usePathname();

@@ -17,6 +17,7 @@ import {
 } from "@/lib/schemas/contactSchema";
 import { captureLeadMeta } from "@/lib/utils/leadMeta";
 import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
+import { formSubmitErrorMessage, sitePhone } from "@/lib/data/site";
 
 const SERVICE_INTEREST = [
   { value: "general", label: "General inquiry" },
@@ -26,8 +27,7 @@ const SERVICE_INTEREST = [
   { value: "Business Apparel", label: "Business Apparel" },
 ];
 
-const CONTACT_ERROR =
-  "Something went wrong. Please try again or call us at (805) 335-2239.";
+const CONTACT_ERROR = formSubmitErrorMessage;
 
 export function ContactForm() {
   const pathname = usePathname();
@@ -88,10 +88,10 @@ export function ContactForm() {
           Thanks {thanksFirstName} — we got your message and will follow up
           within 1 business day. Need something faster? Call or text us at{" "}
           <a
-            href="tel:+18053352239"
+            href={sitePhone.telHref}
             className="font-semibold text-blue-accent hover:text-blue-light hover:underline"
           >
-            (805) 335-2239
+            {sitePhone.display}
           </a>
           .
         </p>

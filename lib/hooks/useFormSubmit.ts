@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { formSubmitErrorMessage } from "@/lib/data/site";
 
-const GENERIC_ERROR =
-  "Something went wrong. Please try again or call us at (805) 335-2239.";
+const GENERIC_ERROR = formSubmitErrorMessage;
 
 export function useFormSubmit() {
   const [isLoading, setIsLoading] = useState(false);

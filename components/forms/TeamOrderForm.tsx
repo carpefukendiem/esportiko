@@ -23,6 +23,7 @@ import {
 } from "@/lib/schemas/teamOrderSchema";
 import { captureLeadMeta } from "@/lib/utils/leadMeta";
 import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
+import { formSubmitErrorMessage } from "@/lib/data/site";
 import {
   SPORT_OPTIONS,
   SEASON_OPTIONS,
@@ -67,8 +68,7 @@ const stepFieldGroups: (keyof TeamOrderFormValues)[][] = [
   ["apparelItems", "decorationType", "estimatedPlayers"],
 ];
 
-const TEAM_QUOTE_ERROR =
-  "Something went wrong. Please try again or call us at (805) 335-2239.";
+const TEAM_QUOTE_ERROR = formSubmitErrorMessage;
 
 export function TeamOrderForm() {
   const pathname = usePathname();

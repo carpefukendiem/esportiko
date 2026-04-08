@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { sitePhone } from "@/lib/data/site";
 import { footerCompany, footerServices } from "@/lib/data/nav";
 import { EsportikoLogo } from "@/components/layout/EsportikoLogo";
 import { Button } from "@/components/ui/button";
@@ -61,10 +62,10 @@ export function SiteFooter() {
             </p>
             <p className="mb-2 text-body-sm">
               <a
-                href="tel:+18055550123"
+                href={sitePhone.telHref}
                 className="hover:text-blue-light hover:underline"
               >
-                (805) 555-0123
+                {sitePhone.display}
               </a>
             </p>
             <p className="mb-6 text-body-sm">

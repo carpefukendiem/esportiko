@@ -19,6 +19,7 @@ import {
 } from "@/lib/schemas/teamRosterDetailsSchema";
 import { captureLeadMeta } from "@/lib/utils/leadMeta";
 import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
+import { formSubmitErrorMessage } from "@/lib/data/site";
 import { SelectField } from "@/components/forms/fields/SelectField";
 import {
   SPORT_OPTIONS,
@@ -35,8 +36,7 @@ function newRow(): TeamRosterDetailsFormValues["roster"][number] {
   };
 }
 
-const ROSTER_ERROR =
-  "Something went wrong. Please try again or call us at (805) 335-2239.";
+const ROSTER_ERROR = formSubmitErrorMessage;
 
 export function TeamRosterDetailsForm() {
   const pathname = usePathname();
