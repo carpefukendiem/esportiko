@@ -12,11 +12,14 @@ export const media = {
   hero: {
     /** Wide hero composition — use no-text variant to avoid duplicating page headline */
     gear: "/images/hero-bg-right-gear-no-text.webp",
+    /** Product stack — right column hero (WebP) */
+    apparelStack: "/images/hero-apparel-stack.webp",
     uploadWidget: "/images/upload-logo-widget.webp",
   },
   pathCards: {
-    team: "/images/team-order-option.webp",
-    business: "/images/business-brand-hat-isolated.webp",
+    /** Large PNGs for full-bleed path cards */
+    team: "/images/team-uniform-order-image.png",
+    business: "/images/branded-shirt.png",
   },
   services: {
     screenPrinting: "/images/screen-printing-service.webp",

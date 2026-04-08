@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+
 export function PathCard({
   title,
   description,
@@ -17,27 +18,36 @@ export function PathCard({
   decorativeAlt: string;
 }) {
   return (
-    <article className="relative overflow-hidden rounded-xl border border-slate bg-navy-light/90 pl-6 pr-4 pt-8 pb-8 md:pl-8">
-      <div
-        className="absolute left-0 top-0 h-full w-1 bg-blue-accent"
-        aria-hidden
-      />
-      <div className="relative z-10 max-w-[85%] md:max-w-[70%]">
-        <h3 className="mb-3 font-display text-2xl font-semibold text-white">
+    <article className="group grid min-h-[300px] overflow-hidden rounded-2xl border border-navy/10 bg-white shadow-[0_24px_60px_-20px_rgba(18,24,38,0.18)] transition-shadow duration-300 hover:shadow-[0_28px_70px_-18px_rgba(18,24,38,0.22)] md:min-h-[min(440px,54vw)] md:grid-cols-[minmax(0,1fr)_minmax(280px,54%)] lg:min-h-[min(480px,48vh)]">
+      <div className="relative z-10 order-2 flex flex-col justify-center px-6 py-8 md:order-1 md:px-8 md:py-10 lg:px-10">
+        <span
+          className="mb-4 block h-1 w-11 rounded-full bg-blue-accent"
+          aria-hidden
+        />
+        <h3 className="font-display text-2xl font-bold tracking-tight text-navy md:text-[1.65rem]">
           {title}
         </h3>
-        <p className="mb-6 text-body text-gray-soft">{description}</p>
-        <Button asChild variant="primary">
+        <p className="mt-3 text-body text-gray-muted">{description}</p>
+        <Button
+          asChild
+          variant="primary"
+          className="mt-7 w-full focus-visible:ring-offset-white sm:w-auto"
+        >
           <Link href={href}>{ctaLabel}</Link>
         </Button>
       </div>
-      <div className="pointer-events-none absolute -bottom-6 -right-4 h-48 w-40 opacity-[0.38] md:h-56 md:w-48">
+      <div className="relative order-1 min-h-[220px] md:order-2 md:min-h-0">
         <Image
           src={decorativeSrc}
           alt={decorativeAlt}
           fill
-          className="object-contain object-bottom"
-          sizes="200px"
+          className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+          sizes="(max-width: 768px) 100vw, 50vw"
+          priority={false}
+        />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/85 via-white/35 to-transparent md:bg-gradient-to-r md:from-white md:via-white/45 md:to-transparent"
+          aria-hidden
         />
       </div>
     </article>

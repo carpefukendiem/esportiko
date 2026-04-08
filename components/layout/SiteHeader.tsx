@@ -25,7 +25,7 @@ export function SiteHeader() {
     <>
       <header
         className={cn(
-          "sticky top-0 z-40 h-[60px] border-b border-transparent transition-colors md:h-[68px]",
+          "sticky top-0 z-40 min-h-[72px] border-b border-transparent py-2 transition-colors md:min-h-[84px] md:py-2.5",
           scrolled
             ? "border-slate/80 bg-navy/95 backdrop-blur-md"
             : "bg-transparent"
@@ -38,7 +38,7 @@ export function SiteHeader() {
             aria-label="Esportiko home"
           >
             <EsportikoLogo
-              className="h-7 w-auto max-w-[200px] md:h-8 md:max-w-[220px]"
+              className="h-[52px] w-auto max-w-[min(78vw,440px)] md:h-[68px] md:max-w-[min(52vw,520px)]"
               priority
             />
           </Link>
