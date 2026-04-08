@@ -96,21 +96,21 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <div className="relative w-full min-w-0 flex-1 overflow-hidden lg:min-h-[min(400px,52vh)]">
+        <div className="relative w-full flex-1 lg:min-h-[620px]">
           <div
             className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[65%] w-full max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-accent/20 blur-[100px] lg:left-[55%] lg:h-[70%] lg:w-[95%]"
             aria-hidden
           />
 
-          <div className="relative z-[1] mx-auto h-full w-full max-w-full lg:flex lg:items-center lg:justify-end">
-            <div className="relative mx-auto aspect-[4/3] w-full max-w-full sm:aspect-[5/4] lg:aspect-auto lg:h-[min(520px,58vh)] lg:max-h-[620px] lg:w-full lg:max-w-[min(100%,520px)]">
+          <div className="relative z-[1] mx-auto h-full w-full max-w-full lg:flex lg:h-full lg:items-center lg:justify-end">
+            <div className="relative h-[min(480px,82vw)] w-full sm:h-[min(560px,72vw)] lg:h-full lg:min-h-[600px] lg:w-full">
               <Image
                 src={media.hero.apparelStack}
                 alt="Custom Esportiko apparel — hoodie, jersey, and caps ready for screen printing and embroidery"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-contain object-bottom drop-shadow-[0_40px_80px_rgba(0,0,0,0.45)] sm:object-center lg:object-right"
+                className="object-contain object-center drop-shadow-[0_40px_80px_rgba(0,0,0,0.45)] lg:object-right lg:object-center"
               />
             </div>
           </div>
