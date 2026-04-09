@@ -42,4 +42,6 @@ export const media = {
   teamOrderingUi: "/images/team-ordering-ui.webp",
   /** Team orders landing page — above-the-fold hero */
   teamOrdersHeroBg: "/images/team-orders-bg2.webp",
+  /** Browse apparel catalog — page hero */
+  apparelBrowseHeroBg: "/images/apparel-bg.webp",
 } as const;
