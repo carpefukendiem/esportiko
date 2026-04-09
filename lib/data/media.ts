@@ -3,7 +3,7 @@
  * Update paths here when filenames change.
  */
 export const brandLogo = {
-  src: "/images/logo/esportiko-modern-logo.png",
+  src: "/images/logo/esportiko-modern-logo.webp",
   width: 1536,
   height: 1024,
 } as const;
