@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Toaster } from "@/components/ui/toaster";
+import { LeadConnectorChatEmbed } from "@/components/third-party/LeadConnectorChatEmbed";
 
 const barlowCondensed = Barlow_Condensed({
   subsets: ["latin"],
@@ -74,6 +75,7 @@ export default function RootLayout({
         </main>
         <SiteFooter />
         <Toaster />
+        <LeadConnectorChatEmbed />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
