@@ -42,8 +42,8 @@ export function SplitPathSection() {
             <PathCard
               title="Team / Uniform Orders"
               description="Roster entry, names and numbers, size breakdowns, and organized apparel — built for coaches, managers, and school programs."
-              href="/request-a-quote?path=team"
-              ctaLabel="Get A Team Quote"
+              href="/start-team-order"
+              ctaLabel="Get A Quote"
               decorativeSrc={media.pathCards.team}
               decorativeAlt="Team and uniform order — jerseys and coordinated apparel"
             />
@@ -58,7 +58,7 @@ export function SplitPathSection() {
             <PathCard
               title="Business / Brand Orders"
               description="Logo uploads, garment selection, placement previews, and quantity-based pricing for businesses, restaurants, nonprofits, and events."
-              href="/request-a-quote?path=business"
+              href="/start-business-order"
               ctaLabel="Get A Quote"
               decorativeSrc={media.pathCards.business}
               decorativeAlt="Branded shirt and apparel for business programs"

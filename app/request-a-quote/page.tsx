@@ -59,13 +59,12 @@ export default function RequestAQuotePage() {
     <SectionContainer className="bg-texture-dark">
       <div className="mx-auto max-w-content">
         <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
-          <SectionLabel className="mb-4">Get a Quote</SectionLabel>
+          <SectionLabel className="mb-4">Get A Free Quote</SectionLabel>
           <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
-            Two Funnels. One Smooth Quote.
+          Pick the path that matches your project.
           </h1>
           <p className="mx-auto max-w-2xl text-body text-off-white/80">
-            Pick the path that matches your project. Each funnel captures
-            exactly what we need to send back a detailed quote — no
+            and we&apos;ll send back a detailed quote — no
             back-and-forth.
           </p>
         </div>

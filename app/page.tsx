@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SplitPathSection } from "@/components/home/SplitPathSection";
 import { ServicesSection } from "@/components/home/ServicesSection";
-import { TeamAdvantageSection } from "@/components/home/TeamAdvantageSection";
 import { PortfolioPreviewSection } from "@/components/home/PortfolioPreviewSection";
 import { WhySection } from "@/components/home/WhySection";
 import { FAQPreviewSection } from "@/components/home/FAQPreviewSection";
@@ -24,7 +23,6 @@ export default function HomePage() {
       <HeroSection />
       <SplitPathSection />
       <ServicesSection />
-      <TeamAdvantageSection />
       <PortfolioPreviewSection />
       <WhySection />
       <FAQPreviewSection />
