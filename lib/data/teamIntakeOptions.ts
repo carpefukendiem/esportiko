@@ -1,22 +1,25 @@
+/** Shared select options for team intake forms (order + roster). */
+
 export const SPORT_OPTIONS = [
-  { value: "Football", label: "Football" },
-  { value: "Baseball", label: "Baseball" },
-  { value: "Softball", label: "Softball" },
-  { value: "Basketball", label: "Basketball" },
-  { value: "Soccer", label: "Soccer" },
-  { value: "Volleyball", label: "Volleyball" },
-  { value: "Wrestling", label: "Wrestling" },
-  { value: "Track & Field", label: "Track & Field" },
-  { value: "Cheer", label: "Cheer" },
-  { value: "Lacrosse", label: "Lacrosse" },
-  { value: "Hockey", label: "Hockey" },
-  { value: "Other", label: "Other" },
+  { value: "baseball", label: "Baseball" },
+  { value: "softball", label: "Softball" },
+  { value: "basketball", label: "Basketball" },
+  { value: "football", label: "Football" },
+  { value: "soccer", label: "Soccer" },
+  { value: "volleyball", label: "Volleyball" },
+  { value: "lacrosse", label: "Lacrosse" },
+  { value: "hockey", label: "Hockey" },
+  { value: "other", label: "Other" },
 ];
 
+const y = new Date().getFullYear();
 export const SEASON_OPTIONS = [
-  { value: "Spring 2026", label: "Spring 2026" },
-  { value: "Summer 2026", label: "Summer 2026" },
-  { value: "Fall 2026", label: "Fall 2026" },
-  { value: "Winter 2026/27", label: "Winter 2026/27" },
-  { value: "Other", label: "Other" },
+  { value: `spring-${y}`, label: `Spring ${y}` },
+  { value: `summer-${y}`, label: `Summer ${y}` },
+  { value: `fall-${y}`, label: `Fall ${y}` },
+  { value: `winter-${y}`, label: `Winter ${y}` },
+  { value: `spring-${y + 1}`, label: `Spring ${y + 1}` },
+  { value: `summer-${y + 1}`, label: `Summer ${y + 1}` },
+  { value: `fall-${y + 1}`, label: `Fall ${y + 1}` },
+  { value: `winter-${y + 1}`, label: `Winter ${y + 1}` },
 ];

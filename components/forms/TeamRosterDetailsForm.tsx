@@ -42,7 +42,7 @@ export function TeamRosterDetailsForm() {
   const pathname = usePathname();
   const { submit, isLoading, isSuccess, isError } = useFormSubmit();
   const [thanks, setThanks] = useState<{
-    firstName: string;
+    contactName: string;
     teamName: string;
   } | null>(null);
 
@@ -51,8 +51,7 @@ export function TeamRosterDetailsForm() {
       teamRosterDetailsFormSchema
     ) as Resolver<TeamRosterDetailsFormValues>,
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      contactName: "",
       email: "",
       phone: "",
       teamName: "",
@@ -78,7 +77,7 @@ export function TeamRosterDetailsForm() {
   const { errors } = formState;
 
   const onSubmit = async (values: TeamRosterDetailsFormValues) => {
-    const meta = captureLeadMeta(pathname, "team-roster");
+    const meta = captureLeadMeta(pathname, "team-roster-details");
 
     const rosterQtyLines = values.roster
       .map(
@@ -105,17 +104,16 @@ export function TeamRosterDetailsForm() {
 
     const payload: Record<string, unknown> = {
       ...meta,
-      formType: "team-roster",
-      firstName: values.firstName.trim(),
-      lastName: values.lastName.trim(),
+      formType: "team-roster-details",
+      contactName: values.contactName.trim(),
       email: values.email.trim(),
       phone: values.phone.trim(),
       teamName: values.teamName.trim(),
-      sport: values.sport,
-      season: values.season,
+      sport: values.sport ?? "",
+      season: values.season ?? "",
       deadline: values.deadline?.trim() ?? "",
-      garments: values.garments.trim(),
-      quantity: values.quantity.trim(),
+      garments: (values.garments ?? "").trim(),
+      quantity: (values.quantity ?? "").trim(),
       rosterEntries: values.roster.map((r) => ({
         playerName: r.lastName.trim(),
         number: r.number.trim(),
@@ -128,7 +126,7 @@ export function TeamRosterDetailsForm() {
     const ok = await submit(payload);
     if (ok) {
       setThanks({
-        firstName: values.firstName.trim(),
+        contactName: values.contactName.trim(),
         teamName: values.teamName.trim(),
       });
     }
@@ -144,7 +142,8 @@ export function TeamRosterDetailsForm() {
         role="status"
       >
         <p className="text-body text-off-white">
-          Thanks {thanks.firstName} — we received the roster for {thanks.teamName}.
+          Thanks {thanks.contactName.split(/\s+/)[0] ?? thanks.contactName} — we
+          received the roster for {thanks.teamName}.
           We&apos;ll review everything and follow up before anything goes to
           production.
         </p>
@@ -183,18 +182,14 @@ export function TeamRosterDetailsForm() {
           </div>
         </div>
         <div className="grid gap-6 md:grid-cols-2">
-          <TextField
-            control={control}
-            name="firstName"
-            label="First name"
-            placeholder="Jordan"
-          />
-          <TextField
-            control={control}
-            name="lastName"
-            label="Last name"
-            placeholder="Smith"
-          />
+          <div className="md:col-span-2">
+            <TextField
+              control={control}
+              name="contactName"
+              label="Your name"
+              placeholder="Jordan Smith"
+            />
+          </div>
           <TextField
             control={control}
             name="roleOrTitle"

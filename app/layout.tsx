@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Barlow_Condensed, DM_Sans } from "next/font/google";
 import "@/styles/globals.css";
-import { SiteHeader } from "@/components/layout/SiteHeader";
-import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Toaster } from "@/components/ui/toaster";
 import { LeadConnectorChatEmbed } from "@/components/third-party/LeadConnectorChatEmbed";
 
@@ -63,17 +61,7 @@ export default function RootLayout({
       className={`${barlowCondensed.variable} ${dmSans.variable}`}
     >
       <body className="min-h-screen font-sans antialiased">
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-blue-accent focus:px-4 focus:py-3 focus:font-sans focus:text-sm focus:font-semibold focus:text-white"
-        >
-          Skip to main content
-        </a>
-        <SiteHeader />
-        <main id="main-content" className="min-h-[50vh]">
-          {children}
-        </main>
-        <SiteFooter />
+        {children}
         <Toaster />
         <LeadConnectorChatEmbed />
         <script

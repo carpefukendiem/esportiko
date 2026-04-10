@@ -11,14 +11,12 @@ import { fadeInUp } from "@/lib/utils/motion";
 export function FAQPreviewSection() {
   const items = getHomeFaqPreview();
   return (
-    <section className="border-y border-navy/10 bg-white">
+    <section className="bg-texture-navy-mid border-y border-slate/60">
       <SectionContainer>
         <div className="mx-auto mb-10 max-w-3xl text-center">
-          <SectionLabel variant="light" className="mb-4">
-            QUICK ANSWERS
-          </SectionLabel>
+          <SectionLabel className="mb-4">QUICK ANSWERS</SectionLabel>
           <motion.h2
-            className="font-display text-h2 font-semibold uppercase tracking-tight text-navy"
+            className="font-display text-h2 font-semibold uppercase tracking-tight text-white"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
@@ -34,7 +32,7 @@ export function FAQPreviewSection() {
           viewport={{ once: true, margin: "-40px" }}
           variants={fadeInUp}
         >
-          <FAQAccordion items={items} variant="light" />
+          <FAQAccordion items={items} />
           <p className="mt-8 text-center">
             <Link
               href="/faq"

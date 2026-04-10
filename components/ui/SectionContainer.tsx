@@ -8,7 +8,7 @@ export function SectionContainer({
   id,
 }: {
   className?: string;
-  /** Merged with default inner wrapper (max-width, horizontal padding). */
+  /** Classes for the inner max-width wrapper (default: max-w-content + horizontal padding). */
   contentClassName?: string;
   children: React.ReactNode;
   as?: "section" | "div";

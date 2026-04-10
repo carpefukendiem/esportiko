@@ -32,13 +32,12 @@ const CONTACT_ERROR = formSubmitErrorMessage;
 export function ContactForm() {
   const pathname = usePathname();
   const { submit, isLoading, isSuccess, isError } = useFormSubmit();
-  const [thanksFirstName, setThanksFirstName] = useState<string | null>(null);
+  const [thanksName, setThanksName] = useState<string | null>(null);
 
   const { control, handleSubmit } = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      name: "",
       email: "",
       phone: "",
       subject: "",
@@ -61,21 +60,20 @@ export function ContactForm() {
     const payload: Record<string, unknown> = {
       ...meta,
       formType: "contact",
-      firstName: values.firstName.trim(),
-      lastName: values.lastName.trim(),
+      name: values.name.trim(),
       subject: values.subject.trim(),
       message,
     };
     const e = values.email.trim();
-    const p = values.phone.trim();
+    const p = (values.phone ?? "").trim();
     if (e) payload.email = e;
     if (p) payload.phone = p;
 
     const ok = await submit(payload);
-    if (ok) setThanksFirstName(values.firstName.trim());
+    if (ok) setThanksName(values.name.trim());
   };
 
-  if (isSuccess && thanksFirstName) {
+  if (isSuccess && thanksName) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -85,7 +83,8 @@ export function ContactForm() {
         role="status"
       >
         <p className="text-body text-off-white">
-          Thanks {thanksFirstName} — we got your message and will follow up
+          Thanks {thanksName.split(/\s+/)[0] ?? thanksName} — we got your
+          message and will follow up
           within 1 business day. Need something faster? Call or text us at{" "}
           <a
             href={sitePhone.telHref}
@@ -105,14 +104,7 @@ export function ContactForm() {
       className="space-y-6 rounded-xl border border-slate bg-navy-mid/80 p-6 md:p-8"
       noValidate
     >
-      <div className="grid gap-6 sm:grid-cols-2">
-        <TextField
-          name="firstName"
-          label="First name"
-          control={control}
-        />
-        <TextField name="lastName" label="Last name" control={control} />
-      </div>
+      <TextField name="name" label="Name" control={control} />
       <EmailField
         name="email"
         label="Email"

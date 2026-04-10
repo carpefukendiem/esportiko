@@ -1,79 +1,57 @@
 import { NextResponse } from "next/server";
-import {
-  type SubmitLeadFormType,
-  submitLeadRequestSchema,
-} from "@/lib/schemas/submitLeadSchema";
 
-const WEBHOOK_ENV_KEYS: Record<SubmitLeadFormType, string> = {
-  "team-order": "GHL_WEBHOOK_URL_TEAM_ORDER",
-  "business-order": "GHL_WEBHOOK_URL_BUSINESS_ORDER",
-  contact: "GHL_WEBHOOK_URL_CONTACT",
-  "team-roster": "GHL_WEBHOOK_URL_TEAM_ROSTER_DETAILS",
+const WEBHOOKS: Record<string, string | undefined> = {
+  contact: process.env.GHL_WEBHOOK_URL_CONTACT,
+  "team-order": process.env.GHL_WEBHOOK_URL_TEAM_ORDER,
+  "business-order": process.env.GHL_WEBHOOK_URL_BUSINESS_ORDER,
+  "team-roster-details": process.env.GHL_WEBHOOK_URL_TEAM_ROSTER_DETAILS,
 };
 
+/**
+ * Public marketing forms POST here. Maps `formType` to the matching GHL webhook env var.
+ */
 export async function POST(request: Request) {
+  let body: Record<string, unknown>;
   try {
-    const body: unknown = await request.json();
-    const parsed = submitLeadRequestSchema.safeParse(body);
-    if (!parsed.success) {
-      const msg =
-        parsed.error.issues[0]?.message ??
-        "Validation failed. Check required fields.";
-      return NextResponse.json({ success: false, error: msg }, { status: 400 });
-    }
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ success: false, error: "Invalid JSON" }, { status: 400 });
+  }
 
-    const payload = parsed.data as Record<string, unknown>;
-    const formType = payload.formType as SubmitLeadFormType;
-    const envKey = WEBHOOK_ENV_KEYS[formType];
-    const url = process.env[envKey];
+  const formType = typeof body.formType === "string" ? body.formType : "";
+  const url = WEBHOOKS[formType];
 
-    if (!url) {
-      console.log(`[submit-lead:${formType}] (no webhook configured)`, payload);
-      return NextResponse.json({ success: true });
-    }
+  if (!url) {
+    console.warn("submit-lead: no webhook for formType", formType);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Webhook not configured for this form type",
+      },
+      { status: 503 }
+    );
+  }
 
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source: "esportiko.com",
-          kind: formType,
-          submittedAt: new Date().toISOString(),
-          ...payload,
-        }),
-        signal: AbortSignal.timeout(8_000),
-      });
-
-      if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        console.error(`[submit-lead:${formType}] webhook ${res.status}`, text);
-        return NextResponse.json(
-          {
-            success: false,
-            error:
-              "We could not complete your request. Please try again or call us.",
-          },
-          { status: 502 }
-        );
-      }
-    } catch (err) {
-      console.error(`[submit-lead:${formType}] fetch failed`, err);
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("submit-lead: upstream", res.status, text);
       return NextResponse.json(
-        {
-          success: false,
-          error:
-            "We could not complete your request. Please try again or call us.",
-        },
+        { success: false, error: "Upstream error" },
         { status: 502 }
       );
     }
-
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (e) {
+    console.error("submit-lead", e);
     return NextResponse.json(
-      { success: false, error: "Invalid request body." },
-      { status: 400 }
+      { success: false, error: "Request failed" },
+      { status: 502 }
     );
   }
 }

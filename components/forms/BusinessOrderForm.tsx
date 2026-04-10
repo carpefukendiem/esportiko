@@ -50,7 +50,7 @@ const stepFieldGroups: (keyof BusinessOrderFormValues)[][] = [
     "decorationType",
     "estimatedQuantity",
   ],
-  ["firstName", "lastName", "email", "phone", "preferredContact"],
+  ["contactName", "email", "phone", "preferredContact"],
 ];
 
 const BUSINESS_QUOTE_ERROR = formSubmitErrorMessage;
@@ -60,7 +60,7 @@ export function BusinessOrderForm() {
   const [step, setStep] = useState(0);
   const { submit, isLoading, isSuccess, isError } = useFormSubmit();
   const [thanks, setThanks] = useState<{
-    firstName: string;
+    contactName: string;
     businessName: string;
   } | null>(null);
 
@@ -77,8 +77,7 @@ export function BusinessOrderForm() {
       deadline: "",
       projectDescription: "",
       placementNotes: "",
-      firstName: "",
-      lastName: "",
+      contactName: "",
       email: "",
       phone: "",
       preferredContact: "email",
@@ -123,8 +122,7 @@ export function BusinessOrderForm() {
     const payload: Record<string, unknown> = {
       ...meta,
       formType: "business-order",
-      firstName: values.firstName.trim(),
-      lastName: values.lastName.trim(),
+      contactName: values.contactName.trim(),
       email: values.email.trim(),
       phone: values.phone.trim(),
       businessName: values.businessName.trim(),
@@ -139,7 +137,7 @@ export function BusinessOrderForm() {
     const ok = await submit(payload);
     if (ok) {
       setThanks({
-        firstName: values.firstName.trim(),
+        contactName: values.contactName.trim(),
         businessName: values.businessName.trim(),
       });
     }
@@ -155,7 +153,8 @@ export function BusinessOrderForm() {
         role="status"
       >
         <p className="text-body text-off-white">
-          Thanks {thanks.firstName} — we received your request for{" "}
+          Thanks {thanks.contactName.split(/\s+/)[0] ?? thanks.contactName} — we
+          received your request for{" "}
           {thanks.businessName} and will be in touch within 1 business day.
         </p>
       </motion.div>
@@ -248,10 +247,11 @@ export function BusinessOrderForm() {
           <p className="font-sans text-label font-semibold uppercase tracking-wider text-gray-soft">
             Contact
           </p>
-          <div className="grid gap-6 sm:grid-cols-2">
-            <TextField name="firstName" label="First name" control={control} />
-            <TextField name="lastName" label="Last name" control={control} />
-          </div>
+          <TextField
+            name="contactName"
+            label="Contact name"
+            control={control}
+          />
           <EmailField name="email" label="Email" control={control} />
           <PhoneField name="phone" label="Phone" control={control} />
           <RadioGroupField

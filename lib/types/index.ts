@@ -21,8 +21,7 @@ export interface LeadSourceMeta {
     | "team-order"
     | "business-order"
     | "contact"
-    | "team-roster-details"
-    | "team-roster";
+    | "team-roster-details";
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;

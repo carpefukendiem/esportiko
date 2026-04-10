@@ -64,7 +64,7 @@ const STEP_LABELS = [
 
 const stepFieldGroups: (keyof TeamOrderFormValues)[][] = [
   ["teamName", "sport", "season"],
-  ["firstName", "lastName", "role", "email", "phone", "preferredContact"],
+  ["contactName", "role", "email", "phone", "preferredContact"],
   ["apparelItems", "decorationType", "estimatedPlayers"],
 ];
 
@@ -75,7 +75,7 @@ export function TeamOrderForm() {
   const [step, setStep] = useState(0);
   const { submit, isLoading, isSuccess, isError } = useFormSubmit();
   const [thanks, setThanks] = useState<{
-    firstName: string;
+    contactName: string;
     teamName: string;
   } | null>(null);
 
@@ -87,8 +87,7 @@ export function TeamOrderForm() {
       season: "",
       dueDate: "",
       notes: "",
-      firstName: "",
-      lastName: "",
+      contactName: "",
       role: "coach",
       email: "",
       phone: "",
@@ -160,8 +159,7 @@ export function TeamOrderForm() {
     const payload: Record<string, unknown> = {
       ...meta,
       formType: "team-order",
-      firstName: values.firstName.trim(),
-      lastName: values.lastName.trim(),
+      contactName: values.contactName.trim(),
       email: values.email.trim(),
       phone: values.phone.trim(),
       teamName: values.teamName.trim(),
@@ -177,7 +175,7 @@ export function TeamOrderForm() {
     const ok = await submit(payload);
     if (ok) {
       setThanks({
-        firstName: values.firstName.trim(),
+        contactName: values.contactName.trim(),
         teamName: values.teamName.trim(),
       });
     }
@@ -193,7 +191,8 @@ export function TeamOrderForm() {
         role="status"
       >
         <p className="text-body text-off-white">
-          Thanks {thanks.firstName} — we got your team order request for{" "}
+          Thanks {thanks.contactName.split(/\s+/)[0] ?? thanks.contactName} — we
+          got your team order request for{" "}
           {thanks.teamName} and will follow up within 1 business day.
         </p>
       </motion.div>
@@ -267,8 +266,11 @@ export function TeamOrderForm() {
             Primary contact
           </p>
           <div className="grid gap-6 sm:grid-cols-2">
-            <TextField name="firstName" label="First name" control={control} />
-            <TextField name="lastName" label="Last name" control={control} />
+            <TextField
+              name="contactName"
+              label="Contact name"
+              control={control}
+            />
           </div>
           <SelectField
             name="role"
