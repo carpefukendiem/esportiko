@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { primaryNav } from "@/lib/data/nav";
 import { NavLink } from "@/components/layout/NavLink";
+import { MyTeamMobileNavSection } from "@/components/layout/MyTeamMobileNavSection";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
@@ -71,6 +72,7 @@ export function MobileNav({
                   </NavLink>
                 </li>
               ))}
+              <MyTeamMobileNavSection onClose={onClose} />
             </ul>
             <div className="mt-8 flex flex-col gap-3 border-t border-slate pt-8">
               <Button asChild variant="primary" width="full">

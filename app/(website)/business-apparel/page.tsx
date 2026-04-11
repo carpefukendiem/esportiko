@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { FAQAccordion } from "@/components/ui/FAQAccordion";
 import { CTABand } from "@/components/ui/CTABand";
 import { ProcessStep } from "@/components/ui/ProcessStep";
-import { Button } from "@/components/ui/button";
+import { ServiceHero } from "@/components/ui/ServiceHero";
 import { getFaqsByCategoryId } from "@/lib/data/faq";
 import { buildMetadata } from "@/lib/seo";
 
@@ -26,21 +25,13 @@ const faqItems = [
 export default function BusinessApparelPage() {
   return (
     <>
-      <SectionContainer className="bg-texture-dark">
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
-            Your Brand, On the Right Garment.
-          </h1>
-          <p className="mb-8 text-body text-gray-soft">
-            From front-of-house uniforms to launch merch, we align decoration
-            method, garment selection, and quantity so your team looks cohesive
-            in the wild.
-          </p>
-          <Button asChild variant="primary">
-            <Link href="/start-business-order">Start Business Order</Link>
-          </Button>
-        </div>
-      </SectionContainer>
+      <ServiceHero
+        backgroundImage="/business-apperal-bg.png"
+        heading="Your Brand, On the Right Garment."
+        subheading="From front-of-house uniforms to launch merch, we align decoration method, garment selection, and quantity so your team looks cohesive in the wild."
+        ctaLabel="Start Business Order"
+        ctaHref="/start-business-order"
+      />
       <SectionContainer className="bg-texture-navy-mid border-y border-slate/60">
         <div className="mx-auto max-w-3xl">
           <h2 className="mb-6 font-display text-h2 font-semibold text-white">
