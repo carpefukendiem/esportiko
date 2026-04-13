@@ -24,7 +24,7 @@ export function ServiceHero({
 }) {
   const overlayTint =
     overlayClassName ??
-    "bg-gradient-to-b from-[#0F1521]/80 via-[#0F1521]/60 to-[#0F1521]/40";
+    "bg-gradient-to-b from-[#0F1521]/48 via-[#0F1521]/34 to-[#0F1521]/22";
   return (
     <section className="relative isolate min-h-[min(380px,88vw)] w-full overflow-hidden md:min-h-[440px] lg:min-h-[520px]">
       <Image

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { SectionContainer } from "@/components/ui/SectionContainer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FAQAccordion } from "@/components/ui/FAQAccordion";
 import { faqCategories } from "@/lib/data/faq";
@@ -34,39 +33,61 @@ export default function FaqPage() {
 
   return (
     <>
-      <SectionContainer className="bg-texture-dark">
-        <div className="mx-auto mb-10 max-w-3xl text-center">
-          <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-body text-gray-soft">
-            Practical answers for coaches, business owners, and event organizers
-            planning custom apparel.
-          </p>
-        </div>
-        <div className="mx-auto max-w-3xl">
-          <Tabs defaultValue={defaultTab} className="w-full">
-            <div className="overflow-x-auto pb-2">
-              <TabsList className="inline-flex h-auto min-h-11 w-max max-w-full flex-wrap justify-start gap-1">
-                {faqCategories.map((cat) => (
-                  <TabsTrigger
-                    key={cat.id}
-                    value={cat.id}
-                    className="min-h-11 whitespace-normal px-3 text-left text-body-sm sm:px-4"
-                  >
-                    {cat.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+      <div className="relative min-h-screen">
+        <div
+          className="fixed inset-0 z-0"
+          style={{
+            backgroundImage: "url('/images/faq-bg.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center top",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "fixed",
+          }}
+          aria-hidden
+        />
+        <div className="fixed inset-0 z-0 bg-navy/80" aria-hidden />
+
+        <div className="relative z-10 pt-16 md:pt-20">
+          <div className="mx-auto max-w-content px-6 py-14 md:px-8 md:py-20 lg:px-12">
+            <div className="mx-auto mb-12 max-w-3xl text-center">
+              <p className="mb-4 inline-block rounded-full border border-slate bg-navy-light px-3 py-1 font-sans text-label font-semibold uppercase tracking-wider text-gray-soft">
+                Quick answers
+              </p>
+              <h1 className="font-display text-h2 font-semibold uppercase tracking-tight text-white">
+                Frequently Asked Questions
+              </h1>
+              <p className="mt-4 text-body text-gray-soft">
+                Everything you need to know about ordering custom apparel with
+                Esportiko.
+              </p>
             </div>
-            {faqCategories.map((cat) => (
-              <TabsContent key={cat.id} value={cat.id} className="mt-8">
-                <FAQAccordion items={cat.items} />
-              </TabsContent>
-            ))}
-          </Tabs>
+
+            <div className="mx-auto max-w-3xl">
+              <Tabs defaultValue={defaultTab} className="w-full">
+                <div className="overflow-x-auto pb-2">
+                  <TabsList className="inline-flex h-auto min-h-11 w-max max-w-full flex-wrap justify-start gap-1 bg-navy/60 backdrop-blur-sm">
+                    {faqCategories.map((cat) => (
+                      <TabsTrigger
+                        key={cat.id}
+                        value={cat.id}
+                        className="min-h-11 whitespace-normal px-3 text-left text-body-sm sm:px-4"
+                      >
+                        {cat.label}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </div>
+                {faqCategories.map((cat) => (
+                  <TabsContent key={cat.id} value={cat.id} className="mt-8">
+                    <FAQAccordion items={cat.items} />
+                  </TabsContent>
+                ))}
+              </Tabs>
+            </div>
+          </div>
         </div>
-      </SectionContainer>
+      </div>
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

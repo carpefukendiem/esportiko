@@ -80,19 +80,18 @@ const sports = [
 export default function TeamOrdersPage() {
   return (
     <>
-      <section className="relative min-h-[min(380px,88vw)] w-full md:min-h-[440px] lg:min-h-[480px]">
+      <section className="relative isolate min-h-[min(380px,88vw)] w-full overflow-hidden md:min-h-[440px] lg:min-h-[480px]">
         <Image
           src={media.teamOrdersHeroBg}
           alt=""
           fill
           priority
-          className="object-cover"
+          className="absolute inset-0 z-0 h-full w-full object-cover"
           sizes="100vw"
           aria-hidden
         />
-        <div className="absolute inset-0 bg-black/60" aria-hidden />
         <div
-          className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/25 to-black/55"
+          className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0F1521]/48 via-[#0F1521]/34 to-[#0F1521]/22"
           aria-hidden
         />
         <div className="relative z-10 mx-auto flex min-h-[min(380px,88vw)] w-full max-w-content flex-col items-center justify-center px-6 py-16 text-center md:min-h-[440px] md:px-8 md:py-20 lg:min-h-[480px] lg:px-8">

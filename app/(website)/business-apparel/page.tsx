@@ -26,7 +26,7 @@ export default function BusinessApparelPage() {
   return (
     <>
       <ServiceHero
-        backgroundImage="/business-apperal-bg.png"
+        backgroundImage="/images/business-apperal-bg.png"
         heading="Your Brand, On the Right Garment."
         subheading="From front-of-house uniforms to launch merch, we align decoration method, garment selection, and quantity so your team looks cohesive in the wild."
         ctaLabel="Start Business Order"
