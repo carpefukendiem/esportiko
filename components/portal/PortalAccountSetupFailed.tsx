@@ -1,11 +1,13 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClientIfConfigured } from "@/lib/supabase/client";
 
 export function PortalAccountSetupFailed() {
   const signOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    const supabase = createBrowserClientIfConfigured();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     window.location.href = "/login";
   };
 

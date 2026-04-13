@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClientIfConfigured } from "@/lib/supabase/client";
 import { brandLogo } from "@/lib/data/media";
 
 const schema = z
@@ -38,7 +38,11 @@ export function ResetPasswordForm() {
   });
 
   useEffect(() => {
-    const supabase = createClient();
+    const supabase = createBrowserClientIfConfigured();
+    if (!supabase) {
+      setGate("invalid");
+      return;
+    }
     let cancelled = false;
     let settled = false;
 
@@ -73,7 +77,8 @@ export function ResetPasswordForm() {
   }, []);
 
   const onSubmit = async (data: Values) => {
-    const supabase = createClient();
+    const supabase = createBrowserClientIfConfigured();
+    if (!supabase) return;
     const { error } = await supabase.auth.updateUser({ password: data.password });
     if (error) {
       setFormError("root", { message: error.message });

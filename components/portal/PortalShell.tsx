@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClientIfConfigured } from "@/lib/supabase/client";
 import type { AccountRow } from "@/types/portal";
 import { cn } from "@/lib/utils/cn";
 
@@ -31,8 +31,10 @@ export function PortalShell({
   const initial = (account.team_name?.[0] ?? email?.[0] ?? "?").toUpperCase();
 
   const signOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    const supabase = createBrowserClientIfConfigured();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     router.push("/login");
     router.refresh();
   };

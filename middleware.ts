@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  const { response, user } = await updateSession(request);
   const path = request.nextUrl.pathname;
+
+  // Let the route handler exchange the OAuth code without refreshing session first;
+  // otherwise PKCE cookies can break and Google sign-in fails.
+  if (path === "/auth/callback") {
+    return NextResponse.next();
+  }
+
+  const { response, user } = await updateSession(request);
 
   if (path.startsWith("/portal")) {
     if (!user) {

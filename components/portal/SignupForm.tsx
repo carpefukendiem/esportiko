@@ -7,9 +7,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/client";
+import {
+  createBrowserClientIfConfigured,
+  SUPABASE_ENV_MISSING_USER_MESSAGE,
+} from "@/lib/supabase/client";
 import { getSiteUrl } from "@/lib/site-url";
 import { brandLogo } from "@/lib/data/media";
+import { SupabaseConfigBanner } from "@/components/portal/SupabaseConfigBanner";
 
 const signupSchema = z
   .object({
@@ -48,7 +52,11 @@ export function SignupForm() {
   });
 
   const onSubmit = async (data: SignupValues) => {
-    const supabase = createClient();
+    const supabase = createBrowserClientIfConfigured();
+    if (!supabase) {
+      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
+      return;
+    }
     const teamName = data.team_name.trim();
     const email = data.email.trim();
 
@@ -97,7 +105,12 @@ export function SignupForm() {
 
   const onGoogle = async () => {
     setOauthLoading(true);
-    const supabase = createClient();
+    const supabase = createBrowserClientIfConfigured();
+    if (!supabase) {
+      setOauthLoading(false);
+      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
+      return;
+    }
     const site = getSiteUrl();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -151,6 +164,8 @@ export function SignupForm() {
           priority
         />
       </div>
+
+      <SupabaseConfigBanner />
 
       <button
         type="button"

@@ -6,9 +6,13 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/client";
+import {
+  createBrowserClientIfConfigured,
+  SUPABASE_ENV_MISSING_USER_MESSAGE,
+} from "@/lib/supabase/client";
 import { brandLogo } from "@/lib/data/media";
 import { getSiteUrl } from "@/lib/site-url";
+import { SupabaseConfigBanner } from "@/components/portal/SupabaseConfigBanner";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -29,7 +33,11 @@ export function ForgotPasswordForm() {
   });
 
   const onSubmit = async (data: Values) => {
-    const supabase = createClient();
+    const supabase = createBrowserClientIfConfigured();
+    if (!supabase) {
+      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
+      return;
+    }
     const site = getSiteUrl();
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
       redirectTo: `${site}/reset-password`,
@@ -60,6 +68,8 @@ export function ForgotPasswordForm() {
       <p className="mb-6 text-center font-sans text-sm font-medium text-[#8A94A6]">
         Enter your email and we&apos;ll send you a link to choose a new password.
       </p>
+
+      <SupabaseConfigBanner />
 
       {sent ? (
         <div className="space-y-6">

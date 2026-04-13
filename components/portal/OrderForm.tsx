@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClientIfConfigured } from "@/lib/supabase/client";
 import {
   portalOrderFormSchema,
   step1Schema,
@@ -237,7 +237,11 @@ export function OrderForm({
     setUploading(true);
     setStepError(null);
     try {
-      const supabase = createClient();
+      const supabase = createBrowserClientIfConfigured();
+      if (!supabase) {
+        setStepError("Storage is not configured.");
+        return;
+      }
       const safeName = file.name.replace(/[^\w.\-]+/g, "_");
       const path = `accounts/${account.id}/artwork/${crypto.randomUUID()}-${safeName}`;
       const { error } = await supabase.storage.from("artwork").upload(path, file);
