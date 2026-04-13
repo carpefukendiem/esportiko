@@ -50,23 +50,23 @@ export default function FaqPage() {
 
         <div className="relative z-10 pt-16 md:pt-20">
           <div className="mx-auto max-w-content px-6 py-14 md:px-8 md:py-20 lg:px-12">
-            <div className="mx-auto mb-12 max-w-3xl text-center">
-              <p className="mb-4 inline-block rounded-full border border-slate bg-navy-light px-3 py-1 font-sans text-label font-semibold uppercase tracking-wider text-gray-soft">
-                Quick answers
-              </p>
-              <h1 className="font-display text-h2 font-semibold uppercase tracking-tight text-white">
-                Frequently Asked Questions
-              </h1>
-              <p className="mt-4 text-body text-gray-soft">
-                Everything you need to know about ordering custom apparel with
-                Esportiko.
-              </p>
-            </div>
+            <div className="mx-auto max-w-3xl rounded-2xl border border-slate/50 bg-navy-mid/95 p-6 shadow-[0_12px_48px_rgba(0,0,0,0.45)] ring-1 ring-white/5 backdrop-blur-md md:p-10">
+              <div className="mb-10 text-center">
+                <p className="mb-4 inline-block rounded-full border border-slate bg-navy-light px-3 py-1 font-sans text-label font-semibold uppercase tracking-wider text-gray-soft">
+                  Quick answers
+                </p>
+                <h1 className="font-display text-h2 font-semibold uppercase tracking-tight text-white">
+                  Frequently Asked Questions
+                </h1>
+                <p className="mt-4 text-body text-gray-soft">
+                  Everything you need to know about ordering custom apparel with
+                  Esportiko.
+                </p>
+              </div>
 
-            <div className="mx-auto max-w-3xl">
               <Tabs defaultValue={defaultTab} className="w-full">
                 <div className="overflow-x-auto pb-2">
-                  <TabsList className="inline-flex h-auto min-h-11 w-max max-w-full flex-wrap justify-start gap-1 bg-navy/60 backdrop-blur-sm">
+                  <TabsList className="inline-flex h-auto min-h-11 w-max max-w-full flex-wrap justify-start gap-1 border border-slate/40 bg-navy/80 backdrop-blur-sm">
                     {faqCategories.map((cat) => (
                       <TabsTrigger
                         key={cat.id}

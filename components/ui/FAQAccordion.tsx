@@ -15,7 +15,7 @@ export function FAQAccordion({ items }: { items: FaqEntry[] }) {
         <AccordionItem
           key={item.question}
           value={`item-${i}`}
-          className="rounded-xl border border-slate bg-navy-light/60 px-4"
+          className="rounded-xl border border-slate/60 bg-navy-light/90 px-4 shadow-sm"
         >
           <AccordionTrigger className="text-left font-sans text-body font-medium text-off-white hover:no-underline">
             {item.question}
