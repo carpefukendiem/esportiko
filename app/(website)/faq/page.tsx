@@ -46,6 +46,7 @@ export default function FaqPage() {
           aria-hidden
         />
         <div className="fixed inset-0 z-0 bg-navy/80" aria-hidden />
+        <div className="fixed inset-0 z-0 bg-black/20" aria-hidden />
 
         <div className="relative z-10 pt-16 md:pt-20">
           <div className="mx-auto max-w-content px-6 py-14 md:px-8 md:py-20 lg:px-12">

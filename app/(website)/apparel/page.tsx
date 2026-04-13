@@ -37,14 +37,15 @@ export default async function ApparelCatalogPage() {
           aria-hidden
         />
         <div
-          className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0F1521]/48 via-[#0F1521]/34 to-[#0F1521]/22"
+          className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0F1521]/55 via-[#0F1521]/40 to-[#0F1521]/30"
           aria-hidden
         />
-        <div className="relative z-10 mx-auto max-w-content px-6 py-12 md:px-8 md:py-16 lg:px-12">
+        <div className="absolute inset-0 z-[1] bg-black/20" aria-hidden />
+        <div className="relative z-10 mx-auto flex min-h-[min(320px,72vw)] w-full max-w-content flex-col items-center justify-center px-6 py-12 text-center md:min-h-[380px] md:px-8 md:py-16 lg:min-h-[420px] lg:px-12">
           <p className="font-sans text-label font-semibold uppercase tracking-widest text-off-white drop-shadow-[0_1px_10px_rgba(0,0,0,0.9)]">
             Apparel catalog
           </p>
-          <h1 className="mt-3 font-display text-h1 font-bold uppercase tracking-tight text-white drop-shadow-[0_2px_20px_rgba(0,0,0,0.85)]">
+          <h1 className="mt-3 max-w-3xl font-display text-h1 font-bold uppercase tracking-tight text-white drop-shadow-[0_2px_20px_rgba(0,0,0,0.85)]">
             Browse Our Full Catalog
           </h1>
           <p className="mt-4 max-w-2xl text-body font-medium text-off-white drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)]">
