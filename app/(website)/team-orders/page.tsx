@@ -91,9 +91,10 @@ export default function TeamOrdersPage() {
           aria-hidden
         />
         <div
-          className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0F1521]/48 via-[#0F1521]/34 to-[#0F1521]/22"
+          className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0F1521]/55 via-[#0F1521]/40 to-[#0F1521]/30"
           aria-hidden
         />
+        <div className="absolute inset-0 z-[1] bg-black/20" aria-hidden />
         <div className="relative z-10 mx-auto flex min-h-[min(380px,88vw)] w-full max-w-content flex-col items-center justify-center px-6 py-16 text-center md:min-h-[440px] md:px-8 md:py-20 lg:min-h-[480px] lg:px-8">
           <h1 className="mb-4 max-w-3xl font-display text-h1 font-bold uppercase tracking-tight text-white drop-shadow-[0_2px_20px_rgba(0,0,0,0.85)]">
             Team Ordering, Finally Organized.
