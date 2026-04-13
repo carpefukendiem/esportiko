@@ -5,7 +5,6 @@ import { CTABand } from "@/components/ui/CTABand";
 import { ProcessStep } from "@/components/ui/ProcessStep";
 import { ServiceHero } from "@/components/ui/ServiceHero";
 import { getFaqsByCategoryId } from "@/lib/data/faq";
-import { media } from "@/lib/data/media";
 import { buildMetadata } from "@/lib/seo";
 
 export function generateMetadata(): Metadata {
@@ -23,14 +22,13 @@ export default function EmbroideryPage() {
   return (
     <>
       <ServiceHero
-        backgroundImage={media.services.embroidery}
+        backgroundImage="/images/embroidery-bg1.png"
         heading="Embroidery That Reads Premium Up Close"
         subheading="Dimensional thread work for restaurants, professional services, team sideline gear, and any brand that needs tactile authority on polos, structured caps, and outerwear."
         ctaLabel="Start Business Order"
         ctaHref="/start-business-order"
         secondaryCtaLabel="Request a Quote"
         secondaryCtaHref="/request-a-quote"
-        overlayClassName="bg-gradient-to-b from-[#0F1521]/65 via-[#0F1521]/58 to-[#0F1521]/52"
       />
       <SectionContainer className="bg-texture-navy-mid border-y border-slate/60">
         <div className="mx-auto max-w-3xl">

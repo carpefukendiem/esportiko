@@ -26,19 +26,18 @@ export default async function ApparelCatalogPage() {
 
   return (
     <>
-      <section className="relative min-h-[min(320px,72vw)] w-full border-b border-white/10 md:min-h-[380px] lg:min-h-[420px]">
+      <section className="relative isolate min-h-[min(320px,72vw)] w-full overflow-hidden border-b border-white/10 md:min-h-[380px] lg:min-h-[420px]">
         <Image
           src={media.apparelBrowseHeroBg}
           alt=""
           fill
           priority
-          className="object-cover"
+          className="absolute inset-0 z-0 h-full w-full object-cover"
           sizes="100vw"
           aria-hidden
         />
-        <div className="absolute inset-0 bg-black/60" aria-hidden />
         <div
-          className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/25 to-black/55"
+          className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0F1521]/48 via-[#0F1521]/34 to-[#0F1521]/22"
           aria-hidden
         />
         <div className="relative z-10 mx-auto max-w-content px-6 py-12 md:px-8 md:py-16 lg:px-12">
