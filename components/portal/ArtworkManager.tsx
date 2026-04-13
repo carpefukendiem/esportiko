@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClientIfConfigured } from "@/lib/supabase/client";
 import { registerArtworkAsset } from "@/lib/actions/portal";
 import type { ArtworkAssetRow } from "@/types/portal";
 import { DeleteArtworkForm } from "@/components/portal/DeleteArtworkForm";
@@ -24,7 +24,11 @@ export function ArtworkManager({
     if (!file) return;
     setUploading(true);
     try {
-      const supabase = createClient();
+      const supabase = createBrowserClientIfConfigured();
+      if (!supabase) {
+        alert("Storage is not configured for this deployment.");
+        return;
+      }
       const safeName = file.name.replace(/[^\w.\-]+/g, "_");
       const path = `accounts/${accountId}/artwork/${crypto.randomUUID()}-${safeName}`;
       const { error } = await supabase.storage.from("artwork").upload(path, file);

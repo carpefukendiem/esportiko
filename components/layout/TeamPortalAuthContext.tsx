@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClientIfConfigured } from "@/lib/supabase/client";
 
 type TeamPortalAuthState = {
   user: User | null;
@@ -22,7 +22,12 @@ type TeamPortalAuthState = {
 const TeamPortalAuthContext = createContext<TeamPortalAuthState | null>(null);
 
 async function resolveTeamName(user: User): Promise<string> {
-  const supabase = createClient();
+  const supabase = createBrowserClientIfConfigured();
+  if (!supabase) {
+    const meta = user.user_metadata?.team_name;
+    if (typeof meta === "string" && meta.trim()) return meta.trim();
+    return user.email?.split("@")[0]?.replace(/\./g, " ") ?? "My team";
+  }
   const { data } = await supabase
     .from("accounts")
     .select("team_name")
@@ -75,7 +80,11 @@ export function TeamPortalAuthProvider({
   }, []);
 
   useEffect(() => {
-    const supabase = createClient();
+    const supabase = createBrowserClientIfConfigured();
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
     let alive = true;
 
     supabase.auth.getSession().then(({ data: { session: s } }) => {
@@ -96,8 +105,10 @@ export function TeamPortalAuthProvider({
   }, [applySession]);
 
   const signOut = useCallback(async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    const supabase = createBrowserClientIfConfigured();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     setSession(null);
     setTeamName(null);
     setLoading(false);
