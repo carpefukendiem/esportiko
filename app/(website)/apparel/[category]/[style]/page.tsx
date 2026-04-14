@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Shirt } from "lucide-react";
 import { CatalogBreadcrumb } from "@/components/catalog/CatalogBreadcrumb";
-import { ColorSwatchRow } from "@/components/catalog/ColorSwatchRow";
 import { DecorationBadge } from "@/components/catalog/DecorationBadge";
+import { ProductDetailMedia } from "@/components/catalog/ProductDetailMedia";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { Button } from "@/components/ui/button";
@@ -75,8 +73,6 @@ export default async function ApparelStyleDetailPage({
   }
 
   const related = await getRelatedProducts(category.slug, product.styleNumber);
-  const thumb = product.images.productImageUrl;
-  const usePlaceholder = thumb.includes("placeholder");
 
   return (
     <>
@@ -90,25 +86,7 @@ export default async function ApparelStyleDetailPage({
       />
       <SectionContainer className="bg-navy border-b border-slate/60">
         <div className="grid gap-8 md:grid-cols-2 md:items-start lg:gap-12">
-          <div className="relative aspect-square w-full overflow-hidden rounded-card bg-navy-mid">
-            {usePlaceholder ? (
-              <div className="flex h-full items-center justify-center">
-                <Shirt
-                  className="h-28 w-28 text-gray-muted/40"
-                  aria-hidden
-                />
-              </div>
-            ) : (
-              <Image
-                src={thumb}
-                alt={product.productTitle}
-                fill
-                className="object-contain p-4"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority
-              />
-            )}
-          </div>
+          <ProductDetailMedia product={product} />
           <div>
             <h1 className="font-display text-h1 font-bold uppercase tracking-tight text-white">
               {product.productTitle}
@@ -125,18 +103,13 @@ export default async function ApparelStyleDetailPage({
               </span>
               {product.availableSizes}
             </p>
-            <div className="mt-4">
-              <p className="font-sans text-body-sm text-gray-muted">
-                Color options
-              </p>
-              <ColorSwatchRow colors={product.colors} />
-            </div>
             <p className="mt-6 text-body text-gray-soft">
               {product.productDescription}
             </p>
             <p className="mt-4 text-body-sm text-gray-muted">
-              Detailed imagery and live inventory sync are coming soon. Share
-              this style number when you start a project.
+              Imagery reflects SanMar&apos;s catalog feed (updated nightly). No
+              live inventory or pricing on this site — share this style number
+              when you start a project.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {product.decorationTypes.map((d) => (
