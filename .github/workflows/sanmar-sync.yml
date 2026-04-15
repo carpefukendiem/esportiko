@@ -1,0 +1,31 @@
+name: SanMar one-shot sync
+
+# Manual trigger only - no schedule. Run from the Actions tab.
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install paramiko requests
+
+      - name: Run SanMar -> Supabase sync
+        env:
+          SANMAR_SFTP_HOST: ftp.sanmar.com
+          SANMAR_SFTP_PORT: "2200"
+          SANMAR_SFTP_USER: ${{ secrets.SANMAR_SFTP_USER }}
+          SANMAR_SFTP_PASSWORD: ${{ secrets.SANMAR_SFTP_PASSWORD }}
+          SANMAR_REMOTE_PATH: /SanMarPDD/SanMar_EPDD.csv
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python scripts/sync_sanmar.py
