@@ -19,15 +19,7 @@ import {
 import type { AccountRow, ArtworkAssetRow, OrderItemRow, OrderRow } from "@/types/portal";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils/cn";
-
-const GARMENTS = [
-  "Jerseys",
-  "Hoodies",
-  "T-Shirts",
-  "Polos",
-  "Hats",
-  "Other",
-] as const;
+import { GarmentSelector } from "@/components/portal/GarmentSelector";
 const DECORATIONS = ["Screen Print", "Embroidery", "Both"] as const;
 
 function seasonChoices(): string[] {
@@ -130,6 +122,13 @@ export function OrderForm({
     setStepError(null);
     const v = form.getValues();
     if (step === 0) {
+      await form.trigger([
+        "team_name",
+        "season",
+        "garment_type",
+        "decoration_method",
+        "quantity",
+      ]);
       const r = step1Schema.safeParse(v);
       if (!r.success) {
         setStepError(r.error.issues[0]?.message ?? "Check highlighted fields");
@@ -330,19 +329,7 @@ export function OrderForm({
             </div>
             <div>
               <label className={labelClass}>Garment type</label>
-              <select className={inputClass} {...form.register("garment_type")}>
-                <option value="">Select…</option>
-                {GARMENTS.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
-                ))}
-              </select>
-              {form.formState.errors.garment_type && (
-                <p className="mt-1 text-sm font-medium text-red-400">
-                  {form.formState.errors.garment_type.message}
-                </p>
-              )}
+              <GarmentSelector control={form.control} name="garment_type" />
             </div>
             <div>
               <label className={labelClass}>Decoration method</label>

@@ -158,6 +158,12 @@ export function LoginForm() {
             </p>
           )}
         </div>
+        <Link
+          href="/forgot-password"
+          className="mb-2 block text-right text-sm text-[#8A94A6] transition-colors hover:text-white"
+        >
+          Forgot password?
+        </Link>
         <button
           type="submit"
           disabled={isSubmitting || oauthLoading}
