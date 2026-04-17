@@ -66,3 +66,33 @@ export const DISPLAY_CATEGORIES: DisplayCategory[] = [
     sanMarCategories: ["Bags", "Accessories"],
   },
 ];
+
+/** Slugs must match routes under `/apparel/[category]`. */
+const APPAREL_INDEX_SLUG_ORDER = [
+  "tshirts",
+  "hoodies-sweatshirts",
+  "polos",
+  "jerseys-uniforms",
+  "hats",
+] as const;
+
+const APPAREL_INDEX_LABEL_OVERRIDES: Partial<
+  Record<(typeof APPAREL_INDEX_SLUG_ORDER)[number], string>
+> = {
+  "hoodies-sweatshirts": "Hoodies",
+  "jerseys-uniforms": "Jerseys",
+  "hats": "Hats",
+};
+
+/** Five primary categories for the /apparel index "Browse by category" grid. */
+export function getDisplayCategoriesForApparelIndex(): DisplayCategory[] {
+  return APPAREL_INDEX_SLUG_ORDER.map((slug) => {
+    const c = DISPLAY_CATEGORIES.find((x) => x.slug === slug);
+    if (!c) {
+      throw new Error(`Missing display category for slug: ${slug}`);
+    }
+    const label = APPAREL_INDEX_LABEL_OVERRIDES[slug] ?? c.label;
+    return { ...c, label };
+  });
+}
+

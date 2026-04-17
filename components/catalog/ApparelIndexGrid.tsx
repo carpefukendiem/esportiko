@@ -13,9 +13,8 @@ export function ApparelIndexGrid({
   return (
     <motion.div
       className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-40px" }}
+      initial="visible"
+      animate="visible"
       variants={staggerContainer}
     >
       {categories.map((c, i) => (

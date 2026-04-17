@@ -1,6 +1,7 @@
 /**
- * Catalog data fetcher — reads from Supabase, filtered by the curated allowlist.
- * Pages in app/(website)/apparel/** import exclusively from this file.
+ * Catalog data fetcher — prefers Supabase (curated allowlist); falls back to
+ * `lib/data/sanmar-seed.ts` when the DB is empty or unavailable so browse pages
+ * still render. Pages in app/(website)/apparel/** import exclusively from this file.
  * Never import sanmar-ftp / sanmar-parser / sanmar-upsert from page components.
  */
 
@@ -11,6 +12,10 @@ import {
   CURATED_STYLES_BY_CATEGORY,
   CURATED_STYLE_SET,
 } from "@/lib/catalog/curated";
+import {
+  SANMAR_SEED_PRODUCTS,
+  type SanMarSeedCategory,
+} from "@/lib/data/sanmar-seed";
 import type {
   CatalogProduct,
   DisplayCategory,
@@ -19,6 +24,77 @@ import type {
 } from "@/lib/catalog/types";
 
 const PLACEHOLDER = "/images/catalog/placeholder.svg";
+
+function seedCategoryToSanMarCategory(cat: SanMarSeedCategory): SanMarCategory {
+  switch (cat) {
+    case "T-Shirts":
+      return "T-Shirts";
+    case "Hoodies":
+      return "Sweatshirts/Fleece";
+    case "Polos":
+      return "Polos/Knits";
+    case "Jerseys":
+      return "Activewear";
+    case "Hats":
+      return "Caps";
+    default:
+      return "T-Shirts";
+  }
+}
+
+function seedDecorationTypes(
+  methods: import("@/lib/data/sanmar-seed").SanMarSeedProduct["decoration_methods"]
+): string[] {
+  const out: string[] = [];
+  for (const m of methods) {
+    if (m === "Both") {
+      out.push("Screen Print", "Embroidery");
+    } else {
+      out.push(m);
+    }
+  }
+  return [...new Set(out)];
+}
+
+function seedProductToCatalogProduct(
+  p: import("@/lib/data/sanmar-seed").SanMarSeedProduct
+): CatalogProduct {
+  const colors: ProductColor[] = p.available_colors.map((displayColor) => ({
+    catalogColor: displayColor,
+    displayColor,
+    swatchImageUrl: PLACEHOLDER,
+    modelImageUrl: p.image_url?.trim() ? p.image_url : PLACEHOLDER,
+  }));
+  const img = p.image_url?.trim() ? p.image_url : PLACEHOLDER;
+  return {
+    uniqueKey: p.style_number.toUpperCase(),
+    styleNumber: p.style_number,
+    productTitle: p.name,
+    brandName: p.brand,
+    productDescription: p.description,
+    status: "Regular",
+    sanMarCategory: seedCategoryToSanMarCategory(p.category),
+    availableSizes: p.available_sizes.join(", "),
+    colors,
+    images: {
+      productImageUrl: img,
+      thumbnailUrl: img,
+      frontModelUrl: p.image_url?.trim() ? p.image_url : undefined,
+    },
+    decorationTypes: seedDecorationTypes(p.decoration_methods),
+  };
+}
+
+function loadCatalogFromSeed(): Map<string, CatalogProduct> {
+  const map = new Map<string, CatalogProduct>();
+  for (const p of SANMAR_SEED_PRODUCTS) {
+    const key = p.style_number.trim().toUpperCase();
+    if (!CURATED_STYLE_SET.has(key)) continue;
+    map.set(key, seedProductToCatalogProduct(p));
+  }
+  return map;
+}
+
 
 const SANMAR_CATEGORY_VALUES: readonly SanMarCategory[] = [
   "Activewear",
@@ -119,7 +195,7 @@ const PRODUCT_SELECT =
 const COLOR_SELECT =
   "style_number,catalog_color,display_color,swatch_image_url,color_product_url,sort_order";
 
-async function loadAllCuratedInner(): Promise<Map<string, CatalogProduct>> {
+async function loadFromSupabase(): Promise<Map<string, CatalogProduct>> {
   const supa = publicClient();
   if (!supa) return new Map();
 
@@ -156,6 +232,16 @@ async function loadAllCuratedInner(): Promise<Map<string, CatalogProduct>> {
     );
   }
   return result;
+}
+
+async function loadAllCuratedInner(): Promise<Map<string, CatalogProduct>> {
+  try {
+    const fromDb = await loadFromSupabase();
+    if (fromDb.size > 0) return fromDb;
+  } catch {
+    /* Supabase missing or schema mismatch — use bundled seed for browse UI */
+  }
+  return loadCatalogFromSeed();
 }
 
 const loadAllCurated = unstable_cache(

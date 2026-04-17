@@ -4,7 +4,8 @@ import { ApparelIndexGrid } from "@/components/catalog/ApparelIndexGrid";
 import { CatalogConversionStrip } from "@/components/catalog/CatalogConversionStrip";
 import { CatalogProductCard } from "@/components/catalog/CatalogProductCard";
 import { buildMetadata } from "@/lib/seo";
-import { getCatalogProductsForIndex, getDisplayCategories } from "@/lib/catalog/fetcher";
+import { getCatalogProductsForIndex } from "@/lib/catalog/fetcher";
+import { getDisplayCategoriesForApparelIndex } from "@/lib/catalog/categories";
 import { media } from "@/lib/data/media";
 
 export const revalidate = 3600;
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ApparelCatalogPage() {
-  const categories = await getDisplayCategories();
+  const categories = getDisplayCategoriesForApparelIndex();
   const products = await getCatalogProductsForIndex(24);
 
   return (
