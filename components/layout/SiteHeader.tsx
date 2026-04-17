@@ -34,7 +34,7 @@ export function SiteHeader() {
               : "bg-transparent"
           )}
         >
-          <div className="mx-auto flex h-full max-w-content items-center justify-between gap-4 px-4 md:px-6 lg:px-8">
+          <div className="mx-auto flex h-full max-w-content items-center justify-between gap-4 px-4 md:px-6 lg:pl-4 lg:pr-8 xl:pl-3 xl:pr-10">
             <Link
               href="/"
               className="flex items-center gap-2 text-white focus-visible:outline-none"
