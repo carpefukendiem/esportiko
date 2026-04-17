@@ -36,14 +36,14 @@ export function buildMetadata({
 }): Metadata {
   const url = `${siteUrl}${path}`;
   const segment = stripTitleSuffixForTemplate(title);
-  const fullTitle = formatPageTitle(segment);
   return {
     /** Short segment only — root `metadata.title.template` appends the suffix once */
     title: segment,
     description,
     alternates: { canonical: url },
     openGraph: {
-      title: fullTitle,
+      /** Root layout template already appends SITE_TITLE_SUFFIX to OG/twitter titles */
+      title: segment,
       description,
       url,
       siteName: "Esportiko",

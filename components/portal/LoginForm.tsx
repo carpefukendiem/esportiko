@@ -145,7 +145,7 @@ export function LoginForm() {
           )}
           <Link
             href="/forgot-password"
-            className="mb-2 block text-right text-sm text-[#8A94A6] transition-colors hover:text-white"
+            className="text-sm text-[#8A94A6] hover:text-white transition-colors block text-right mb-2"
           >
             Forgot password?
           </Link>
