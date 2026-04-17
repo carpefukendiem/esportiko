@@ -10,6 +10,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Public marketing catalog — skip Supabase session refresh so browse pages never
+  // block on auth.getUser() network latency or stalls.
+  if (path === "/apparel" || path.startsWith("/apparel/")) {
+    return NextResponse.next();
+  }
+
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-es-pathname", path);
   const requestWithPath = new NextRequest(request, { headers: requestHeaders });
