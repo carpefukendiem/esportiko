@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
+/** Catalog browse is public; cap Supabase wait so a slow auth.getUser() never blocks HTML. */
+const CATALOG_SESSION_TIMEOUT_MS = 3000;
+
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
@@ -10,17 +13,39 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Public marketing catalog — skip Supabase session refresh so browse pages never
-  // block on auth.getUser() network latency or stalls.
-  if (path === "/apparel" || path.startsWith("/apparel/")) {
-    return NextResponse.next();
-  }
-
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-es-pathname", path);
   const requestWithPath = new NextRequest(request, { headers: requestHeaders });
 
-  const { response, user } = await updateSession(requestWithPath);
+  const isCatalog =
+    path === "/apparel" || path.startsWith("/apparel/");
+
+  let response: NextResponse;
+  let user: Awaited<ReturnType<typeof updateSession>>["user"];
+
+  if (isCatalog) {
+    try {
+      const result = await Promise.race([
+        updateSession(requestWithPath),
+        new Promise<never>((_, reject) =>
+          setTimeout(
+            () => reject(new Error("catalog-session-timeout")),
+            CATALOG_SESSION_TIMEOUT_MS
+          )
+        ),
+      ]);
+      response = result.response;
+      user = result.user;
+    } catch {
+      // Still advance the request with pathname header; skip refresh on timeout only.
+      response = NextResponse.next({ request: requestWithPath });
+      user = null;
+    }
+  } else {
+    const result = await updateSession(requestWithPath);
+    response = result.response;
+    user = result.user;
+  }
 
   if (path.startsWith("/portal")) {
     if (!user) {
