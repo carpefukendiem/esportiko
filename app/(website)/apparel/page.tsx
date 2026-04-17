@@ -19,9 +19,9 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function ApparelCatalogPage() {
+export default function ApparelCatalogPage() {
   const categories = getDisplayCategoriesForApparelIndex();
-  const products = await getCatalogProductsForIndex(24);
+  const products = getCatalogProductsForIndex(24);
 
   return (
     <>

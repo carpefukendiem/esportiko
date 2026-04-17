@@ -12,18 +12,18 @@ import {
 
 export const revalidate = 3600;
 
-export async function generateStaticParams() {
-  const categories = await getDisplayCategories();
+export function generateStaticParams() {
+  const categories = getDisplayCategories();
   const legacy = [{ category: "tshirts" }, { category: "jerseys-uniforms" }];
   return [...categories.map((c) => ({ category: c.slug })), ...legacy];
 }
 
-export async function generateMetadata({
+export function generateMetadata({
   params,
 }: {
   params: { category: string };
-}): Promise<Metadata> {
-  const cat = await getDisplayCategoryBySlug(params.category);
+}): Metadata {
+  const cat = getDisplayCategoryBySlug(params.category);
   if (!cat) {
     return { title: "Category | Esportiko" };
   }
@@ -34,17 +34,17 @@ export async function generateMetadata({
   });
 }
 
-export default async function ApparelCategoryPage({
+export default function ApparelCategoryPage({
   params,
 }: {
   params: { category: string };
 }) {
-  const category = await getDisplayCategoryBySlug(params.category);
+  const category = getDisplayCategoryBySlug(params.category);
   if (!category) {
     notFound();
   }
 
-  const products = await getProductsByDisplayCategory(category.slug);
+  const products = getProductsByDisplayCategory(category.slug);
 
   return (
     <>

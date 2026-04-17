@@ -18,11 +18,11 @@ import {
 
 export const revalidate = 3600;
 
-export async function generateStaticParams() {
-  const categories = await getDisplayCategories();
+export function generateStaticParams() {
+  const categories = getDisplayCategories();
   const out: { category: string; style: string }[] = [];
   for (const c of categories) {
-    const items = await getProductsByDisplayCategory(c.slug);
+    const items = getProductsByDisplayCategory(c.slug);
     for (const p of items) {
       out.push({ category: c.slug, style: p.styleNumber });
     }
@@ -30,15 +30,15 @@ export async function generateStaticParams() {
   return out;
 }
 
-export async function generateMetadata({
+export function generateMetadata({
   params,
 }: {
   params: { category: string; style: string };
-}): Promise<Metadata> {
+}): Metadata {
   const catSlug = params.category;
   const styleParam = params.style;
-  const category = await getDisplayCategoryBySlug(catSlug);
-  const product = await getProductInDisplayCategory(
+  const category = getDisplayCategoryBySlug(catSlug);
+  const product = getProductInDisplayCategory(
     catSlug,
     decodeURIComponent(styleParam)
   );
@@ -52,24 +52,24 @@ export async function generateMetadata({
   });
 }
 
-export default async function ApparelStyleDetailPage({
+export default function ApparelStyleDetailPage({
   params,
 }: {
   params: { category: string; style: string };
 }) {
   const catSlug = params.category;
   const styleId = decodeURIComponent(params.style);
-  const category = await getDisplayCategoryBySlug(catSlug);
+  const category = getDisplayCategoryBySlug(catSlug);
   if (!category) {
     notFound();
   }
 
-  const product = await getProductInDisplayCategory(catSlug, styleId);
+  const product = getProductInDisplayCategory(catSlug, styleId);
   if (!product) {
     notFound();
   }
 
-  const related = await getRelatedProducts(category.slug, product.styleNumber);
+  const related = getRelatedProducts(category.slug, product.styleNumber);
 
   return (
     <>
