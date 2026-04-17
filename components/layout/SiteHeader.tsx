@@ -34,10 +34,10 @@ export function SiteHeader() {
               : "bg-transparent"
           )}
         >
-          <div className="mx-auto flex h-full max-w-content items-center justify-between gap-4 px-4 md:px-6 lg:pl-4 lg:pr-8 xl:pl-3 xl:pr-10">
+          <div className="mx-auto flex h-full max-w-content items-center justify-between gap-4 px-4 md:px-6 lg:pl-2 lg:pr-8 xl:pl-0 xl:pr-10">
             <Link
               href="/"
-              className="flex items-center gap-2 text-white focus-visible:outline-none"
+              className="flex shrink-0 items-center gap-2 text-white focus-visible:outline-none lg:-translate-x-3 xl:-translate-x-6 2xl:-translate-x-8"
               aria-label="Esportiko home"
             >
               <EsportikoLogo
