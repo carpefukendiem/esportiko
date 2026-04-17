@@ -143,6 +143,12 @@ export function LoginForm() {
               {errors.password.message}
             </p>
           )}
+          <Link
+            href="/forgot-password"
+            className="mb-2 block text-right text-sm text-[#8A94A6] transition-colors hover:text-white"
+          >
+            Forgot password?
+          </Link>
         </div>
         <button
           type="submit"
@@ -154,12 +160,11 @@ export function LoginForm() {
       </form>
 
       <p className="mt-6 text-center font-sans text-sm font-medium text-[#8A94A6]">
-        New team?{" "}
         <Link
-          href="/team-orders"
+          href="/signup"
           className="text-[#3B7BF8] hover:underline"
         >
-          Request access
+          Create an account
         </Link>
       </p>
     </div>
