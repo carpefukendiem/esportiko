@@ -1,6 +1,5 @@
 import { cache } from "react";
 import { unstable_noStore as noStore } from "next/cache";
-import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
 import type { AccountRow } from "@/types/portal";
@@ -18,11 +17,10 @@ import type { AccountRow } from "@/types/portal";
 export const loadPortalAccount = cache(
   async (
     userId: string,
-    userEmail: string | undefined,
-    authUser: User | null = null
+    userEmail: string | undefined
   ): Promise<AccountRow | null> => {
     noStore();
     const supabase = createClient();
-    return ensureAccount(supabase, userId, userEmail, authUser);
+    return ensureAccount(supabase, userId, userEmail);
   }
 );

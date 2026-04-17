@@ -10,11 +10,7 @@ export async function updateSession(request: NextRequest) {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
-    return {
-      response: supabaseResponse,
-      user: null as null,
-      supabase: null as null,
-    };
+    return { response: supabaseResponse, user: null as null };
   }
 
   const supabase = createServerClient(url, key, {
@@ -40,5 +36,5 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return { response: supabaseResponse, user, supabase };
+  return { response: supabaseResponse, user };
 }

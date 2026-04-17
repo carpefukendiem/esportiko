@@ -1,19 +1,12 @@
 import type { NextRequest } from "next/server";
 
-/**
- * Public site origin for redirects (Vercel uses x-forwarded-host; request.url can be internal).
- */
+/** Origin for redirects from route handlers (falls back to env or localhost). */
 export function getRequestOrigin(request: NextRequest): string {
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const forwardedProto = request.headers.get("x-forwarded-proto");
-  if (forwardedHost) {
-    const hostOnly = forwardedHost.split(":")[0] ?? forwardedHost;
-    const proto =
-      forwardedProto ??
-      (hostOnly === "localhost" || hostOnly === "127.0.0.1"
-        ? "http"
-        : "https");
-    return `${proto}://${forwardedHost}`;
-  }
-  return request.nextUrl.origin;
+  const proto = request.headers.get("x-forwarded-proto") ?? "https";
+  const host =
+    request.headers.get("x-forwarded-host") ??
+    request.headers.get("host") ??
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/^https?:\/\//, "") ??
+    "localhost:3000";
+  return `${proto}://${host}`;
 }

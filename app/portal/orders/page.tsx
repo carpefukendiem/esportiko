@@ -1,8 +1,6 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
-import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
 import { OrderStatusBadge } from "@/components/portal/OrderStatusBadge";
 import type { OrderRow, OrderStatus } from "@/types/portal";
 
@@ -33,14 +31,13 @@ export default async function OrdersListPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) return null;
   const account = await ensureAccount(
     supabase,
     user.id,
-    user.email ?? undefined,
-    user
+    user.email ?? undefined
   );
-  if (!account) return <PortalAccountSetupFailed />;
+  if (!account) return null;
 
   let q = supabase
     .from("orders")

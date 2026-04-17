@@ -3,7 +3,6 @@ import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
-import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
 import { reorderAndRedirect } from "@/lib/actions/portal";
 import { OrderStatusBadge } from "@/components/portal/OrderStatusBadge";
 import {
@@ -17,6 +16,7 @@ export default async function OrderDetailPage({
 }: {
   params: { id: string };
 }) {
+  const orderId = params.id;
   const supabase = createClient();
   const {
     data: { user },
@@ -26,15 +26,14 @@ export default async function OrderDetailPage({
   const account = await ensureAccount(
     supabase,
     user.id,
-    user.email ?? undefined,
-    user
+    user.email ?? undefined
   );
-  if (!account) return <PortalAccountSetupFailed />;
+  if (!account) redirect("/login");
 
   const { data: order } = await supabase
     .from("orders")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", orderId)
     .single();
 
   if (!order || (order as OrderRow).account_id !== account.id) {
@@ -45,7 +44,7 @@ export default async function OrderDetailPage({
   const { data: items } = await supabase
     .from("order_items")
     .select("*")
-    .eq("order_id", params.id);
+    .eq("order_id", orderId);
 
   const roster = (items ?? []) as OrderItemRow[];
 

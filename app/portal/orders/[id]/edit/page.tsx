@@ -2,7 +2,6 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
-import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
 import { OrderForm } from "@/components/portal/OrderForm";
 import type { ArtworkAssetRow, OrderItemRow, OrderRow } from "@/types/portal";
 
@@ -11,6 +10,7 @@ export default async function EditOrderPage({
 }: {
   params: { id: string };
 }) {
+  const orderId = params.id;
   const supabase = createClient();
   const {
     data: { user },
@@ -20,15 +20,14 @@ export default async function EditOrderPage({
   const account = await ensureAccount(
     supabase,
     user.id,
-    user.email ?? undefined,
-    user
+    user.email ?? undefined
   );
-  if (!account) return <PortalAccountSetupFailed />;
+  if (!account) redirect("/login");
 
   const { data: order } = await supabase
     .from("orders")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", orderId)
     .single();
 
   if (!order || (order as OrderRow).account_id !== account.id) {
@@ -37,13 +36,13 @@ export default async function EditOrderPage({
 
   const o = order as OrderRow;
   if (o.status !== "draft") {
-    redirect(`/portal/orders/${params.id}`);
+    redirect(`/portal/orders/${orderId}`);
   }
 
   const { data: items } = await supabase
     .from("order_items")
     .select("*")
-    .eq("order_id", params.id);
+    .eq("order_id", orderId);
 
   const { data: artworkRows } = await supabase
     .from("artwork_assets")
@@ -59,7 +58,7 @@ export default async function EditOrderPage({
         </Link>
         <span aria-hidden>/</span>
         <Link
-          href={`/portal/orders/${params.id}`}
+          href={`/portal/orders/${orderId}`}
           className="text-[#3B7BF8] hover:underline"
         >
           Order
@@ -71,7 +70,7 @@ export default async function EditOrderPage({
         New team order
       </h1>
       <OrderForm
-        orderId={params.id}
+        orderId={orderId}
         account={account}
         order={o}
         items={(items ?? []) as OrderItemRow[]}

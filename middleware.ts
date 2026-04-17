@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
+/** Catalog browse is public; cap Supabase wait so a slow auth.getUser() never blocks HTML. */
+const CATALOG_SESSION_TIMEOUT_MS = 3000;
+
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
@@ -10,7 +13,39 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const { response, user } = await updateSession(request);
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-es-pathname", path);
+  const requestWithPath = new NextRequest(request, { headers: requestHeaders });
+
+  const isCatalog =
+    path === "/apparel" || path.startsWith("/apparel/");
+
+  let response: NextResponse;
+  let user: Awaited<ReturnType<typeof updateSession>>["user"];
+
+  if (isCatalog) {
+    try {
+      const result = await Promise.race([
+        updateSession(requestWithPath),
+        new Promise<never>((_, reject) =>
+          setTimeout(
+            () => reject(new Error("catalog-session-timeout")),
+            CATALOG_SESSION_TIMEOUT_MS
+          )
+        ),
+      ]);
+      response = result.response;
+      user = result.user;
+    } catch {
+      // Still advance the request with pathname header; skip refresh on timeout only.
+      response = NextResponse.next({ request: requestWithPath });
+      user = null;
+    }
+  } else {
+    const result = await updateSession(requestWithPath);
+    response = result.response;
+    user = result.user;
+  }
 
   if (path.startsWith("/portal")) {
     if (!user) {
@@ -29,6 +64,10 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    /*
+     * Skip Next internals, API routes, and static assets so CSS/JS/RSC payloads
+     * and HMR are never wrapped by Supabase session refresh.
+     */
+    "/((?!api|_next/static|_next/image|_next/data|_next/webpack-hmr|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff2?)$).*)",
   ],
 };

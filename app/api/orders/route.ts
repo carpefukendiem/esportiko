@@ -15,8 +15,7 @@ export async function GET() {
   const account = await ensureAccount(
     supabase,
     user.id,
-    user.email ?? undefined,
-    user
+    user.email ?? undefined
   );
   if (!account) {
     return NextResponse.json({ error: "No account" }, { status: 403 });

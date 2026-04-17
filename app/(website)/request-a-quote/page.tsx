@@ -5,6 +5,7 @@ import { Users, Briefcase, Check } from "lucide-react";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { Button } from "@/components/ui/button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { RequestQuoteGarmentPicker } from "@/components/portal/RequestQuoteGarmentPicker";
 import { buildMetadata } from "@/lib/seo";
 import { media } from "@/lib/data/media";
 
@@ -61,13 +62,14 @@ export default function RequestAQuotePage() {
         <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
           <SectionLabel className="mb-4">Get A Free Quote</SectionLabel>
           <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
-          Pick the path that matches your project.
+            Pick the path that matches your project.
           </h1>
           <p className="mx-auto max-w-2xl text-body text-off-white/80">
-            and we&apos;ll send back a detailed quote — no
-            back-and-forth.
+            and we&apos;ll send back a detailed quote — no back-and-forth.
           </p>
         </div>
+
+        <RequestQuoteGarmentPicker />
 
         <div className="grid gap-6 lg:grid-cols-2">
           {funnels.map((f) => (
@@ -109,10 +111,7 @@ export default function RequestAQuotePage() {
                         key={b}
                         className="flex items-center gap-2 text-body-sm text-off-white/80"
                       >
-                        <Check
-                          className="h-4 w-4 text-blue-light"
-                          aria-hidden
-                        />
+                        <Check className="h-4 w-4 text-blue-light" aria-hidden />
                         {b}
                       </li>
                     ))}

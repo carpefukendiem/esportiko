@@ -13,7 +13,9 @@ export const portalOrderFormSchema = z.object({
   sport: z.string().optional(),
   season: z.string().min(1, "Select a season"),
   deadline: z.string().optional(),
-  garment_type: z.string().min(1, "Select a garment type"),
+  garment_type: z
+    .array(z.string())
+    .min(1, "Select at least one garment type to continue"),
   decoration_method: z.string().min(1, "Select a decoration method"),
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
   color_notes: z.string().optional(),

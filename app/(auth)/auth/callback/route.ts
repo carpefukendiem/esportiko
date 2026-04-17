@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Ensure `accounts` row exists (Google OAuth or email confirmation first sign-in).
   if (user) {
     await ensureAccount(
       supabase,

@@ -7,13 +7,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
-import {
-  createBrowserClientIfConfigured,
-  SUPABASE_ENV_MISSING_USER_MESSAGE,
-} from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import { getSiteUrl } from "@/lib/site-url";
 import { brandLogo } from "@/lib/data/media";
-import { SupabaseConfigBanner } from "@/components/portal/SupabaseConfigBanner";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -39,11 +35,7 @@ export function LoginForm() {
   });
 
   const onSubmit = async (data: LoginValues) => {
-    const supabase = createBrowserClientIfConfigured();
-    if (!supabase) {
-      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
-      return;
-    }
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
@@ -58,12 +50,7 @@ export function LoginForm() {
 
   const onGoogle = async () => {
     setOauthLoading(true);
-    const supabase = createBrowserClientIfConfigured();
-    if (!supabase) {
-      setOauthLoading(false);
-      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
-      return;
-    }
+    const supabase = createClient();
     const site = getSiteUrl();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -83,14 +70,13 @@ export function LoginForm() {
         <Image
           src={brandLogo.src}
           alt="Esportiko"
-          width={brandLogo.width}
-          height={brandLogo.height}
-          className="h-10 w-auto"
+          width={180}
+          height={120}
+          className="h-10 w-auto max-h-10 max-w-[min(100%,12rem)] object-contain object-center"
           priority
+          sizes="(max-width: 768px) 70vw, 12rem"
         />
       </div>
-
-      <SupabaseConfigBanner />
 
       <button
         type="button"
@@ -157,6 +143,12 @@ export function LoginForm() {
               {errors.password.message}
             </p>
           )}
+          <Link
+            href="/forgot-password"
+            className="text-sm text-[#8A94A6] hover:text-white transition-colors block text-right mb-2"
+          >
+            Forgot password?
+          </Link>
         </div>
         <button
           type="submit"
@@ -168,7 +160,10 @@ export function LoginForm() {
       </form>
 
       <p className="mt-6 text-center font-sans text-sm font-medium text-[#8A94A6]">
-        <Link href="/signup" className="text-[#3B7BF8] hover:underline">
+        <Link
+          href="/signup"
+          className="text-[#3B7BF8] hover:underline"
+        >
           Create an account
         </Link>
       </p>
@@ -198,3 +193,5 @@ function GoogleGlyph() {
     </svg>
   );
 }
+
+export default LoginForm;

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SectionContainer } from "@/components/ui/SectionContainer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FAQAccordion } from "@/components/ui/FAQAccordion";
 import { faqCategories } from "@/lib/data/faq";
@@ -33,62 +34,39 @@ export default function FaqPage() {
 
   return (
     <>
-      <div className="relative min-h-screen">
-        <div
-          className="fixed inset-0 z-0"
-          style={{
-            backgroundImage: "url('/images/faq-bg.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "center top",
-            backgroundRepeat: "no-repeat",
-            backgroundAttachment: "fixed",
-          }}
-          aria-hidden
-        />
-        <div className="fixed inset-0 z-0 bg-navy/92" aria-hidden />
-        <div className="fixed inset-0 z-0 bg-black/45" aria-hidden />
-
-        <div className="relative z-10 pt-16 md:pt-20">
-          <div className="mx-auto max-w-content px-6 py-14 md:px-8 md:py-20 lg:px-12">
-            <div className="mx-auto max-w-3xl rounded-2xl border border-white/15 bg-[#030712]/92 p-6 shadow-[0_16px_56px_rgba(0,0,0,0.65)] ring-1 ring-black/50 backdrop-blur-xl md:p-10">
-              <div className="mb-10 text-center text-white">
-                <p className="mb-4 inline-block rounded-full border border-white/25 bg-black/45 px-3 py-1 font-sans text-label font-semibold uppercase tracking-wider text-white">
-                  Quick answers
-                </p>
-                <h1 className="font-display text-h2 font-semibold uppercase tracking-tight text-white">
-                  Frequently Asked Questions
-                </h1>
-                <p className="mt-4 text-body text-white">
-                  Everything you need to know about ordering custom apparel with
-                  Esportiko.
-                </p>
-              </div>
-
-              <Tabs defaultValue={defaultTab} className="w-full text-white">
-                <div className="overflow-x-auto pb-2">
-                  <TabsList className="inline-flex h-auto min-h-11 w-max max-w-full flex-wrap justify-start gap-1 border border-white/20 bg-black/50 text-white backdrop-blur-md">
-                    {faqCategories.map((cat) => (
-                      <TabsTrigger
-                        key={cat.id}
-                        value={cat.id}
-                        className="min-h-11 whitespace-normal px-3 text-left text-body-sm text-white/90 data-[state=active]:text-white sm:px-4"
-                      >
-                        {cat.label}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </div>
-                {faqCategories.map((cat) => (
-                  <TabsContent key={cat.id} value={cat.id} className="mt-8">
-                    <FAQAccordion items={cat.items} variant="faqDark" />
-                  </TabsContent>
-                ))}
-              </Tabs>
-            </div>
-          </div>
+      <SectionContainer className="bg-texture-dark">
+        <div className="mx-auto mb-10 max-w-3xl text-center">
+          <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
+            Frequently Asked Questions
+          </h1>
+          <p className="text-body text-gray-soft">
+            Practical answers for coaches, business owners, and event organizers
+            planning custom apparel.
+          </p>
         </div>
-      </div>
-
+        <div className="mx-auto max-w-3xl">
+          <Tabs defaultValue={defaultTab} className="w-full">
+            <div className="overflow-x-auto pb-2">
+              <TabsList className="inline-flex h-auto min-h-11 w-max max-w-full flex-wrap justify-start gap-1">
+                {faqCategories.map((cat) => (
+                  <TabsTrigger
+                    key={cat.id}
+                    value={cat.id}
+                    className="min-h-11 whitespace-normal px-3 text-left text-body-sm sm:px-4"
+                  >
+                    {cat.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+            {faqCategories.map((cat) => (
+              <TabsContent key={cat.id} value={cat.id} className="mt-8">
+                <FAQAccordion items={cat.items} />
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      </SectionContainer>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

@@ -3,11 +3,12 @@ import { cloneOrderToDraft } from "@/lib/actions/portal";
 
 export async function POST(
   _request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const id = await cloneOrderToDraft(params.id);
-    return NextResponse.json({ id });
+    const orderId = context.params.id;
+    const newId = await cloneOrderToDraft(orderId);
+    return NextResponse.json({ id: newId });
   } catch {
     return NextResponse.json({ error: "Could not clone order" }, { status: 500 });
   }

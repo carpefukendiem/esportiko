@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
 import { PortalShell } from "@/components/portal/PortalShell";
+import { PortalAccountHeader } from "@/components/portal/PortalAccountHeader";
 import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
 
 export async function PortalLayoutContent({
@@ -30,7 +31,11 @@ export async function PortalLayoutContent({
   }
 
   return (
-    <PortalShell account={account} email={user.email ?? undefined}>
+    <PortalShell
+      headerSlot={
+        <PortalAccountHeader account={account} email={user.email ?? undefined} />
+      }
+    >
       {children}
     </PortalShell>
   );

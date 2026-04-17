@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { ensureAccount } from "@/lib/portal/ensureAccount";
-import { PortalShell } from "@/components/portal/PortalShell";
-import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
+import { PortalShellSkeleton } from "@/components/portal/PortalShellSkeleton";
+import { PortalLayoutWithAccount } from "./PortalLayoutWithAccount";
 
 export const metadata: Metadata = {
   title: {
@@ -19,11 +18,6 @@ export default async function PortalLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = headers().get("x-es-pathname") ?? "";
-  const onOnboardingRoute =
-    pathname === "/portal/onboarding" ||
-    pathname.startsWith("/portal/onboarding/");
-
   const supabase = createClient();
   const {
     data: { user },
@@ -33,33 +27,9 @@ export default async function PortalLayout({
     redirect("/login");
   }
 
-  const account = await ensureAccount(
-    supabase,
-    user.id,
-    user.email ?? undefined
-  );
-
-  if (!account) {
-    return <PortalAccountSetupFailed />;
-  }
-
-  const onboardingDone = account.onboarding_completed === true;
-
-  if (onOnboardingRoute && onboardingDone) {
-    redirect("/portal/dashboard");
-  }
-
-  if (!onOnboardingRoute && !onboardingDone) {
-    redirect("/portal/onboarding");
-  }
-
-  if (onOnboardingRoute) {
-    return <>{children}</>;
-  }
-
   return (
-    <PortalShell account={account} email={user.email ?? undefined}>
-      {children}
-    </PortalShell>
+    <Suspense fallback={<PortalShellSkeleton />}>
+      <PortalLayoutWithAccount user={user}>{children}</PortalLayoutWithAccount>
+    </Suspense>
   );
 }

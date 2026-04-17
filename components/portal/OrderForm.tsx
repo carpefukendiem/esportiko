@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useFieldArray, useForm } from "react-hook-form";
-import { createBrowserClientIfConfigured } from "@/lib/supabase/client";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { createClient } from "@/lib/supabase/client";
 import {
   portalOrderFormSchema,
   step1Schema,
@@ -18,17 +18,15 @@ import {
 } from "@/lib/actions/portal";
 import type { AccountRow, ArtworkAssetRow, OrderItemRow, OrderRow } from "@/types/portal";
 import { useToast } from "@/components/ui/use-toast";
+import { GarmentSelector } from "@/components/portal/GarmentSelector";
 import { cn } from "@/lib/utils/cn";
 
-const GARMENTS = [
-  "Jerseys",
-  "Hoodies",
-  "T-Shirts",
-  "Polos",
-  "Hats",
-  "Other",
-] as const;
 const DECORATIONS = ["Screen Print", "Embroidery", "Both"] as const;
+
+function parseGarmentTypes(raw: string | null | undefined): string[] {
+  if (!raw?.trim()) return [];
+  return raw.split(",").map((s) => s.trim()).filter(Boolean);
+}
 
 function seasonChoices(): string[] {
   const y = new Date().getFullYear();
@@ -81,7 +79,7 @@ function buildDefaults(
     sport: account.sport ?? "",
     season: order.season ?? seasonChoices()[0] ?? "Spring " + new Date().getFullYear(),
     deadline: order.deadline ?? "",
-    garment_type: order.garment_type ?? "",
+    garment_type: parseGarmentTypes(order.garment_type),
     decoration_method: order.decoration_method ?? "",
     quantity: order.quantity ?? 1,
     color_notes: color ?? "",
@@ -237,11 +235,7 @@ export function OrderForm({
     setUploading(true);
     setStepError(null);
     try {
-      const supabase = createBrowserClientIfConfigured();
-      if (!supabase) {
-        setStepError("Storage is not configured.");
-        return;
-      }
+      const supabase = createClient();
       const safeName = file.name.replace(/[^\w.\-]+/g, "_");
       const path = `accounts/${account.id}/artwork/${crypto.randomUUID()}-${safeName}`;
       const { error } = await supabase.storage.from("artwork").upload(path, file);
@@ -329,20 +323,22 @@ export function OrderForm({
               <input className={inputClass} type="date" {...form.register("deadline")} />
             </div>
             <div>
-              <label className={labelClass}>Garment type</label>
-              <select className={inputClass} {...form.register("garment_type")}>
-                <option value="">Select…</option>
-                {GARMENTS.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
-                ))}
-              </select>
-              {form.formState.errors.garment_type && (
-                <p className="mt-1 text-sm font-medium text-red-400">
-                  {form.formState.errors.garment_type.message}
-                </p>
-              )}
+              <p className={labelClass}>Garment type</p>
+              <Controller
+                name="garment_type"
+                control={form.control}
+                render={({ field }) => (
+                  <GarmentSelector
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={
+                      typeof form.formState.errors.garment_type?.message === "string"
+                        ? form.formState.errors.garment_type.message
+                        : undefined
+                    }
+                  />
+                )}
+              />
             </div>
             <div>
               <label className={labelClass}>Decoration method</label>
@@ -531,7 +527,9 @@ export function OrderForm({
               </div>
               <div className="flex justify-between gap-4">
                 <dt>Garment</dt>
-                <dd className="text-right text-white">{form.watch("garment_type")}</dd>
+                <dd className="text-right text-white">
+                  {(form.watch("garment_type") as string[]).join(", ")}
+                </dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt>Decoration</dt>

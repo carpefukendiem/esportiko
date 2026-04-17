@@ -2,7 +2,7 @@ import type { DisplayCategory } from "@/lib/catalog/types";
 
 export const DISPLAY_CATEGORIES: DisplayCategory[] = [
   {
-    slug: "tshirts",
+    slug: "t-shirts",
     label: "T-Shirts",
     description:
       "Core tees and performance knits for teams, events, and everyday wear.",
@@ -26,7 +26,7 @@ export const DISPLAY_CATEGORIES: DisplayCategory[] = [
     sanMarCategories: ["Polos/Knits"],
   },
   {
-    slug: "jerseys-uniforms",
+    slug: "jerseys",
     label: "Jerseys & Uniforms",
     description:
       "Athletic cuts and uniform bases we decorate for league and school play.",
@@ -66,3 +66,33 @@ export const DISPLAY_CATEGORIES: DisplayCategory[] = [
     sanMarCategories: ["Bags", "Accessories"],
   },
 ];
+
+/** Slugs must match routes under `/apparel/[category]`. */
+const APPAREL_INDEX_SLUG_ORDER = [
+  "t-shirts",
+  "hoodies-sweatshirts",
+  "polos",
+  "jerseys",
+  "hats",
+] as const;
+
+const APPAREL_INDEX_LABEL_OVERRIDES: Partial<
+  Record<(typeof APPAREL_INDEX_SLUG_ORDER)[number], string>
+> = {
+  "hoodies-sweatshirts": "Hoodies",
+  jerseys: "Jerseys",
+  hats: "Hats",
+};
+
+/** Five primary categories for the /apparel index "Browse by category" grid. */
+export function getDisplayCategoriesForApparelIndex(): DisplayCategory[] {
+  return APPAREL_INDEX_SLUG_ORDER.map((slug) => {
+    const c = DISPLAY_CATEGORIES.find((x) => x.slug === slug);
+    if (!c) {
+      throw new Error(`Missing display category for slug: ${slug}`);
+    }
+    const label = APPAREL_INDEX_LABEL_OVERRIDES[slug] ?? c.label;
+    return { ...c, label };
+  });
+}
+

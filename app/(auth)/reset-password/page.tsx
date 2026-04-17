@@ -1,14 +1,16 @@
-import type { Metadata } from "next";
-import { ResetPasswordForm } from "@/components/portal/ResetPasswordForm";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Set new password",
-  robots: { index: false, follow: false },
-};
+import ResetPasswordForm from "@/components/portal/ResetPasswordForm";
 
 export default function ResetPasswordPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0F1521] px-4 py-12">
+    <div
+      className="flex min-h-screen flex-col items-center justify-center px-4 py-12"
+      style={{
+        background:
+          "radial-gradient(ellipse at 50% 0%, rgba(59,123,248,0.08) 0%, transparent 70%), #0F1521",
+      }}
+    >
       <ResetPasswordForm />
     </div>
   );

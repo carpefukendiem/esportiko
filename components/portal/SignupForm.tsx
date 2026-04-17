@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,7 @@ const signupSchema = z
     confirmPassword: z.string().min(1, "Confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords must match",
+    message: "Passwords do not match",
     path: ["confirmPassword"],
   });
 
@@ -34,7 +34,7 @@ export function SignupForm() {
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next") ?? "/portal/dashboard";
   const [oauthLoading, setOauthLoading] = useState(false);
-  const [confirmEmail, setConfirmEmail] = useState(false);
+  const [awaitingEmail, setAwaitingEmail] = useState(false);
 
   const {
     register,
@@ -51,58 +51,6 @@ export function SignupForm() {
     },
   });
 
-  const onSubmit = async (data: SignupValues) => {
-    const supabase = createBrowserClientIfConfigured();
-    if (!supabase) {
-      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
-      return;
-    }
-    const teamName = data.team_name.trim();
-    const email = data.email.trim();
-
-    const { data: signData, error } = await supabase.auth.signUp({
-      email,
-      password: data.password,
-      options: {
-        data: { team_name: teamName },
-        emailRedirectTo: `${getSiteUrl()}/auth/callback?next=${encodeURIComponent(nextPath.startsWith("/") ? nextPath : `/${nextPath}`)}`,
-      },
-    });
-
-    if (error) {
-      setFormError("root", { message: error.message });
-      return;
-    }
-
-    if (signData.session?.user) {
-      const { error: accErr } = await supabase.from("accounts").insert({
-        user_id: signData.session.user.id,
-        team_name: teamName,
-        contact_email: email,
-      });
-      if (
-        accErr &&
-        accErr.code !== "23505" &&
-        !(
-          typeof accErr.message === "string" &&
-          accErr.message.toLowerCase().includes("duplicate")
-        )
-      ) {
-        console.error("signup accounts insert", accErr);
-        setFormError("root", {
-          message:
-            "Account was created but we couldn’t save your team profile. Try signing in, or contact support.",
-        });
-        return;
-      }
-      router.push(nextPath.startsWith("/") ? nextPath : `/${nextPath}`);
-      router.refresh();
-      return;
-    }
-
-    setConfirmEmail(true);
-  };
-
   const onGoogle = async () => {
     setOauthLoading(true);
     const supabase = createBrowserClientIfConfigured();
@@ -112,10 +60,11 @@ export function SignupForm() {
       return;
     }
     const site = getSiteUrl();
+    const safeNext = nextPath.startsWith("/") ? nextPath : `/${nextPath}`;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${site}/auth/callback?next=${encodeURIComponent(nextPath.startsWith("/") ? nextPath : `/${nextPath}`)}`,
+        redirectTo: `${site}/auth/callback?next=${encodeURIComponent(safeNext)}`,
       },
     });
     setOauthLoading(false);
@@ -124,12 +73,50 @@ export function SignupForm() {
     }
   };
 
-  const inputClass =
-    "w-full rounded-lg border border-[#2A3347] bg-[#1C2333] px-3 py-2.5 font-sans text-sm font-medium text-white placeholder:text-[#8A94A6] focus:border-[#3B7BF8] focus:outline-none focus:ring-1 focus:ring-[#3B7BF8]";
+  const onSubmit = async (data: SignupValues) => {
+    const supabase = createBrowserClientIfConfigured();
+    if (!supabase) {
+      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
+      return;
+    }
 
-  if (confirmEmail) {
+    const site = getSiteUrl();
+    const safeNext = nextPath.startsWith("/") ? nextPath : `/${nextPath}`;
+
+    const { data: signData, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        emailRedirectTo: `${site}/auth/callback?next=${encodeURIComponent(safeNext)}`,
+        data: { team_name: data.team_name },
+      },
+    });
+
+    if (error) {
+      setFormError("root", { message: error.message });
+      return;
+    }
+
+    if (signData.session && signData.user) {
+      const { error: insertErr } = await supabase.from("accounts").insert({
+        user_id: signData.user.id,
+        team_name: data.team_name,
+        contact_email: data.email,
+      });
+      if (insertErr && !isDuplicateAccountError(insertErr)) {
+        console.error("signup accounts insert", insertErr);
+      }
+      router.push(safeNext);
+      router.refresh();
+      return;
+    }
+
+    setAwaitingEmail(true);
+  };
+
+  if (awaitingEmail) {
     return (
-      <div className="w-full max-w-md rounded-xl border border-[#2A3347] bg-[#1C2333] p-8">
+      <div className="w-full max-w-md rounded-xl border border-[#2A3347] bg-[#1C2333] p-8 text-center">
         <div className="mb-8 flex justify-center">
           <Image
             src={brandLogo.src}
@@ -140,14 +127,15 @@ export function SignupForm() {
             priority
           />
         </div>
-        <p className="text-center font-sans text-sm font-medium text-[#B8C0D0]">
+        <p className="font-sans text-sm font-medium text-[#B8D4FF]">
           Check your email to confirm your account
         </p>
-        <p className="mt-4 text-center font-sans text-sm font-medium text-[#8A94A6]">
-          <Link href="/login" className="text-[#3B7BF8] hover:underline">
-            Back to sign in
-          </Link>
-        </p>
+        <Link
+          href="/login"
+          className="mt-6 inline-block font-sans text-sm font-semibold text-[#3B7BF8] hover:underline"
+        >
+          Back to sign in
+        </Link>
       </div>
     );
   }
@@ -194,17 +182,18 @@ export function SignupForm() {
         )}
         <div>
           <label
-            htmlFor="team_name"
+            htmlFor="signup-team"
             className="mb-1 block font-sans text-sm font-medium text-white"
           >
             Team name
           </label>
           <input
-            id="team_name"
+            id="signup-team"
+            type="text"
             autoComplete="organization"
             {...register("team_name")}
-            className={inputClass}
-            placeholder="Westside Volleyball"
+            className="w-full rounded-lg border border-[#2A3347] bg-[#1C2333] px-3 py-2.5 font-sans text-sm font-medium text-white placeholder:text-[#8A94A6] focus:border-[#3B7BF8] focus:outline-none focus:ring-1 focus:ring-[#3B7BF8]"
+            placeholder="Your team or school"
           />
           {errors.team_name && (
             <p className="mt-1 text-sm font-medium text-red-500">
@@ -214,17 +203,17 @@ export function SignupForm() {
         </div>
         <div>
           <label
-            htmlFor="email"
+            htmlFor="signup-email"
             className="mb-1 block font-sans text-sm font-medium text-white"
           >
             Email
           </label>
           <input
-            id="email"
+            id="signup-email"
             type="email"
             autoComplete="email"
             {...register("email")}
-            className={inputClass}
+            className="w-full rounded-lg border border-[#2A3347] bg-[#1C2333] px-3 py-2.5 font-sans text-sm font-medium text-white placeholder:text-[#8A94A6] focus:border-[#3B7BF8] focus:outline-none focus:ring-1 focus:ring-[#3B7BF8]"
             placeholder="you@team.com"
           />
           {errors.email && (
@@ -235,17 +224,17 @@ export function SignupForm() {
         </div>
         <div>
           <label
-            htmlFor="password"
+            htmlFor="signup-password"
             className="mb-1 block font-sans text-sm font-medium text-white"
           >
             Password
           </label>
           <input
-            id="password"
+            id="signup-password"
             type="password"
             autoComplete="new-password"
             {...register("password")}
-            className={inputClass}
+            className="w-full rounded-lg border border-[#2A3347] bg-[#1C2333] px-3 py-2.5 font-sans text-sm font-medium text-white placeholder:text-[#8A94A6] focus:border-[#3B7BF8] focus:outline-none focus:ring-1 focus:ring-[#3B7BF8]"
           />
           {errors.password && (
             <p className="mt-1 text-sm font-medium text-red-500">
@@ -255,17 +244,17 @@ export function SignupForm() {
         </div>
         <div>
           <label
-            htmlFor="confirmPassword"
+            htmlFor="signup-confirm"
             className="mb-1 block font-sans text-sm font-medium text-white"
           >
             Confirm password
           </label>
           <input
-            id="confirmPassword"
+            id="signup-confirm"
             type="password"
             autoComplete="new-password"
             {...register("confirmPassword")}
-            className={inputClass}
+            className="w-full rounded-lg border border-[#2A3347] bg-[#1C2333] px-3 py-2.5 font-sans text-sm font-medium text-white placeholder:text-[#8A94A6] focus:border-[#3B7BF8] focus:outline-none focus:ring-1 focus:ring-[#3B7BF8]"
           />
           {errors.confirmPassword && (
             <p className="mt-1 text-sm font-medium text-red-500">
@@ -292,6 +281,14 @@ export function SignupForm() {
   );
 }
 
+function isDuplicateAccountError(error: { code?: string; message?: string }): boolean {
+  return (
+    error.code === "23505" ||
+    (typeof error.message === "string" &&
+      error.message.toLowerCase().includes("duplicate"))
+  );
+}
+
 function GoogleGlyph() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
@@ -314,3 +311,5 @@ function GoogleGlyph() {
     </svg>
   );
 }
+
+export default SignupForm;
