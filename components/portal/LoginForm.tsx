@@ -70,10 +70,11 @@ export function LoginForm() {
         <Image
           src={brandLogo.src}
           alt="Esportiko"
-          width={brandLogo.width}
-          height={brandLogo.height}
-          className="h-10 w-auto"
+          width={180}
+          height={120}
+          className="h-10 w-auto max-h-10 max-w-[min(100%,12rem)] object-contain object-center"
           priority
+          sizes="(max-width: 768px) 70vw, 12rem"
         />
       </div>
 
