@@ -33,41 +33,37 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { category: string; style: string };
+  params: Promise<{ category: string; style: string }>;
 }): Promise<Metadata> {
-  const category = await getDisplayCategoryBySlug(params.category);
+  const { category: catSlug, style: styleParam } = await params;
+  const category = await getDisplayCategoryBySlug(catSlug);
   const product = await getProductInDisplayCategory(
-    params.category,
-    decodeURIComponent(params.style)
+    catSlug,
+    decodeURIComponent(styleParam)
   );
   if (!category || !product) {
     return { title: "Style | Esportiko" };
   }
-  const base = buildMetadata({
+  return buildMetadata({
     title: `${product.styleNumber} — ${category.label}`,
     description: `${product.productTitle}. Custom decoration available — request a quote from Esportiko.`,
     path: `/apparel/${category.slug}/${product.styleNumber}`,
   });
-  return {
-    ...base,
-    title: {
-      absolute: `${product.styleNumber} | ${category.label} | Esportiko`,
-    },
-  };
 }
 
 export default async function ApparelStyleDetailPage({
   params,
 }: {
-  params: { category: string; style: string };
+  params: Promise<{ category: string; style: string }>;
 }) {
-  const styleId = decodeURIComponent(params.style);
-  const category = await getDisplayCategoryBySlug(params.category);
+  const { category: catSlug, style: styleParam } = await params;
+  const styleId = decodeURIComponent(styleParam);
+  const category = await getDisplayCategoryBySlug(catSlug);
   if (!category) {
     notFound();
   }
 
-  const product = await getProductInDisplayCategory(params.category, styleId);
+  const product = await getProductInDisplayCategory(catSlug, styleId);
   if (!product) {
     notFound();
   }

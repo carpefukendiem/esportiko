@@ -1,12 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
-import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
 import { ArtworkManager } from "@/components/portal/ArtworkManager";
 import type { ArtworkAssetRow } from "@/types/portal";
 
 export default async function ArtworkPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -14,10 +13,9 @@ export default async function ArtworkPage() {
   const account = await ensureAccount(
     supabase,
     user.id,
-    user.email ?? undefined,
-    user
+    user.email ?? undefined
   );
-  if (!account) return <PortalAccountSetupFailed />;
+  if (!account) redirect("/login");
 
   const { data: rows } = await supabase
     .from("artwork_assets")

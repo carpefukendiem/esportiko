@@ -7,13 +7,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
-import {
-  createBrowserClientIfConfigured,
-  SUPABASE_ENV_MISSING_USER_MESSAGE,
-} from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import { getSiteUrl } from "@/lib/site-url";
 import { brandLogo } from "@/lib/data/media";
-import { SupabaseConfigBanner } from "@/components/portal/SupabaseConfigBanner";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -39,11 +35,7 @@ export function LoginForm() {
   });
 
   const onSubmit = async (data: LoginValues) => {
-    const supabase = createBrowserClientIfConfigured();
-    if (!supabase) {
-      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
-      return;
-    }
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
@@ -58,12 +50,7 @@ export function LoginForm() {
 
   const onGoogle = async () => {
     setOauthLoading(true);
-    const supabase = createBrowserClientIfConfigured();
-    if (!supabase) {
-      setOauthLoading(false);
-      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
-      return;
-    }
+    const supabase = createClient();
     const site = getSiteUrl();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -89,8 +76,6 @@ export function LoginForm() {
           priority
         />
       </div>
-
-      <SupabaseConfigBanner />
 
       <button
         type="button"
@@ -158,12 +143,6 @@ export function LoginForm() {
             </p>
           )}
         </div>
-        <Link
-          href="/forgot-password"
-          className="mb-2 block text-right text-sm text-[#8A94A6] transition-colors hover:text-white"
-        >
-          Forgot password?
-        </Link>
         <button
           type="submit"
           disabled={isSubmitting || oauthLoading}
@@ -174,8 +153,12 @@ export function LoginForm() {
       </form>
 
       <p className="mt-6 text-center font-sans text-sm font-medium text-[#8A94A6]">
-        <Link href="/signup" className="text-[#3B7BF8] hover:underline">
-          Create an account
+        New team?{" "}
+        <Link
+          href="/team-orders"
+          className="text-[#3B7BF8] hover:underline"
+        >
+          Request access
         </Link>
       </p>
     </div>
@@ -204,3 +187,5 @@ function GoogleGlyph() {
     </svg>
   );
 }
+
+export default LoginForm;

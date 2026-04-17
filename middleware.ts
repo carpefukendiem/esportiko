@@ -10,7 +10,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const { response, user } = await updateSession(request);
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-es-pathname", path);
+  const requestWithPath = new NextRequest(request, { headers: requestHeaders });
+
+  const { response, user } = await updateSession(requestWithPath);
 
   if (path.startsWith("/portal")) {
     if (!user) {

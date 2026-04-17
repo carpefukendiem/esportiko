@@ -14,7 +14,7 @@ export async function completeOnboarding(
     return { ok: false, error: "Please check the form and try again." };
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

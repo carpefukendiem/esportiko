@@ -2,21 +2,31 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
 import { sendOrderToGHL } from "@/lib/ghl/webhook";
 import type { AccountRow, OrderRow, OrderItemRow } from "@/types/portal";
 import type { PortalOrderFormValues } from "@/lib/schemas/portalOrderFormSchema";
 
-async function requireAccount(): Promise<{ supabase: ReturnType<typeof createClient>; account: AccountRow; userId: string }> {
-  const supabase = createClient();
+async function requireAccount(): Promise<{
+  supabase: SupabaseClient;
+  account: AccountRow;
+  userId: string;
+}> {
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
     redirect("/login");
   }
-  const account = await ensureAccount(supabase, user.id, user.email ?? undefined);
+  const account = await ensureAccount(
+    supabase,
+    user.id,
+    user.email ?? undefined,
+    user
+  );
   if (!account) {
     redirect("/login");
   }
@@ -94,7 +104,11 @@ export async function savePortalDraft(
   }
 
   const patch: Record<string, unknown> = {};
-  if (values.garment_type !== undefined) patch.garment_type = values.garment_type;
+  if (values.garment_type !== undefined) {
+    patch.garment_type = Array.isArray(values.garment_type)
+      ? values.garment_type.join(", ")
+      : values.garment_type;
+  }
   if (values.decoration_method !== undefined)
     patch.decoration_method = values.decoration_method;
   if (values.quantity !== undefined) patch.quantity = values.quantity;
@@ -188,7 +202,9 @@ export async function submitPortalOrder(
     .from("orders")
     .update({
       status: "submitted",
-      garment_type: values.garment_type,
+      garment_type: Array.isArray(values.garment_type)
+        ? values.garment_type.join(", ")
+        : values.garment_type,
       decoration_method: values.decoration_method,
       quantity: values.quantity,
       deadline: values.deadline || null,

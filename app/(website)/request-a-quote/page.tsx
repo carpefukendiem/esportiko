@@ -1,26 +1,13 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { Users, Briefcase, Check } from "lucide-react";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { Button } from "@/components/ui/button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { RequestQuoteGarmentPicker } from "@/components/portal/RequestQuoteGarmentPicker";
 import { buildMetadata } from "@/lib/seo";
 import { media } from "@/lib/data/media";
-
-const RequestQuoteGarmentPicker = dynamic(
-  () => import("@/components/portal/RequestQuoteGarmentPicker"),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        className="min-h-[280px] rounded-2xl border border-white/10 bg-navy-light/30"
-        aria-hidden
-      />
-    ),
-  }
-);
 
 export function generateMetadata(): Metadata {
   return buildMetadata({
@@ -72,23 +59,17 @@ export default function RequestAQuotePage() {
   return (
     <SectionContainer className="bg-texture-dark">
       <div className="mx-auto max-w-content">
-        <h2 className="text-white font-semibold text-xl mb-6 text-center">
-          What are you looking to order?
-        </h2>
-        <div className="mx-auto mb-14 max-w-4xl">
-          <RequestQuoteGarmentPicker />
-        </div>
-
         <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
           <SectionLabel className="mb-4">Get A Free Quote</SectionLabel>
           <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
-          Pick the path that matches your project.
+            Pick the path that matches your project.
           </h1>
           <p className="mx-auto max-w-2xl text-body text-off-white/80">
-            and we&apos;ll send back a detailed quote — no
-            back-and-forth.
+            and we&apos;ll send back a detailed quote — no back-and-forth.
           </p>
         </div>
+
+        <RequestQuoteGarmentPicker />
 
         <div className="grid gap-6 lg:grid-cols-2">
           {funnels.map((f) => (
@@ -130,10 +111,7 @@ export default function RequestAQuotePage() {
                         key={b}
                         className="flex items-center gap-2 text-body-sm text-off-white/80"
                       >
-                        <Check
-                          className="h-4 w-4 text-blue-light"
-                          aria-hidden
-                        />
+                        <Check className="h-4 w-4 text-blue-light" aria-hidden />
                         {b}
                       </li>
                     ))}

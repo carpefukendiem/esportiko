@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { FAQAccordion } from "@/components/ui/FAQAccordion";
 import { CTABand } from "@/components/ui/CTABand";
 import { ProcessStep } from "@/components/ui/ProcessStep";
-import { ServiceHero } from "@/components/ui/ServiceHero";
+import { Button } from "@/components/ui/button";
 import { getFaqsByCategoryId } from "@/lib/data/faq";
 import { buildMetadata } from "@/lib/seo";
 
@@ -21,15 +22,26 @@ const faqItems = getFaqsByCategoryId("screen-printing");
 export default function ScreenPrintingPage() {
   return (
     <>
-      <ServiceHero
-        backgroundImage="/images/screen-printing-bg2.png"
-        heading="Screen Printing Built for Real Wear"
-        subheading="Bold color, consistent coverage, and production discipline for team sets, school programs, fundraisers, and business merch across the Central Coast."
-        ctaLabel="Start Business Order"
-        ctaHref="/start-business-order"
-        secondaryCtaLabel="Request a Quote"
-        secondaryCtaHref="/request-a-quote"
-      />
+      <SectionContainer className="bg-texture-dark">
+        <div className="mx-auto max-w-3xl text-center">
+          <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
+            Screen Printing Built for Real Wear
+          </h1>
+          <p className="mb-8 text-body text-gray-soft">
+            Bold color, consistent coverage, and production discipline for team
+            sets, school programs, fundraisers, and business merch across the
+            Central Coast.
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <Button asChild variant="primary">
+              <Link href="/start-business-order">Start Business Order</Link>
+            </Button>
+            <Button asChild variant="ghost">
+              <Link href="/request-a-quote">Request a Quote</Link>
+            </Button>
+          </div>
+        </div>
+      </SectionContainer>
       <SectionContainer className="bg-texture-navy-mid border-y border-slate/60">
         <div className="mx-auto max-w-3xl">
           <h2 className="mb-4 font-display text-h2 font-semibold text-white">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+/** Uses role="list" instead of `<ol>` to avoid Radix/browser hydration quirks with list semantics. */
 export function CatalogBreadcrumb({
   items,
 }: {
@@ -7,9 +8,12 @@ export function CatalogBreadcrumb({
 }) {
   return (
     <nav aria-label="Breadcrumb" className="bg-navy font-sans text-body-sm">
-      <ol className="mx-auto flex max-w-content flex-wrap items-center gap-x-2 gap-y-1 px-6 pt-4 pb-2 md:px-8 lg:px-12">
+      <div
+        role="list"
+        className="mx-auto flex max-w-content flex-wrap items-center gap-x-2 gap-y-1 px-6 pt-4 pb-2 md:px-8 lg:px-12"
+      >
         {items.map((item, i) => (
-          <li key={`${item.label}-${i}`} className="flex items-center gap-2">
+          <div key={`${item.label}-${i}`} role="listitem" className="flex items-center gap-2">
             {i > 0 ? (
               <span aria-hidden className="text-gray-muted">
                 &gt;
@@ -25,9 +29,9 @@ export function CatalogBreadcrumb({
             ) : (
               <span className="text-off-white">{item.label}</span>
             )}
-          </li>
+          </div>
         ))}
-      </ol>
+      </div>
     </nav>
   );
 }

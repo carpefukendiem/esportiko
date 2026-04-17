@@ -1,14 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { createBrowserClientIfConfigured } from "@/lib/supabase/client";
+import {
+  createBrowserClientIfConfigured,
+  SUPABASE_ENV_MISSING_USER_MESSAGE,
+} from "@/lib/supabase/client";
 import { brandLogo } from "@/lib/data/media";
+import { SupabaseConfigBanner } from "@/components/portal/SupabaseConfigBanner";
 
 const schema = z
   .object({
@@ -16,17 +20,18 @@ const schema = z
     confirmPassword: z.string().min(1, "Confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords must match",
+    message: "Passwords do not match",
     path: ["confirmPassword"],
   });
 
 type Values = z.infer<typeof schema>;
 
-type Gate = "checking" | "ready" | "invalid";
+type SessionState = "checking" | "ready" | "invalid" | "nocfg";
 
 export function ResetPasswordForm() {
   const router = useRouter();
-  const [gate, setGate] = useState<Gate>("checking");
+  const [sessionState, setSessionState] = useState<SessionState>("checking");
+
   const {
     register,
     handleSubmit,
@@ -40,45 +45,58 @@ export function ResetPasswordForm() {
   useEffect(() => {
     const supabase = createBrowserClientIfConfigured();
     if (!supabase) {
-      setGate("invalid");
+      setSessionState("nocfg");
       return;
     }
+
     let cancelled = false;
-    let settled = false;
 
-    const timeoutId = window.setTimeout(() => {
-      if (!cancelled && !settled) setGate("invalid");
-    }, 6000);
-
-    const markReady = () => {
-      if (cancelled || settled) return;
-      settled = true;
-      window.clearTimeout(timeoutId);
-      setGate("ready");
+    const markReadyIfSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
+      if (data.session) {
+        setSessionState("ready");
+        return true;
+      }
+      return false;
     };
+
+    void markReadyIfSession();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN")) {
-        markReady();
+      if (cancelled) return;
+      if (
+        (event === "PASSWORD_RECOVERY" || event === "INITIAL_SESSION" || event === "SIGNED_IN") &&
+        session
+      ) {
+        setSessionState("ready");
       }
     });
 
-    void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) markReady();
-    });
+    const fallbackInvalid = window.setTimeout(() => {
+      if (cancelled) return;
+      void (async () => {
+        const ok = await markReadyIfSession();
+        if (cancelled || ok) return;
+        setSessionState((s) => (s === "ready" ? "ready" : "invalid"));
+      })();
+    }, 900);
 
     return () => {
       cancelled = true;
-      window.clearTimeout(timeoutId);
+      window.clearTimeout(fallbackInvalid);
       subscription.unsubscribe();
     };
   }, []);
 
   const onSubmit = async (data: Values) => {
     const supabase = createBrowserClientIfConfigured();
-    if (!supabase) return;
+    if (!supabase) {
+      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
+      return;
+    }
     const { error } = await supabase.auth.updateUser({ password: data.password });
     if (error) {
       setFormError("root", { message: error.message });
@@ -88,22 +106,51 @@ export function ResetPasswordForm() {
     router.refresh();
   };
 
-  const inputClass =
-    "w-full rounded-lg border border-[#2A3347] bg-[#1C2333] px-3 py-2.5 font-sans text-sm font-medium text-white placeholder:text-[#8A94A6] focus:border-[#3B7BF8] focus:outline-none focus:ring-1 focus:ring-[#3B7BF8]";
-
-  if (gate === "checking") {
+  if (sessionState === "checking") {
     return (
-      <div className="w-full max-w-md animate-pulse rounded-xl border border-[#2A3347] bg-[#1C2333] p-8">
-        <div className="mx-auto mb-8 h-10 w-32 rounded bg-[#2A3347]" />
-        <div className="space-y-4">
-          <div className="h-10 rounded-lg bg-[#2A3347]" />
-          <div className="h-10 rounded-lg bg-[#2A3347]" />
+      <div className="w-full max-w-md rounded-xl border border-[#2A3347] bg-[#1C2333] p-8">
+        <div className="mb-8 flex justify-center">
+          <Image
+            src={brandLogo.src}
+            alt="Esportiko"
+            width={brandLogo.width}
+            height={brandLogo.height}
+            className="h-10 w-auto"
+            priority
+          />
         </div>
+        <p className="text-center font-sans text-sm font-medium text-[#8A94A6]">
+          Verifying reset link…
+        </p>
       </div>
     );
   }
 
-  if (gate === "invalid") {
+  if (sessionState === "nocfg") {
+    return (
+      <div className="w-full max-w-md rounded-xl border border-[#2A3347] bg-[#1C2333] p-8">
+        <div className="mb-8 flex justify-center">
+          <Image
+            src={brandLogo.src}
+            alt="Esportiko"
+            width={brandLogo.width}
+            height={brandLogo.height}
+            className="h-10 w-auto"
+            priority
+          />
+        </div>
+        <SupabaseConfigBanner />
+        <Link
+          href="/login"
+          className="mt-6 block text-center font-sans text-sm font-semibold text-[#3B7BF8] hover:underline"
+        >
+          Back to sign in
+        </Link>
+      </div>
+    );
+  }
+
+  if (sessionState === "invalid") {
     return (
       <div className="w-full max-w-md rounded-xl border border-[#2A3347] bg-[#1C2333] p-8">
         <div className="mb-8 flex justify-center">
@@ -117,19 +164,20 @@ export function ResetPasswordForm() {
           />
         </div>
         <p className="text-center font-sans text-sm font-medium text-red-400">
-          This reset link is invalid or has expired. Request a new one to
-          continue.
+          This reset link is invalid or has expired. Request a new one below.
         </p>
-        <p className="mt-6 text-center font-sans text-sm font-medium text-[#8A94A6]">
-          <Link href="/forgot-password" className="text-[#3B7BF8] hover:underline">
-            Request a new reset link
-          </Link>
-        </p>
-        <p className="mt-3 text-center font-sans text-sm font-medium text-[#8A94A6]">
-          <Link href="/login" className="text-[#3B7BF8] hover:underline">
-            Back to sign in
-          </Link>
-        </p>
+        <Link
+          href="/forgot-password"
+          className="mt-6 block text-center font-sans text-sm font-semibold text-[#3B7BF8] hover:underline"
+        >
+          Forgot password?
+        </Link>
+        <Link
+          href="/login"
+          className="mt-3 block text-center font-sans text-sm font-medium text-[#8A94A6] hover:text-white"
+        >
+          Back to sign in
+        </Link>
       </div>
     );
   }
@@ -146,28 +194,27 @@ export function ResetPasswordForm() {
           priority
         />
       </div>
+
+      <SupabaseConfigBanner />
+
       <h1 className="mb-6 text-center font-sans text-xl font-semibold text-white">
         Choose a new password
       </h1>
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {errors.root && (
-          <p className="text-sm font-medium text-red-500" role="alert">
-            {errors.root.message}
-          </p>
-        )}
         <div>
           <label
-            htmlFor="password"
+            htmlFor="new-password"
             className="mb-1 block font-sans text-sm font-medium text-white"
           >
             New password
           </label>
           <input
-            id="password"
+            id="new-password"
             type="password"
             autoComplete="new-password"
             {...register("password")}
-            className={inputClass}
+            className="w-full rounded-lg border border-[#2A3347] bg-[#1C2333] px-3 py-2.5 font-sans text-sm font-medium text-white placeholder:text-[#8A94A6] focus:border-[#3B7BF8] focus:outline-none focus:ring-1 focus:ring-[#3B7BF8]"
           />
           {errors.password && (
             <p className="mt-1 text-sm font-medium text-red-500">
@@ -177,17 +224,17 @@ export function ResetPasswordForm() {
         </div>
         <div>
           <label
-            htmlFor="confirmPassword"
+            htmlFor="confirm-password"
             className="mb-1 block font-sans text-sm font-medium text-white"
           >
             Confirm password
           </label>
           <input
-            id="confirmPassword"
+            id="confirm-password"
             type="password"
             autoComplete="new-password"
             {...register("confirmPassword")}
-            className={inputClass}
+            className="w-full rounded-lg border border-[#2A3347] bg-[#1C2333] px-3 py-2.5 font-sans text-sm font-medium text-white placeholder:text-[#8A94A6] focus:border-[#3B7BF8] focus:outline-none focus:ring-1 focus:ring-[#3B7BF8]"
           />
           {errors.confirmPassword && (
             <p className="mt-1 text-sm font-medium text-red-500">
@@ -202,7 +249,19 @@ export function ResetPasswordForm() {
         >
           Update password
         </button>
+        {errors.root && (
+          <p className="text-center text-sm font-medium text-red-500" role="alert">
+            {errors.root.message}
+          </p>
+        )}
+        <p className="text-center font-sans text-sm font-medium text-[#8A94A6]">
+          <Link href="/login" className="text-[#3B7BF8] hover:underline">
+            Back to sign in
+          </Link>
+        </p>
       </form>
     </div>
   );
 }
+
+export default ResetPasswordForm;

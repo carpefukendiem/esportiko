@@ -1,10 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
-import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
 import { reorderAndRedirect } from "@/lib/actions/portal";
 import { OrderStatusBadge } from "@/components/portal/OrderStatusBadge";
 import {
@@ -13,52 +11,13 @@ import {
 } from "@/components/portal/OrderDetailClient";
 import type { OrderItemRow, OrderRow, OrderStatus } from "@/types/portal";
 
-/** True if path or URL (ignoring query) ends with a raster extension safe for <Image>. */
-function isRasterImagePath(pathOrUrl: string): boolean {
-  const trimmed = pathOrUrl.trim();
-  if (!trimmed) return false;
-  let path = trimmed.split("?")[0].split("#")[0];
-  try {
-    if (path.startsWith("http://") || path.startsWith("https://")) {
-      path = new URL(path).pathname;
-    }
-  } catch {
-    return false;
-  }
-  return /\.(png|jpg|jpeg|webp)$/i.test(path);
-}
-
-/**
- * Public storage URL: NEXT_PUBLIC_SUPABASE_URL + '/storage/v1/object/public/' + path.
- * Supabase expects path = `{bucket}/{objectKey}`. Orders store `objectKey` only
- * (e.g. accounts/.../file.png) under bucket `artwork` — prefix when missing.
- */
-function buildArtworkImageUrl(artworkUrl: string): string | null {
-  const raw = artworkUrl.trim();
-  if (!raw) return null;
-
-  if (raw.startsWith("http://") || raw.startsWith("https://")) {
-    return raw;
-  }
-
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
-  if (!base) return null;
-
-  const tail = raw.replace(/^\/+/, "");
-  const path = tail.startsWith("artwork/") ? tail : `artwork/${tail}`;
-  return `${base}/storage/v1/object/public/${path}`;
-}
-
-function isSupabaseStorageUrl(url: string): boolean {
-  return url.includes("supabase.co") && url.includes("/storage/v1/object/");
-}
-
 export default async function OrderDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const supabase = createClient();
+  const { id: orderId } = await params;
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -67,15 +26,14 @@ export default async function OrderDetailPage({
   const account = await ensureAccount(
     supabase,
     user.id,
-    user.email ?? undefined,
-    user
+    user.email ?? undefined
   );
-  if (!account) return <PortalAccountSetupFailed />;
+  if (!account) redirect("/login");
 
   const { data: order } = await supabase
     .from("orders")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", orderId)
     .single();
 
   if (!order || (order as OrderRow).account_id !== account.id) {
@@ -86,18 +44,19 @@ export default async function OrderDetailPage({
   const { data: items } = await supabase
     .from("order_items")
     .select("*")
-    .eq("order_id", params.id);
+    .eq("order_id", orderId);
 
   const roster = (items ?? []) as OrderItemRow[];
 
-  const hasArtworkPath = Boolean(o.artwork_url?.trim()) && !o.artwork_deferred;
-  const artworkPreview = hasArtworkPath
-    ? buildArtworkImageUrl(o.artwork_url!)
-    : null;
-  const showRasterPreview =
-    hasArtworkPath &&
-    Boolean(artworkPreview) &&
-    isRasterImagePath(o.artwork_url ?? artworkPreview ?? "");
+  let artworkPreview: string | null = null;
+  if (o.artwork_url && o.artwork_url.startsWith("accounts/")) {
+    const { data: signed } = await supabase.storage
+      .from("artwork")
+      .createSignedUrl(o.artwork_url, 3600);
+    artworkPreview = signed?.signedUrl ?? null;
+  } else if (o.artwork_url?.match(/\.(png|jpg|jpeg|webp)$/i)) {
+    artworkPreview = o.artwork_url;
+  }
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -183,26 +142,19 @@ export default async function OrderDetailPage({
 
         <div className="rounded-xl border border-[#2A3347] bg-[#1C2333] p-6">
           <h2 className="font-sans text-sm font-semibold text-white">Preview</h2>
-          {showRasterPreview && artworkPreview ? (
-            <div className="relative mt-4 flex min-h-[240px] w-full items-center justify-center overflow-hidden rounded-lg border border-[#2A3347] bg-[#0F1521] p-3">
-              <Image
+          {artworkPreview && /\.(png|jpg|jpeg|webp)$/i.test(artworkPreview) ? (
+            <div className="mt-4 overflow-hidden rounded-lg border border-[#2A3347] bg-[#0F1521]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={artworkPreview}
-                alt="Order artwork preview"
-                width={800}
-                height={600}
-                className="h-auto max-h-80 w-full max-w-full object-contain"
-                sizes="(max-width: 896px) 100vw, 400px"
-                unoptimized={isSupabaseStorageUrl(artworkPreview)}
+                alt="Artwork"
+                className="max-h-80 w-full object-contain"
               />
             </div>
-          ) : !hasArtworkPath ? (
-            <div className="mt-4 flex min-h-[200px] items-center justify-center rounded-xl border border-[#2A3347] bg-[#1C2333] px-4 py-8 text-center font-sans text-sm text-[#8A94A6]">
-              No artwork uploaded yet
-            </div>
           ) : (
-            <div className="mt-4 flex min-h-[200px] items-center justify-center rounded-xl border border-[#2A3347] bg-[#1C2333] px-4 py-8 text-center font-sans text-sm text-[#8A94A6]">
-              No image preview for this file type (e.g. vector or PDF).
-            </div>
+            <p className="mt-4 font-sans text-sm font-medium text-[#8A94A6]">
+              No image preview (vector/PDF or file on file).
+            </p>
           )}
         </div>
       </div>

@@ -14,14 +14,14 @@ export type AccountRow = {
   contact_name: string | null;
   contact_email: string | null;
   contact_phone: string | null;
+  default_roster: DefaultRosterJson;
+  use_default_roster_for_new_orders: boolean;
+  /** Present when onboarding wizard / extended profile columns exist */
+  onboarding_completed?: boolean | null;
   league_or_school?: string | null;
   heard_about_us?: string | null;
   likely_order_types?: string[] | null;
   onboarding_notes?: string | null;
-  /** false / null / undefined = must complete onboarding */
-  onboarding_completed?: boolean | null;
-  default_roster: DefaultRosterJson;
-  use_default_roster_for_new_orders: boolean;
   created_at: string;
 };
 

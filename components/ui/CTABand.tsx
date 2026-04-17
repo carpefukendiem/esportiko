@@ -16,7 +16,7 @@ export function CTABand({
   secondaryLabel?: string;
 }) {
   return (
-    <section className="border-y border-blue-muted/40 bg-blue-muted/25 bg-texture-dark py-16 md:py-20">
+    <section className="border-y border-blue-muted/40 bg-blue-muted/25 bg-texture-dark py-16 pb-24 md:py-20 md:pb-24">
       <SectionContainer as="div" className="py-0 md:py-0">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="mb-6 font-display text-h2 font-semibold uppercase tracking-tight text-white">

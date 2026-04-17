@@ -2,12 +2,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
+import { dashboardWelcomeDisplayName } from "@/lib/portal/dashboardWelcomeName";
 import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
 import { OrderStatusBadge } from "@/components/portal/OrderStatusBadge";
 import type { OrderRow, OrderStatus, SavedConfigurationRow } from "@/types/portal";
 
 export default async function PortalDashboardPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -39,12 +40,17 @@ export default async function PortalDashboardPage() {
   const list = (orders ?? []) as OrderRow[];
   const saved = (configs ?? []) as SavedConfigurationRow[];
 
+  const welcomeName = dashboardWelcomeDisplayName(
+    account,
+    user.email ?? undefined
+  );
+
   return (
     <div className="mx-auto max-w-4xl space-y-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-sans text-2xl font-semibold text-white md:text-3xl">
-            Welcome back, {account.team_name}
+            Welcome back, {welcomeName}
           </h1>
           <p className="mt-1 font-sans text-sm font-medium text-[#8A94A6]">
             Manage orders, rosters, and artwork in one place.

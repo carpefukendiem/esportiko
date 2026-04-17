@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { GARMENT_TYPE_VALUES } from "@/lib/portal/garmentTypes";
 
 export const rosterRowPortalSchema = z.object({
   id: z.string(),
@@ -15,11 +14,8 @@ export const portalOrderFormSchema = z.object({
   season: z.string().min(1, "Select a season"),
   deadline: z.string().optional(),
   garment_type: z
-    .string()
-    .min(1, "Select a garment type")
-    .refine((v) => (GARMENT_TYPE_VALUES as readonly string[]).includes(v), {
-      message: "Select a garment type",
-    }),
+    .array(z.string())
+    .min(1, "Select at least one garment type to continue"),
   decoration_method: z.string().min(1, "Select a decoration method"),
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
   color_notes: z.string().optional(),

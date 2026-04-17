@@ -1,8 +1,6 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
-import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
 import { OrderStatusBadge } from "@/components/portal/OrderStatusBadge";
 import type { OrderRow, OrderStatus } from "@/types/portal";
 
@@ -20,27 +18,27 @@ const PAGE_SIZE = 20;
 export default async function OrdersListPage({
   searchParams,
 }: {
-  searchParams: { page?: string; status?: string };
+  searchParams: Promise<{ page?: string; status?: string }>;
 }) {
-  const page = Math.max(1, parseInt(searchParams.page ?? "1", 10) || 1);
-  const statusFilter = searchParams.status;
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  const statusFilter = sp.status;
   const validStatus =
     statusFilter && STATUSES.includes(statusFilter as OrderStatus)
       ? (statusFilter as OrderStatus)
       : undefined;
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) return null;
   const account = await ensureAccount(
     supabase,
     user.id,
-    user.email ?? undefined,
-    user
+    user.email ?? undefined
   );
-  if (!account) return <PortalAccountSetupFailed />;
+  if (!account) return null;
 
   let q = supabase
     .from("orders")

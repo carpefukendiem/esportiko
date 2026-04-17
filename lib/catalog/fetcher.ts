@@ -189,6 +189,20 @@ export async function getProductsByDisplayCategory(
   }
 }
 
+/** Featured grid on /apparel — curated styles from Supabase (same pool as category browse). */
+export async function getCatalogProductsForIndex(
+  limit = 24
+): Promise<CatalogProduct[]> {
+  try {
+    const all = await loadAllCurated();
+    return Array.from(all.values())
+      .filter((p) => p.status !== "Discontinued")
+      .slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
 export async function getProductByStyle(
   styleNumber: string
 ): Promise<CatalogProduct | null> {

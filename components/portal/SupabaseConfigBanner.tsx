@@ -5,14 +5,15 @@ import {
   SUPABASE_ENV_MISSING_USER_MESSAGE,
 } from "@/lib/supabase/client";
 
+/** Shown when NEXT_PUBLIC_SUPABASE_* are missing in the client bundle. */
 export function SupabaseConfigBanner() {
   if (isBrowserSupabaseConfigured()) return null;
   return (
-    <div
-      className="mb-6 rounded-lg border border-amber-500/35 bg-amber-500/10 px-4 py-3 text-left font-sans text-sm leading-relaxed text-amber-100"
-      role="alert"
+    <p
+      className="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-sans text-xs font-medium text-amber-200"
+      role="status"
     >
       {SUPABASE_ENV_MISSING_USER_MESSAGE}
-    </div>
+    </p>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,8 +10,8 @@ import {
   createBrowserClientIfConfigured,
   SUPABASE_ENV_MISSING_USER_MESSAGE,
 } from "@/lib/supabase/client";
-import { brandLogo } from "@/lib/data/media";
 import { getSiteUrl } from "@/lib/site-url";
+import { brandLogo } from "@/lib/data/media";
 import { SupabaseConfigBanner } from "@/components/portal/SupabaseConfigBanner";
 
 const schema = z.object({
@@ -21,12 +21,13 @@ const schema = z.object({
 type Values = z.infer<typeof schema>;
 
 export function ForgotPasswordForm() {
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setError: setFormError,
   } = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: { email: "" },
@@ -35,7 +36,8 @@ export function ForgotPasswordForm() {
   const onSubmit = async (data: Values) => {
     const supabase = createBrowserClientIfConfigured();
     if (!supabase) {
-      setFormError("root", { message: SUPABASE_ENV_MISSING_USER_MESSAGE });
+      setStatus("error");
+      setMessage(SUPABASE_ENV_MISSING_USER_MESSAGE);
       return;
     }
     const site = getSiteUrl();
@@ -43,10 +45,12 @@ export function ForgotPasswordForm() {
       redirectTo: `${site}/reset-password`,
     });
     if (error) {
-      setFormError("root", { message: error.message });
+      setStatus("error");
+      setMessage(error.message);
       return;
     }
-    setSent(true);
+    setStatus("success");
+    setMessage("Check your email for a link to reset your password.");
   };
 
   return (
@@ -62,43 +66,36 @@ export function ForgotPasswordForm() {
         />
       </div>
 
+      <SupabaseConfigBanner />
+
       <h1 className="mb-2 text-center font-sans text-xl font-semibold text-white">
-        Reset password
+        Reset your password
       </h1>
       <p className="mb-6 text-center font-sans text-sm font-medium text-[#8A94A6]">
         Enter your email and we&apos;ll send you a link to choose a new password.
       </p>
 
-      <SupabaseConfigBanner />
-
-      {sent ? (
-        <div className="space-y-6">
-          <p className="text-center font-sans text-sm font-medium text-[#B8C0D0]">
-            Check your email for a reset link
-          </p>
+      {status === "success" ? (
+        <div className="space-y-6 text-center">
+          <p className="font-sans text-sm font-medium text-emerald-400">{message}</p>
           <Link
             href="/login"
-            className="block text-center font-sans text-sm font-semibold text-[#3B7BF8] hover:underline"
+            className="inline-block font-sans text-sm font-semibold text-[#3B7BF8] hover:underline"
           >
             Back to sign in
           </Link>
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {errors.root && (
-            <p className="text-sm font-medium text-red-500" role="alert">
-              {errors.root.message}
-            </p>
-          )}
           <div>
             <label
-              htmlFor="email"
+              htmlFor="forgot-email"
               className="mb-1 block font-sans text-sm font-medium text-white"
             >
               Email
             </label>
             <input
-              id="email"
+              id="forgot-email"
               type="email"
               autoComplete="email"
               {...register("email")}
@@ -118,6 +115,11 @@ export function ForgotPasswordForm() {
           >
             Send reset link
           </button>
+          {status === "error" && message && (
+            <p className="text-center text-sm font-medium text-red-500" role="alert">
+              {message}
+            </p>
+          )}
           <p className="text-center font-sans text-sm font-medium text-[#8A94A6]">
             <Link href="/login" className="text-[#3B7BF8] hover:underline">
               Back to sign in
@@ -128,3 +130,5 @@ export function ForgotPasswordForm() {
     </div>
   );
 }
+
+export default ForgotPasswordForm;

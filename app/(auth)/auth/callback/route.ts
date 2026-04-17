@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=config`);
   }
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const redirectTo = `${origin}${safeNext}`;
 
   // Session cookies must be attached to this response (Route Handler + redirect).
@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Ensure `accounts` row exists (Google OAuth or email confirmation first sign-in).
   if (user) {
     await ensureAccount(
       supabase,

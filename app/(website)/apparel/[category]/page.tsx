@@ -20,31 +20,27 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }): Promise<Metadata> {
-  const cat = await getDisplayCategoryBySlug(params.category);
+  const { category: categorySlug } = await params;
+  const cat = await getDisplayCategoryBySlug(categorySlug);
   if (!cat) {
     return { title: "Category | Esportiko" };
   }
-  const base = buildMetadata({
+  return buildMetadata({
     title: `${cat.label} | Browse Apparel`,
     description: `Browse ${cat.label.toLowerCase()} styles available for customization. Santa Barbara and Central Coast.`,
     path: `/apparel/${cat.slug}`,
   });
-  return {
-    ...base,
-    title: {
-      absolute: `${cat.label} | Browse Apparel | Esportiko`,
-    },
-  };
 }
 
 export default async function ApparelCategoryPage({
   params,
 }: {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }) {
-  const category = await getDisplayCategoryBySlug(params.category);
+  const { category: categorySlug } = await params;
+  const category = await getDisplayCategoryBySlug(categorySlug);
   if (!category) {
     notFound();
   }

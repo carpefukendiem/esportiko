@@ -4,8 +4,9 @@ import { createDraftOrder } from "@/lib/actions/portal";
 export default async function NewOrderPage({
   searchParams,
 }: {
-  searchParams: { config?: string };
+  searchParams: Promise<{ config?: string }>;
 }) {
-  const id = await createDraftOrder(searchParams.config ?? null);
+  const sp = await searchParams;
+  const id = await createDraftOrder(sp.config ?? null);
   redirect(`/portal/orders/${id}/edit`);
 }

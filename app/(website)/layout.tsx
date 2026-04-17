@@ -15,7 +15,7 @@ export default function WebsiteLayout({
         Skip to main content
       </a>
       <SiteHeader />
-      <main id="main-content" className="min-h-[50vh]">
+      <main id="main-content" className="min-h-[50vh] pb-24">
         {children}
       </main>
       <SiteFooter />

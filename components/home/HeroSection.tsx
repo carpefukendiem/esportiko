@@ -24,7 +24,7 @@ export function HeroSection() {
     <section className="relative overflow-hidden bg-texture-dark geometric-bg min-h-[600px] lg:min-h-[680px]">
       <div className="mx-auto flex max-w-content flex-col lg:flex-row lg:items-center px-6 md:px-8 lg:px-12 py-12 md:py-16 lg:py-0 lg:min-h-[680px] gap-8 lg:gap-0">
         {/* Left column — text */}
-        <div className="w-full lg:w-[52%] lg:shrink-0 lg:py-16 relative z-10">
+        <div className="relative z-10 w-full min-w-0 pr-2 sm:pr-4 lg:w-[52%] lg:shrink-0 lg:py-16 lg:pr-10 xl:pr-14">
           <h1 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-white">
             <span className="block">
               {wordsA.map((w) => {

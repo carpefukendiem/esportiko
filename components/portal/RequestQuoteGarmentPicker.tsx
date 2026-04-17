@@ -1,60 +1,79 @@
 "use client";
 
+import { useState, type MouseEvent } from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
 import { GarmentSelector } from "@/components/portal/GarmentSelector";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils/cn";
 
-type QuoteGarmentForm = {
-  garment_type: string;
-};
+function garmentsQuery(garments: string[]): string {
+  return `garments=${encodeURIComponent(garments.join(","))}`;
+}
 
-function RequestQuoteGarmentPicker() {
-  const form = useForm<QuoteGarmentForm>({
-    defaultValues: { garment_type: "" },
-    mode: "onChange",
-  });
+export function RequestQuoteGarmentPicker() {
+  const [selected, setSelected] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const garment = form.watch("garment_type");
-  const canContinue = Boolean(garment);
+  const canProceed = selected.length > 0;
+  const teamHref = canProceed ? `/team-orders?${garmentsQuery(selected)}` : "#";
+  const businessHref = canProceed
+    ? `/start-business-order?${garmentsQuery(selected)}`
+    : "#";
 
-  const hrefWithGarment = (path: string) =>
-    `${path}?garment=${encodeURIComponent(garment)}`;
+  const onBlockedClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (!canProceed) {
+      e.preventDefault();
+      setError("Select at least one garment type to continue");
+    }
+  };
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-navy-light/90 via-navy to-navy-mid p-6 shadow-[0_20px_50px_-20px_rgba(8,12,24,0.5)] md:p-8">
-      <p className="mb-6 max-w-2xl font-sans text-sm font-medium text-[#8A94A6] md:text-body-sm">
-        Pick a category so we can route you to the right quote flow with context.
+    <div className="mb-12 rounded-2xl border border-white/10 bg-navy-light/80 p-6 shadow-[0_20px_50px_-20px_rgba(8,12,24,0.5)] md:p-8">
+      <h2 id="garment-picker-heading" className="font-display text-xl font-bold text-white md:text-2xl">
+        What are you looking to order?
+      </h2>
+      <p className="mt-2 text-body text-off-white/80">
+        Select everything that applies — many projects include more than one garment type.
       </p>
-
-      <GarmentSelector control={form.control} name="garment_type" />
-
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
-        {canContinue ? (
-          <Button asChild variant="primary" className="w-full sm:w-auto">
-            <Link href={hrefWithGarment("/start-team-order")}>
-              Team / uniform quote
-            </Link>
-          </Button>
-        ) : (
-          <Button type="button" variant="primary" className="w-full sm:w-auto" disabled>
-            Team / uniform quote
-          </Button>
-        )}
-        {canContinue ? (
-          <Button asChild variant="secondary" className="w-full sm:w-auto">
-            <Link href={hrefWithGarment("/start-business-order")}>
-              Business / brand quote
-            </Link>
-          </Button>
-        ) : (
-          <Button type="button" variant="secondary" className="w-full sm:w-auto" disabled>
-            Business / brand quote
-          </Button>
-        )}
+      <p className="mt-1 text-sm text-[#8A94A6]">
+        Ordering jerseys and hoodies together? Select both.
+      </p>
+      <div className="mt-6">
+        <GarmentSelector
+          labelledBy="garment-picker-heading"
+          value={selected}
+          onChange={(next) => {
+            setSelected(next);
+            if (next.length > 0) setError(null);
+          }}
+          error={error ?? undefined}
+        />
+      </div>
+      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <Link
+          href={teamHref}
+          scroll={canProceed}
+          onClick={onBlockedClick}
+          className={cn(
+            "flex w-full items-center justify-center rounded-lg border border-[#3B7BF8] py-3 text-center font-sans text-sm font-semibold text-[#3B7BF8] transition-colors hover:bg-[#3B7BF8] hover:text-white",
+            !canProceed && "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-[#3B7BF8]"
+          )}
+          aria-disabled={!canProceed}
+        >
+          Team / uniform quote
+        </Link>
+        <Link
+          href={businessHref}
+          scroll={canProceed}
+          onClick={onBlockedClick}
+          className={cn(
+            "flex w-full items-center justify-center rounded-lg border border-[#3B7BF8] py-3 text-center font-sans text-sm font-semibold text-[#3B7BF8] transition-colors hover:bg-[#3B7BF8] hover:text-white",
+            !canProceed && "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-[#3B7BF8]"
+          )}
+          aria-disabled={!canProceed}
+        >
+          Business / brand quote
+        </Link>
       </div>
     </div>
   );
 }
-
-export default RequestQuoteGarmentPicker;

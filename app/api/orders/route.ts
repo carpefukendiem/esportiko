@@ -4,7 +4,7 @@ import { ensureAccount } from "@/lib/portal/ensureAccount";
 import { createDraftOrder } from "@/lib/actions/portal";
 
 export async function GET() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -15,8 +15,7 @@ export async function GET() {
   const account = await ensureAccount(
     supabase,
     user.id,
-    user.email ?? undefined,
-    user
+    user.email ?? undefined
   );
   if (!account) {
     return NextResponse.json({ error: "No account" }, { status: 403 });
@@ -36,7 +35,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

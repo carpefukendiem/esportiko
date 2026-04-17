@@ -18,6 +18,10 @@ function defaultTeamName(email: string | undefined, authUser: User | null): stri
   return email?.split("@")[0]?.replace(/\./g, " ") ?? "My team";
 }
 
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function fetchOwnAccount(
   supabase: SupabaseClient,
   userId: string
@@ -46,7 +50,8 @@ function isUniqueUserIdViolation(error: { code?: string; message?: string }): bo
 
 /**
  * Ensures the authenticated user has an `accounts` row (first portal visit).
- * Retries select after insert errors to handle concurrent first requests.
+ * Retries insert + select for races and transient failures so the portal keeps
+ * loading instead of hanging when the row is missing.
  */
 export async function ensureAccount(
   supabase: SupabaseClient,
@@ -54,35 +59,39 @@ export async function ensureAccount(
   email: string | undefined,
   authUser: User | null = null
 ): Promise<AccountRow | null> {
-  const existing = await fetchOwnAccount(supabase, userId);
-  if (existing) {
-    return existing;
-  }
-
   const teamName = defaultTeamName(email, authUser);
+  const insertPayload = {
+    user_id: userId,
+    team_name: teamName,
+    contact_email: email ?? null,
+  };
 
-  const { data: created, error: insErr } = await supabase
-    .from("accounts")
-    .insert({
-      user_id: userId,
-      team_name: teamName,
-      contact_email: email ?? null,
-    })
-    .select("*")
-    .single();
-
-  if (!insErr && created) {
-    return created as AccountRow;
-  }
-
-  if (insErr) {
-    console.error("ensureAccount insert", insErr);
-    if (isUniqueUserIdViolation(insErr)) {
-      const afterRace = await fetchOwnAccount(supabase, userId);
-      if (afterRace) return afterRace;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const existing = await fetchOwnAccount(supabase, userId);
+    if (existing) {
+      return existing;
     }
+
+    const { data: created, error: insErr } = await supabase
+      .from("accounts")
+      .insert(insertPayload)
+      .select("*")
+      .maybeSingle();
+
+    if (created) {
+      return created as AccountRow;
+    }
+
+    if (insErr) {
+      console.error("ensureAccount insert", insErr);
+      if (isUniqueUserIdViolation(insErr)) {
+        const afterRace = await fetchOwnAccount(supabase, userId);
+        if (afterRace) return afterRace;
+      }
+    }
+
+    await delay(80 * (attempt + 1));
   }
 
-  const retry = await fetchOwnAccount(supabase, userId);
-  return retry;
+  return fetchOwnAccount(supabase, userId);
 }

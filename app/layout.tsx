@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Barlow_Condensed, DM_Sans } from "next/font/google";
 import "@/styles/globals.css";
-import { Toaster } from "@/components/ui/toaster";
+import { RootToaster } from "@/components/ui/root-toaster";
 import { LeadConnectorChatEmbed } from "@/components/third-party/LeadConnectorChatEmbed";
 
 const barlowCondensed = Barlow_Condensed({
@@ -62,7 +62,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen font-sans antialiased">
         {children}
-        <Toaster />
+        <RootToaster />
         <LeadConnectorChatEmbed />
         <script
           type="application/ld+json"
