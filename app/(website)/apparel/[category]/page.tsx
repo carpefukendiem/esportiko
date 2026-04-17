@@ -20,10 +20,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ category: string }>;
+  params: { category: string };
 }): Promise<Metadata> {
-  const { category: categorySlug } = await params;
-  const cat = await getDisplayCategoryBySlug(categorySlug);
+  const cat = await getDisplayCategoryBySlug(params.category);
   if (!cat) {
     return { title: "Category | Esportiko" };
   }
@@ -37,10 +36,9 @@ export async function generateMetadata({
 export default async function ApparelCategoryPage({
   params,
 }: {
-  params: Promise<{ category: string }>;
+  params: { category: string };
 }) {
-  const { category: categorySlug } = await params;
-  const category = await getDisplayCategoryBySlug(categorySlug);
+  const category = await getDisplayCategoryBySlug(params.category);
   if (!category) {
     notFound();
   }

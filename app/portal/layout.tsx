@@ -18,7 +18,7 @@ export default async function PortalLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

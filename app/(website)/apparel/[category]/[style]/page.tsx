@@ -33,9 +33,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ category: string; style: string }>;
+  params: { category: string; style: string };
 }): Promise<Metadata> {
-  const { category: catSlug, style: styleParam } = await params;
+  const catSlug = params.category;
+  const styleParam = params.style;
   const category = await getDisplayCategoryBySlug(catSlug);
   const product = await getProductInDisplayCategory(
     catSlug,
@@ -54,10 +55,10 @@ export async function generateMetadata({
 export default async function ApparelStyleDetailPage({
   params,
 }: {
-  params: Promise<{ category: string; style: string }>;
+  params: { category: string; style: string };
 }) {
-  const { category: catSlug, style: styleParam } = await params;
-  const styleId = decodeURIComponent(styleParam);
+  const catSlug = params.category;
+  const styleId = decodeURIComponent(params.style);
   const category = await getDisplayCategoryBySlug(catSlug);
   if (!category) {
     notFound();

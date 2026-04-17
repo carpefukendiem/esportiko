@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=config`);
   }
 
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const redirectTo = `${origin}${safeNext}`;
 
   // Session cookies must be attached to this response (Route Handler + redirect).

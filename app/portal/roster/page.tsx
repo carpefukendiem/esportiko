@@ -5,7 +5,7 @@ import { RosterManager } from "@/components/portal/RosterManager";
 import type { DefaultRosterJson } from "@/types/portal";
 
 export default async function RosterPage() {
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

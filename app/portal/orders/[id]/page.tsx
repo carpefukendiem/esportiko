@@ -14,10 +14,10 @@ import type { OrderItemRow, OrderRow, OrderStatus } from "@/types/portal";
 export default async function OrderDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id: orderId } = await params;
-  const supabase = await createClient();
+  const orderId = params.id;
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

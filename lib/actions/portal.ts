@@ -14,7 +14,7 @@ async function requireAccount(): Promise<{
   account: AccountRow;
   userId: string;
 }> {
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

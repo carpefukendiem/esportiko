@@ -5,7 +5,7 @@ import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetup
 import { SettingsForm } from "@/components/portal/SettingsForm";
 
 export default async function PortalSettingsPage() {
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

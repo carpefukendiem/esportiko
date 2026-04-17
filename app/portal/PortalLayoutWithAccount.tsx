@@ -14,7 +14,7 @@ export async function PortalLayoutWithAccount({
   user: User;
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
+  const supabase = createClient();
   const account = await ensureAccount(
     supabase,
     user.id,
@@ -26,8 +26,7 @@ export async function PortalLayoutWithAccount({
     return <PortalAccountSetupFailed />;
   }
 
-  const headerList = await headers();
-  const pathname = headerList.get("x-es-pathname") ?? "";
+  const pathname = headers().get("x-es-pathname") ?? "";
   const onSettings =
     pathname === "/portal/settings" ||
     pathname.startsWith("/portal/settings/");

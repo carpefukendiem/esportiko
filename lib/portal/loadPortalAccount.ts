@@ -20,7 +20,7 @@ export const loadPortalAccount = cache(
     userEmail: string | undefined
   ): Promise<AccountRow | null> => {
     noStore();
-    const supabase = await createClient();
+    const supabase = createClient();
     return ensureAccount(supabase, userId, userEmail);
   }
 );

@@ -5,7 +5,7 @@ import { ArtworkManager } from "@/components/portal/ArtworkManager";
 import type { ArtworkAssetRow } from "@/types/portal";
 
 export default async function ArtworkPage() {
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

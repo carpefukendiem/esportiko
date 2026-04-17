@@ -8,10 +8,10 @@ import type { ArtworkAssetRow, OrderItemRow, OrderRow } from "@/types/portal";
 export default async function EditOrderPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id: orderId } = await params;
-  const supabase = await createClient();
+  const orderId = params.id;
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

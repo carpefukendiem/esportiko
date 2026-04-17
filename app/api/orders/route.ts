@@ -4,7 +4,7 @@ import { ensureAccount } from "@/lib/portal/ensureAccount";
 import { createDraftOrder } from "@/lib/actions/portal";
 
 export async function GET() {
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -35,7 +35,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

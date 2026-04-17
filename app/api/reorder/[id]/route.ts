@@ -3,10 +3,10 @@ import { cloneOrderToDraft } from "@/lib/actions/portal";
 
 export async function POST(
   _request: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id: orderId } = await context.params;
+    const orderId = context.params.id;
     const newId = await cloneOrderToDraft(orderId);
     return NextResponse.json({ id: newId });
   } catch {

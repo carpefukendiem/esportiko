@@ -8,7 +8,7 @@ import { OrderStatusBadge } from "@/components/portal/OrderStatusBadge";
 import type { OrderRow, OrderStatus, SavedConfigurationRow } from "@/types/portal";
 
 export default async function PortalDashboardPage() {
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

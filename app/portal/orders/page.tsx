@@ -18,17 +18,16 @@ const PAGE_SIZE = 20;
 export default async function OrdersListPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; status?: string }>;
+  searchParams: { page?: string; status?: string };
 }) {
-  const sp = await searchParams;
-  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
-  const statusFilter = sp.status;
+  const page = Math.max(1, parseInt(searchParams.page ?? "1", 10) || 1);
+  const statusFilter = searchParams.status;
   const validStatus =
     statusFilter && STATUSES.includes(statusFilter as OrderStatus)
       ? (statusFilter as OrderStatus)
       : undefined;
 
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
