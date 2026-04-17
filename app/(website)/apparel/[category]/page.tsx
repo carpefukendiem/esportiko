@@ -14,7 +14,8 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const categories = await getDisplayCategories();
-  return categories.map((c) => ({ category: c.slug }));
+  const legacy = [{ category: "tshirts" }, { category: "jerseys-uniforms" }];
+  return [...categories.map((c) => ({ category: c.slug })), ...legacy];
 }
 
 export async function generateMetadata({

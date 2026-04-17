@@ -17,7 +17,7 @@
  *    before surfacing those brands.
  */
 export const CURATED_STYLES_BY_CATEGORY: Record<string, readonly string[]> = {
-  tshirts: [
+  "t-shirts": [
     "PC61",
     "PC55",
     "PC54",
@@ -45,7 +45,7 @@ export const CURATED_STYLES_BY_CATEGORY: Record<string, readonly string[]> = {
     "ST640",
     "ST650",
   ],
-  "jerseys-uniforms": [
+  jerseys: [
     "ST350",
     "ST380",
     "T474",

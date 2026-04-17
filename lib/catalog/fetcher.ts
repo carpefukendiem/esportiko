@@ -12,6 +12,7 @@ import {
   CURATED_STYLES_BY_CATEGORY,
   CURATED_STYLE_SET,
 } from "@/lib/catalog/curated";
+import { normalizeCategorySlug } from "@/lib/catalog/slug-aliases";
 import {
   SANMAR_SEED_PRODUCTS,
   type SanMarSeedCategory,
@@ -234,19 +235,45 @@ async function loadFromSupabase(): Promise<Map<string, CatalogProduct>> {
   return result;
 }
 
-async function loadAllCuratedInner(): Promise<Map<string, CatalogProduct>> {
-  try {
-    const fromDb = await loadFromSupabase();
-    if (fromDb.size > 0) return fromDb;
-  } catch {
-    /* Supabase missing or schema mismatch — use bundled seed for browse UI */
+const CATALOG_FETCH_TIMEOUT_MS = 8000;
+
+async function loadFromSupabaseWithTimeout(): Promise<Map<string, CatalogProduct>> {
+  return Promise.race([
+    loadFromSupabase(),
+    new Promise<Map<string, CatalogProduct>>((_, reject) =>
+      setTimeout(
+        () => reject(new Error("sanmar-catalog-timeout")),
+        CATALOG_FETCH_TIMEOUT_MS
+      )
+    ),
+  ]);
+}
+
+function mergeCatalogMaps(
+  seed: Map<string, CatalogProduct>,
+  db: Map<string, CatalogProduct>
+): Map<string, CatalogProduct> {
+  const merged = new Map(seed);
+  for (const [k, v] of db) {
+    merged.set(k, v);
   }
-  return loadCatalogFromSeed();
+  return merged;
+}
+
+async function loadAllCuratedInner(): Promise<Map<string, CatalogProduct>> {
+  const seed = loadCatalogFromSeed();
+  try {
+    const fromDb = await loadFromSupabaseWithTimeout();
+    return mergeCatalogMaps(seed, fromDb);
+  } catch {
+    /* Timeout, network, or Supabase error — seed-only map */
+    return seed;
+  }
 }
 
 const loadAllCurated = unstable_cache(
   async () => loadAllCuratedInner(),
-  ["sanmar-catalog-all"],
+  ["sanmar-catalog-all", "v2"],
   { revalidate: 3600, tags: ["sanmar-catalog"] }
 );
 
@@ -257,13 +284,15 @@ export async function getDisplayCategories(): Promise<DisplayCategory[]> {
 export async function getDisplayCategoryBySlug(
   slug: string
 ): Promise<DisplayCategory | null> {
-  return DISPLAY_CATEGORIES.find((c) => c.slug === slug) ?? null;
+  const key = normalizeCategorySlug(slug);
+  return DISPLAY_CATEGORIES.find((c) => c.slug === key) ?? null;
 }
 
 export async function getProductsByDisplayCategory(
   slug: string
 ): Promise<CatalogProduct[]> {
-  const order = CURATED_STYLES_BY_CATEGORY[slug];
+  const key = normalizeCategorySlug(slug);
+  const order = CURATED_STYLES_BY_CATEGORY[key];
   if (!order?.length) return [];
   try {
     const all = await loadAllCurated();
@@ -318,7 +347,9 @@ export async function getProductInDisplayCategory(
 ): Promise<CatalogProduct | null> {
   const product = await getProductByStyle(styleNumber);
   if (!product) return null;
-  const inCategory = await getProductsByDisplayCategory(categorySlug);
+  const inCategory = await getProductsByDisplayCategory(
+    normalizeCategorySlug(categorySlug)
+  );
   const match = inCategory.some(
     (p) => p.styleNumber.toUpperCase() === product.styleNumber.toUpperCase()
   );

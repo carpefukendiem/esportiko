@@ -2,7 +2,7 @@ import type { DisplayCategory } from "@/lib/catalog/types";
 
 export const DISPLAY_CATEGORIES: DisplayCategory[] = [
   {
-    slug: "tshirts",
+    slug: "t-shirts",
     label: "T-Shirts",
     description:
       "Core tees and performance knits for teams, events, and everyday wear.",
@@ -26,7 +26,7 @@ export const DISPLAY_CATEGORIES: DisplayCategory[] = [
     sanMarCategories: ["Polos/Knits"],
   },
   {
-    slug: "jerseys-uniforms",
+    slug: "jerseys",
     label: "Jerseys & Uniforms",
     description:
       "Athletic cuts and uniform bases we decorate for league and school play.",
@@ -69,10 +69,10 @@ export const DISPLAY_CATEGORIES: DisplayCategory[] = [
 
 /** Slugs must match routes under `/apparel/[category]`. */
 const APPAREL_INDEX_SLUG_ORDER = [
-  "tshirts",
+  "t-shirts",
   "hoodies-sweatshirts",
   "polos",
-  "jerseys-uniforms",
+  "jerseys",
   "hats",
 ] as const;
 
@@ -80,8 +80,8 @@ const APPAREL_INDEX_LABEL_OVERRIDES: Partial<
   Record<(typeof APPAREL_INDEX_SLUG_ORDER)[number], string>
 > = {
   "hoodies-sweatshirts": "Hoodies",
-  "jerseys-uniforms": "Jerseys",
-  "hats": "Hats",
+  jerseys: "Jerseys",
+  hats: "Hats",
 };
 
 /** Five primary categories for the /apparel index "Browse by category" grid. */
