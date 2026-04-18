@@ -3,6 +3,8 @@ export type DesignElementType = "image" | "text";
 export type DesignElement = {
   id: string;
   type: DesignElementType;
+  /** Which garment face this element belongs to. */
+  view: "front" | "back";
   src?: string;
   text?: string;
   fontFamily?: string;

@@ -76,7 +76,8 @@ function newImageElement(
   src: string,
   naturalW: number,
   naturalH: number,
-  zone: { x: number; y: number; w: number; h: number }
+  zone: { x: number; y: number; w: number; h: number },
+  garmentView: "front" | "back"
 ): DesignElement {
   const aspect = naturalW > 0 ? naturalH / naturalW : 1;
   const w = Math.max(40, zone.w * 0.42);
@@ -86,6 +87,7 @@ function newImageElement(
   return {
     id: crypto.randomUUID(),
     type: "image",
+    view: garmentView,
     src,
     x: cx - w / 2,
     y: cy - h / 2,
@@ -97,7 +99,10 @@ function newImageElement(
   };
 }
 
-function newTextElement(zone: { x: number; y: number; w: number; h: number }): DesignElement {
+function newTextElement(
+  zone: { x: number; y: number; w: number; h: number },
+  garmentView: "front" | "back"
+): DesignElement {
   const fontSize = 56;
   const w = Math.min(zone.w * 0.85, 280);
   const h = fontSize * 1.25 + 16;
@@ -106,6 +111,7 @@ function newTextElement(zone: { x: number; y: number; w: number; h: number }): D
   return {
     id: crypto.randomUUID(),
     type: "text",
+    view: garmentView,
     text: "YOUR TEXT",
     fontFamily: "Bebas Neue",
     color: "#ffffff",
@@ -287,7 +293,7 @@ export function CustomizeExperience() {
             img.src = url;
           });
           additions.push(
-            newImageElement(url, img.naturalWidth || 400, img.naturalHeight || 400, zone)
+            newImageElement(url, img.naturalWidth || 400, img.naturalHeight || 400, zone, view)
           );
         } catch {
           toast({ title: "Upload failed", description: file.name });
@@ -309,14 +315,14 @@ export function CustomizeExperience() {
       const last = additions[additions.length - 1];
       if (last) setSelectedElementId(last.id);
     },
-    [toast, zone]
+    [toast, view, zone]
   );
 
   const addText = useCallback(() => {
-    const el = newTextElement(zone);
+    const el = newTextElement(zone, view);
     setElements((prev) => [...prev, el]);
     setSelectedElementId(el.id);
-  }, [zone]);
+  }, [zone, view]);
 
   const deleteElement = useCallback((id: string) => {
     setElements((prev) => prev.filter((e) => e.id !== id));
@@ -458,7 +464,16 @@ export function CustomizeExperience() {
       if (row.garment_style_number) setSelectedStyle(row.garment_style_number.toUpperCase());
       if (row.garment_color) setColorName(row.garment_color);
       if (row.view_mode === "front" || row.view_mode === "back") setView(row.view_mode);
-      setElements(Array.isArray(row.elements) ? row.elements : []);
+      const raw = Array.isArray(row.elements) ? row.elements : [];
+      setElements(
+        raw.map((el) => {
+          const e = el as DesignElement;
+          return {
+            ...e,
+            view: e.view === "back" ? "back" : "front",
+          };
+        })
+      );
       setSelectedElementId(null);
       setSavedDesignId(row.id);
       toast({
@@ -469,7 +484,16 @@ export function CustomizeExperience() {
     [toast]
   );
 
-  const designParamLoaded = useRef<string | null>(null);
+  useEffect(() => {
+    setSelectedElementId((cur) => {
+      if (!cur) return null;
+      const el = elements.find((e) => e.id === cur);
+      if (!el) return null;
+      return el.view === view ? cur : null;
+    });
+  }, [elements, view]);
+
+    const designParamLoaded = useRef<string | null>(null);
   useEffect(() => {
     const id = searchParams.get("design");
     if (!id || designParamLoaded.current === id) return;
@@ -707,6 +731,7 @@ export function CustomizeExperience() {
           <div className="min-w-0 flex-1 space-y-6">
             <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#2A3347] bg-[#1C2333] p-3 md:p-4">
               <input
+                id="customize-image-upload"
                 ref={fileInputRef}
                 type="file"
                 accept={ACCEPT}
@@ -774,7 +799,7 @@ export function CustomizeExperience() {
                       canvasHeight={canvasH}
                       garmentSvgKind={garmentSvgKind}
                       view={view}
-                      fillHex={fillHex}
+                      garmentColor={fillHex}
                       garmentRasterUrl={raster}
                       showGarmentPrintZone={printGuides}
                       showSafeZoneOverlay={printGuides}
@@ -825,8 +850,25 @@ export function CustomizeExperience() {
                     void addFiles(e.dataTransfer.files);
                   }}
                 >
-                  <p className="text-sm font-medium text-white">Drop images here</p>
+                  <p className="text-sm font-medium text-white">
+                    Drop images here, or{" "}
+                    <label
+                      htmlFor="customize-image-upload"
+                      className="cursor-pointer font-semibold text-[#3B7BF8] underline decoration-[#3B7BF8]/40 underline-offset-2 hover:opacity-90"
+                    >
+                      choose files
+                    </label>
+                  </p>
                   <p className="mt-1 text-xs text-[#8A94A6]">PNG with transparency works best · max 5MB each</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="rounded-lg bg-[#3B7BF8] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                    >
+                      Browse images
+                    </button>
+                  </div>
                 </div>
 
                 <div className="rounded-xl border border-[#2A3347] bg-[#1C2333] p-4">
@@ -864,9 +906,15 @@ export function CustomizeExperience() {
                             <GripVertical className="h-4 w-4 shrink-0 text-[#8A94A6]" />
                             <button
                               type="button"
-                              onClick={() => setSelectedElementId(el.id)}
+                              onClick={() => {
+                              setView(el.view);
+                              setSelectedElementId(el.id);
+                            }}
                               className="min-w-0 flex-1 text-left text-sm text-white"
                             >
+                              <span className="mr-2 inline-block rounded bg-[#2A3347] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#8A94A6]">
+                                {el.view}
+                              </span>
                               <span className="font-semibold">{el.type === "text" ? "Text" : "Image"}</span>{" "}
                               <span className="block truncate text-xs text-[#8A94A6]">
                                 {el.type === "text" ? el.text : el.src?.slice(0, 28)}

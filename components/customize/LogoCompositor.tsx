@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildGarmentPlaceholderDataUrl } from "@/lib/catalog/garment-placeholder";
 import type { DesignElement } from "@/lib/customize/design-types";
 import type { GarmentSvgKind } from "@/lib/customize/design-types";
@@ -18,7 +18,7 @@ export type LogoCompositorProps = {
   canvasHeight: number;
   garmentSvgKind: GarmentSvgKind;
   view: "front" | "back";
-  fillHex: string;
+  garmentColor: string;
   garmentRasterUrl: string | null;
   /** When true, dashed print zone is baked into the SVG garment. */
   showGarmentPrintZone: boolean;
@@ -98,7 +98,7 @@ export function LogoCompositor({
   canvasHeight,
   garmentSvgKind,
   view,
-  fillHex,
+  garmentColor,
   garmentRasterUrl,
   showGarmentPrintZone,
   showSafeZoneOverlay,
@@ -117,6 +117,7 @@ export function LogoCompositor({
   const outsideRef = useRef(false);
   const elementsRef = useRef(elements);
   elementsRef.current = elements;
+  const [baseImageEpoch, setBaseImageEpoch] = useState(0);
 
   const zone = useMemo(
     () => printZoneOnCanvas(garmentSvgKind, view, canvasWidth, canvasHeight),
@@ -125,8 +126,8 @@ export function LogoCompositor({
 
   const garmentKey = useMemo(
     () =>
-      `${canvasWidth}x${canvasHeight}|${garmentSvgKind}|${view}|${garmentRasterUrl ?? ""}|${fillHex}|${showGarmentPrintZone ? 1 : 0}`,
-    [canvasHeight, canvasWidth, fillHex, garmentRasterUrl, garmentSvgKind, showGarmentPrintZone, view]
+      `${canvasWidth}x${canvasHeight}|${garmentSvgKind}|${view}|${garmentRasterUrl ?? ""}|${garmentColor}|${showGarmentPrintZone ? 1 : 0}`,
+    [canvasHeight, canvasWidth, garmentColor, garmentRasterUrl, garmentSvgKind, showGarmentPrintZone, view]
   );
 
   useEffect(() => {
@@ -140,7 +141,10 @@ export function LogoCompositor({
       try {
         if (garmentRasterUrl) {
           const img = await loadImage(garmentRasterUrl);
-          if (!cancelled) baseImgRef.current = img;
+          if (!cancelled) {
+            baseImgRef.current = img;
+            setBaseImageEpoch((n) => n + 1);
+          }
         } else {
           throw new Error("placeholder");
         }
@@ -148,21 +152,35 @@ export function LogoCompositor({
         const url = buildGarmentPlaceholderDataUrl(
           garmentSvgKind,
           view,
-          fillHex,
+          garmentColor,
           showGarmentPrintZone
         );
         try {
           const img = await loadImage(url);
-          if (!cancelled) baseImgRef.current = img;
+          if (!cancelled) {
+            baseImgRef.current = img;
+            setBaseImageEpoch((n) => n + 1);
+          }
         } catch {
-          if (!cancelled) baseImgRef.current = null;
+          if (!cancelled) {
+            baseImgRef.current = null;
+            setBaseImageEpoch((n) => n + 1);
+          }
         }
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [fillHex, garmentRasterUrl, garmentSvgKind, showGarmentPrintZone, view]);
+  }, [
+    canvasHeight,
+    canvasWidth,
+    garmentColor,
+    garmentRasterUrl,
+    garmentSvgKind,
+    showGarmentPrintZone,
+    view,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -195,7 +213,7 @@ export function LogoCompositor({
       ctx.drawImage(base, 0, 0, canvasWidth, canvasHeight);
     }
 
-    const els = elementsRef.current.filter((e) => e.visible);
+    const els = elementsRef.current.filter((e) => e.visible && e.view === view);
     for (const el of els) {
       if (el.type === "image" && el.src) {
         const img = imageCacheRef.current.get(el.src);
@@ -284,8 +302,10 @@ export function LogoCompositor({
     onOutsidePrintZoneChange,
     selectedElementId,
     showSafeZoneOverlay,
+    view,
     zone,
   ]);
+
 
   const scheduleDraw = useCallback(() => {
     if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
@@ -298,6 +318,11 @@ export function LogoCompositor({
   useEffect(() => {
     scheduleDraw();
   }, [draw, scheduleDraw, elements, selectedElementId]);
+  useEffect(() => {
+    scheduleDraw();
+  }, [baseImageEpoch, scheduleDraw]);
+
+
 
   useEffect(() => {
     let cancelled = false;
@@ -375,7 +400,7 @@ export function LogoCompositor({
 
   function onPointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
     const { mx, my } = clientToCanvas(e.clientX, e.clientY);
-    const ordered = [...elementsRef.current].filter((x) => x.visible).reverse();
+    const ordered = [...elementsRef.current].filter((x) => x.visible && x.view === view).reverse();
     for (const el of ordered) {
       if (el.locked) continue;
       const inside = hitRotatedRect(mx, my, el.x, el.y, el.width, el.height, el.rotation);
