@@ -20,6 +20,7 @@ export const footerServices: NavItem[] = [
   { label: "Business Apparel", href: "/business-apparel" },
   { label: "Our Work", href: "/our-work" },
   { label: "Browse Apparel", href: "/apparel" },
+  { label: "Preview Your Logo", href: "/customize" },
 ];
 
 export const footerCompany: NavItem[] = [

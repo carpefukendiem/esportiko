@@ -153,6 +153,15 @@ export function MyTeamMenuContent({
             Request a quote
           </Link>
         </Button>
+        <p className="pt-2">
+          <Link
+            href="/customize"
+            onClick={afterNav}
+            className="text-sm text-[#8A94A6] transition-colors hover:text-white"
+          >
+            Preview your logo →
+          </Link>
+        </p>
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-soft">
             What&apos;s included

@@ -94,6 +94,14 @@ export default function ApparelStyleDetailPage({
             <p className="mt-1 font-mono text-label text-gray-muted">
               Style #{product.styleNumber}
             </p>
+            <p className="mt-3">
+              <Link
+                href={`/customize?style=${encodeURIComponent(product.styleNumber)}&category=${encodeURIComponent(category.slug)}`}
+                className="text-sm font-semibold text-blue-light underline-offset-4 hover:text-off-white hover:underline"
+              >
+                Preview your logo on this style
+              </Link>
+            </p>
             <p className="mt-6 font-sans text-body-sm text-gray-soft">
               <span className="font-semibold text-off-white">
                 Available sizes:{" "}
