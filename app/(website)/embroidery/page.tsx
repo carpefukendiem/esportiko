@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { FAQAccordion } from "@/components/ui/FAQAccordion";
 import { CTABand } from "@/components/ui/CTABand";
 import { ProcessStep } from "@/components/ui/ProcessStep";
-import { Button } from "@/components/ui/button";
+import { ServiceHero } from "@/components/ui/ServiceHero";
 import { getFaqsByCategoryId } from "@/lib/data/faq";
 import { buildMetadata } from "@/lib/seo";
 
@@ -22,26 +21,15 @@ const faqItems = getFaqsByCategoryId("embroidery");
 export default function EmbroideryPage() {
   return (
     <>
-      <SectionContainer className="bg-texture-dark">
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
-            Embroidery That Reads Premium Up Close
-          </h1>
-          <p className="mb-8 text-body text-gray-soft">
-            Dimensional thread work for restaurants, professional services, team
-            sideline gear, and any brand that needs tactile authority on polos,
-            structured caps, and outerwear.
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Button asChild variant="primary">
-              <Link href="/start-business-order">Start Business Order</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link href="/request-a-quote">Request a Quote</Link>
-            </Button>
-          </div>
-        </div>
-      </SectionContainer>
+      <ServiceHero
+        backgroundImage="/images/embroidery-bg1.png"
+        heading="Embroidery That Reads Premium Up Close"
+        subheading="Dimensional thread work for restaurants, professional services, team sideline gear, and any brand that needs tactile authority on polos, structured caps, and outerwear."
+        ctaLabel="Start Business Order"
+        ctaHref="/start-business-order"
+        secondaryCtaLabel="Request a Quote"
+        secondaryCtaHref="/request-a-quote"
+      />
       <SectionContainer className="bg-texture-navy-mid border-y border-slate/60">
         <div className="mx-auto max-w-3xl">
           <h2 className="mb-4 font-display text-h2 font-semibold text-white">

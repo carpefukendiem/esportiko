@@ -15,13 +15,16 @@ export function ServiceHero({
   backgroundImage: string;
   heading: string;
   subheading: string;
-  ctaLabel: string;
-  ctaHref: string;
+  /** When omitted, no CTA buttons are rendered (e.g. FAQ hero). */
+  ctaLabel?: string;
+  ctaHref?: string;
   secondaryCtaLabel?: string;
   secondaryCtaHref?: string;
   /** Tailwind gradient or bg-* classes only (layer also has absolute inset-0 z-[1]). */
   overlayClassName?: string;
 }) {
+  const hasPrimaryCta = Boolean(ctaLabel && ctaHref);
+  const hasSecondaryCta = Boolean(secondaryCtaLabel && secondaryCtaHref);
   const overlayTint =
     overlayClassName ??
     "bg-gradient-to-b from-[#0F1521]/55 via-[#0F1521]/40 to-[#0F1521]/30";
@@ -51,20 +54,20 @@ export function ServiceHero({
         <p className="mb-8 max-w-2xl text-body text-off-white drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)]">
           {subheading}
         </p>
-        {secondaryCtaLabel && secondaryCtaHref ? (
+        {hasPrimaryCta && hasSecondaryCta ? (
           <div className="flex w-full max-w-md flex-col gap-3 sm:mx-auto sm:max-w-none sm:flex-row sm:justify-center">
             <Button asChild variant="primary" className="w-full sm:w-auto">
-              <Link href={ctaHref}>{ctaLabel}</Link>
+              <Link href={ctaHref!}>{ctaLabel}</Link>
             </Button>
             <Button asChild variant="ghost" className="w-full sm:w-auto">
-              <Link href={secondaryCtaHref}>{secondaryCtaLabel}</Link>
+              <Link href={secondaryCtaHref!}>{secondaryCtaLabel}</Link>
             </Button>
           </div>
-        ) : (
+        ) : hasPrimaryCta ? (
           <Button asChild variant="primary" className="mx-auto">
-            <Link href={ctaHref}>{ctaLabel}</Link>
+            <Link href={ctaHref!}>{ctaLabel}</Link>
           </Button>
-        )}
+        ) : null}
       </div>
     </section>
   );
