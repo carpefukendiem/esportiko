@@ -1,67 +1,34 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { buildGarmentPlaceholderDataUrl } from "@/lib/catalog/garment-placeholder";
+import type { DesignElement } from "@/lib/customize/design-types";
+import type { GarmentSvgKind } from "@/lib/customize/design-types";
+import { printZoneOnCanvas } from "@/lib/customize/canvas-print-zone";
 
-export type GarmentKind = "torso" | "cap";
-
-type PrintZone = { x: number; y: number; w: number; h: number };
-
-function printZoneFor(
-  kind: GarmentKind,
-  view: "front" | "back",
-  cw: number,
-  ch: number
-): PrintZone {
-  const f =
-    kind === "cap"
-      ? view === "front"
-        ? { x: 0.28, y: 0.3, w: 0.44, h: 0.32 }
-        : { x: 0.26, y: 0.24, w: 0.48, h: 0.3 }
-      : view === "front"
-        ? { x: 0.22, y: 0.26, w: 0.56, h: 0.28 }
-        : { x: 0.24, y: 0.2, w: 0.52, h: 0.26 };
-  return {
-    x: f.x * cw,
-    y: f.y * ch,
-    w: f.w * cw,
-    h: f.h * ch,
-  };
-}
-
-function rectFullyInside(
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  z: PrintZone
-) {
-  return (
-    x >= z.x &&
-    y >= z.y &&
-    x + w <= z.x + z.w &&
-    y + h <= z.y + z.h
-  );
-}
-
-type Corner = "nw" | "ne" | "sw" | "se";
 const HANDLE = 10;
+type Corner = "nw" | "ne" | "sw" | "se";
+
+type DragState =
+  | { type: "move"; id: string; startMx: number; startMy: number; origX: number; origY: number }
+  | { type: "resize"; id: string; corner: Corner; anchorX: number; anchorY: number };
 
 export type LogoCompositorProps = {
   canvasWidth: number;
   canvasHeight: number;
-  garmentKind: GarmentKind;
+  garmentSvgKind: GarmentSvgKind;
   view: "front" | "back";
   fillHex: string;
   garmentRasterUrl: string | null;
-  logoSrc: string | null;
-  logoNaturalWidth: number;
-  logoNaturalHeight: number;
-  hasLogo: boolean;
-  sizePct: number;
-  opacityPct: number;
-  onOutsidePrintZoneChange: (outside: boolean) => void;
-  onRegisterReset?: (fn: () => void) => void;
+  /** When true, dashed print zone is baked into the SVG garment. */
+  showGarmentPrintZone: boolean;
+  /** Overlay the canonical print rectangle on the canvas (dashed). */
+  showSafeZoneOverlay: boolean;
+  elements: DesignElement[];
+  selectedElementId: string | null;
+  onElementsChange: (next: DesignElement[]) => void;
+  onSelectElement: (id: string | null) => void;
+  onOutsidePrintZoneChange?: (outside: boolean) => void;
   onCanvasReady?: (el: HTMLCanvasElement) => void;
 };
 
@@ -75,81 +42,97 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-type DragState =
-  | { type: "move"; offX: number; offY: number }
-  | { type: "resize"; corner: Corner; anchorX: number; anchorY: number };
+function rectFullyInside(
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  z: { x: number; y: number; w: number; h: number }
+) {
+  return x >= z.x && y >= z.y && x + w <= z.x + z.w && y + h <= z.y + z.h;
+}
+
+function hitRotatedRect(
+  px: number,
+  py: number,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  rotationDeg: number
+): boolean {
+  if (rotationDeg === 0) {
+    return px >= x && px <= x + w && py >= y && py <= y + h;
+  }
+  const cx = x + w / 2;
+  const cy = y + h / 2;
+  const rad = (-rotationDeg * Math.PI) / 180;
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+  const dx = px - cx;
+  const dy = py - cy;
+  const lx = dx * cos - dy * sin;
+  const ly = dx * sin + dy * cos;
+  return Math.abs(lx) <= w / 2 && Math.abs(ly) <= h / 2;
+}
+
+function measureTextBox(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  fontPx: number,
+  family: string,
+  bold: boolean,
+  letterSpacing: number
+): { w: number; h: number } {
+  const weight = bold ? "700" : "400";
+  ctx.font = `${weight} ${fontPx}px "${family}", system-ui, sans-serif`;
+  ctx.letterSpacing = `${letterSpacing}px`;
+  const w = Math.max(1, ctx.measureText(text || " ").width + 8);
+  const h = Math.max(1, fontPx * 1.25 + 8);
+  ctx.letterSpacing = "0px";
+  return { w, h };
+}
 
 export function LogoCompositor({
   canvasWidth,
   canvasHeight,
-  garmentKind,
+  garmentSvgKind,
   view,
   fillHex,
   garmentRasterUrl,
-  logoSrc,
-  logoNaturalWidth,
-  logoNaturalHeight,
-  hasLogo,
-  sizePct,
-  opacityPct,
+  showGarmentPrintZone,
+  showSafeZoneOverlay,
+  elements,
+  selectedElementId,
+  onElementsChange,
+  onSelectElement,
   onOutsidePrintZoneChange,
-  onRegisterReset,
   onCanvasReady,
 }: LogoCompositorProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const baseImgRef = useRef<HTMLImageElement | null>(null);
+  const imageCacheRef = useRef<Map<string, HTMLImageElement>>(new Map());
+  const rafRef = useRef<number | null>(null);
+  const dragRef = useRef<DragState | null>(null);
+  const outsideRef = useRef(false);
+  const elementsRef = useRef(elements);
+  elementsRef.current = elements;
+
+  const zone = useMemo(
+    () => printZoneOnCanvas(garmentSvgKind, view, canvasWidth, canvasHeight),
+    [canvasHeight, canvasWidth, garmentSvgKind, view]
+  );
+
+  const garmentKey = useMemo(
+    () =>
+      `${canvasWidth}x${canvasHeight}|${garmentSvgKind}|${view}|${garmentRasterUrl ?? ""}|${fillHex}|${showGarmentPrintZone ? 1 : 0}`,
+    [canvasHeight, canvasWidth, fillHex, garmentRasterUrl, garmentSvgKind, showGarmentPrintZone, view]
+  );
 
   useEffect(() => {
     const el = canvasRef.current;
     if (el) onCanvasReady?.(el);
   }, [onCanvasReady, canvasWidth, canvasHeight]);
-  const baseImgRef = useRef<HTMLImageElement | null>(null);
-  const logoImgRef = useRef<HTMLImageElement | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const outsideRef = useRef(false);
-  const dragRef = useRef<DragState | null>(null);
-  const logoGeomRef = useRef({ x: 0, y: 0, w: 100, h: 100 });
-
-  const [logoX, setLogoX] = useState(0);
-  const [logoY, setLogoY] = useState(0);
-  const [logoW, setLogoW] = useState(100);
-  const [logoH, setLogoH] = useState(100);
-  const [selected, setSelected] = useState(false);
-
-  const zone = useMemo(
-    () => printZoneFor(garmentKind, view, canvasWidth, canvasHeight),
-    [canvasHeight, canvasWidth, garmentKind, view]
-  );
-  const aspect =
-    logoNaturalWidth > 0 ? logoNaturalHeight / logoNaturalWidth : 1;
-
-  const garmentKey = useMemo(
-    () =>
-      `${canvasWidth}x${canvasHeight}|${garmentKind}|${view}|${garmentRasterUrl ?? ""}|${fillHex}`,
-    [canvasHeight, canvasWidth, fillHex, garmentKind, garmentRasterUrl, view]
-  );
-
-  logoGeomRef.current = { x: logoX, y: logoY, w: logoW, h: logoH };
-
-  const placeCenteredInZone = useCallback(
-    (pct: number) => {
-      const w = Math.max(20, (pct / 100) * canvasWidth);
-      const h = w * aspect;
-      const cx = zone.x + zone.w / 2;
-      const cy = zone.y + zone.h / 2;
-      setLogoW(w);
-      setLogoH(h);
-      setLogoX(cx - w / 2);
-      setLogoY(cy - h / 2);
-    },
-    [aspect, canvasWidth, zone.x, zone.y, zone.w, zone.h]
-  );
-
-  useEffect(() => {
-    onRegisterReset?.(() => {
-      placeCenteredInZone(sizePct);
-      setSelected(true);
-    });
-  }, [onRegisterReset, placeCenteredInZone, sizePct]);
 
   useEffect(() => {
     let cancelled = false;
@@ -163,10 +146,10 @@ export function LogoCompositor({
         }
       } catch {
         const url = buildGarmentPlaceholderDataUrl(
-          garmentKind,
+          garmentSvgKind,
           view,
           fillHex,
-          !hasLogo
+          showGarmentPrintZone
         );
         try {
           const img = await loadImage(url);
@@ -179,47 +162,27 @@ export function LogoCompositor({
     return () => {
       cancelled = true;
     };
-  }, [fillHex, garmentKind, garmentRasterUrl, hasLogo, view]);
+  }, [fillHex, garmentRasterUrl, garmentSvgKind, showGarmentPrintZone, view]);
 
   useEffect(() => {
     let cancelled = false;
-    if (!logoSrc || !hasLogo) {
-      logoImgRef.current = null;
-      return;
-    }
     (async () => {
-      try {
-        const img = await loadImage(logoSrc);
-        if (!cancelled) logoImgRef.current = img;
-      } catch {
-        if (!cancelled) logoImgRef.current = null;
-      }
+      await document.fonts.ready;
+      if (cancelled) return;
     })();
     return () => {
       cancelled = true;
     };
-  }, [hasLogo, logoSrc]);
+  }, []);
 
-  const sizePctRef = useRef(sizePct);
-  sizePctRef.current = sizePct;
-
-  useEffect(() => {
-    placeCenteredInZone(sizePctRef.current);
-    setSelected(Boolean(hasLogo));
-  }, [garmentKey, hasLogo, logoSrc, placeCenteredInZone]);
-
-  useEffect(() => {
-    if (dragRef.current) return;
-    const { x, y, w, h } = logoGeomRef.current;
-    const cx = x + w / 2;
-    const cy = y + h / 2;
-    const nw = Math.max(20, (sizePct / 100) * canvasWidth);
-    const nh = nw * aspect;
-    setLogoW(nw);
-    setLogoH(nh);
-    setLogoX(cx - nw / 2);
-    setLogoY(cy - nh / 2);
-  }, [aspect, canvasWidth, sizePct]);
+  const ensureImage = useCallback(async (src: string) => {
+    const cache = imageCacheRef.current;
+    const hit = cache.get(src);
+    if (hit && hit.complete) return hit;
+    const img = await loadImage(src);
+    cache.set(src, img);
+    return img;
+  }, []);
 
   const draw = useCallback(() => {
     const c = canvasRef.current;
@@ -231,48 +194,96 @@ export function LogoCompositor({
     if (base && base.complete && base.naturalWidth) {
       ctx.drawImage(base, 0, 0, canvasWidth, canvasHeight);
     }
-    const logo = logoImgRef.current;
-    if (logo && logo.complete && hasLogo) {
-      ctx.save();
-      ctx.globalAlpha = opacityPct / 100;
-      ctx.drawImage(logo, logoX, logoY, logoW, logoH);
-      ctx.restore();
-      if (selected) {
-        ctx.strokeStyle = "#3B7BF8";
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
-        ctx.strokeRect(logoX, logoY, logoW, logoH);
-        ctx.setLineDash([]);
-        const corners: [number, number][] = [
-          [logoX, logoY],
-          [logoX + logoW, logoY],
-          [logoX, logoY + logoH],
-          [logoX + logoW, logoY + logoH],
-        ];
-        ctx.fillStyle = "#3B7BF8";
-        for (const [cx, cy] of corners) {
-          ctx.fillRect(cx - HANDLE / 2, cy - HANDLE / 2, HANDLE, HANDLE);
-        }
+
+    const els = elementsRef.current.filter((e) => e.visible);
+    for (const el of els) {
+      if (el.type === "image" && el.src) {
+        const img = imageCacheRef.current.get(el.src);
+        if (!img || !img.complete) continue;
+        ctx.save();
+        ctx.globalAlpha = el.opacity;
+        const cx = el.x + el.width / 2;
+        const cy = el.y + el.height / 2;
+        ctx.translate(cx, cy);
+        ctx.rotate((el.rotation * Math.PI) / 180);
+        ctx.drawImage(img, -el.width / 2, -el.height / 2, el.width, el.height);
+        ctx.restore();
+      } else if (el.type === "text") {
+        const text = el.text ?? "YOUR TEXT";
+        const fontSize = el.fontSize ?? 48;
+        const family = el.fontFamily ?? "Bebas Neue";
+        const bold = Boolean(el.bold);
+        const letter = el.letterSpacing ?? 0;
+        const color = el.color ?? "#ffffff";
+        ctx.save();
+        ctx.globalAlpha = el.opacity;
+        const cx = el.x + el.width / 2;
+        const cy = el.y + el.height / 2;
+        ctx.translate(cx, cy);
+        ctx.rotate((el.rotation * Math.PI) / 180);
+        const weight = bold ? "700" : "400";
+        ctx.font = `${weight} ${fontSize}px "${family}", system-ui, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.letterSpacing = `${letter}px`;
+        ctx.fillStyle = color;
+        ctx.fillText(text, 0, 0);
+        ctx.letterSpacing = "0px";
+        ctx.restore();
       }
     }
+
+    if (showSafeZoneOverlay) {
+      ctx.save();
+      ctx.strokeStyle = "rgba(148,163,184,0.75)";
+      ctx.setLineDash([6, 6]);
+      ctx.lineWidth = 1;
+      ctx.strokeRect(zone.x + 0.5, zone.y + 0.5, zone.w - 1, zone.h - 1);
+      ctx.restore();
+    }
+
+    const sel = els.find((e) => e.id === selectedElementId);
+    if (sel) {
+      ctx.save();
+      ctx.strokeStyle = "#3B7BF8";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      const cx = sel.x + sel.width / 2;
+      const cy = sel.y + sel.height / 2;
+      ctx.translate(cx, cy);
+      ctx.rotate((sel.rotation * Math.PI) / 180);
+      ctx.strokeRect(-sel.width / 2, -sel.height / 2, sel.width, sel.height);
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#3B7BF8";
+      const hw = sel.width / 2;
+      const hh = sel.height / 2;
+      const corners: [number, number][] = [
+        [-hw, -hh],
+        [hw, -hh],
+        [-hw, hh],
+        [hw, hh],
+      ];
+      for (const [rx, ry] of corners) {
+        ctx.fillRect(rx - HANDLE / 2, ry - HANDLE / 2, HANDLE, HANDLE);
+      }
+      ctx.restore();
+    }
+
     const outside =
-      hasLogo &&
-      !rectFullyInside(logoX, logoY, logoW, logoH, zone);
-    if (outsideRef.current !== outside) {
-      outsideRef.current = outside;
-      onOutsidePrintZoneChange(outside);
+      Boolean(sel) &&
+      !rectFullyInside(sel!.x, sel!.y, sel!.width, sel!.height, zone);
+    if (onOutsidePrintZoneChange) {
+      if (outsideRef.current !== outside) {
+        outsideRef.current = outside;
+        onOutsidePrintZoneChange(outside);
+      }
     }
   }, [
     canvasHeight,
     canvasWidth,
-    hasLogo,
-    logoH,
-    logoW,
-    logoX,
-    logoY,
     onOutsidePrintZoneChange,
-    opacityPct,
-    selected,
+    selectedElementId,
+    showSafeZoneOverlay,
     zone,
   ]);
 
@@ -286,7 +297,29 @@ export function LogoCompositor({
 
   useEffect(() => {
     scheduleDraw();
-  }, [draw, scheduleDraw]);
+  }, [draw, scheduleDraw, elements, selectedElementId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      for (const el of elements) {
+        if (el.type !== "image" || !el.src) continue;
+        try {
+          const img = await ensureImage(el.src);
+          if (!cancelled && img) scheduleDraw();
+        } catch {
+          /* skip broken uploads */
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [elements, ensureImage, scheduleDraw]);
+
+  useEffect(() => {
+    scheduleDraw();
+  }, [garmentKey, scheduleDraw]);
 
   function clientToCanvas(clientX: number, clientY: number) {
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -297,17 +330,26 @@ export function LogoCompositor({
     };
   }
 
-  function hitCorner(mx: number, my: number): Corner | null {
+  function hitCorner(mx: number, my: number, el: DesignElement): Corner | null {
+    const cx = el.x + el.width / 2;
+    const cy = el.y + el.height / 2;
+    const rad = (el.rotation * Math.PI) / 180;
+    const cos = Math.cos(-rad);
+    const sin = Math.sin(-rad);
+    const dx = mx - cx;
+    const dy = my - cy;
+    const lx = dx * cos - dy * sin;
+    const ly = dx * sin + dy * cos;
+    const hw = el.width / 2;
+    const hh = el.height / 2;
     const pts: [Corner, number, number][] = [
-      ["nw", logoX, logoY],
-      ["ne", logoX + logoW, logoY],
-      ["sw", logoX, logoY + logoH],
-      ["se", logoX + logoW, logoY + logoH],
+      ["nw", -hw, -hh],
+      ["ne", hw, -hh],
+      ["sw", -hw, hh],
+      ["se", hw, hh],
     ];
-    for (const [name, cx, cy] of pts) {
-      if (Math.abs(mx - cx) <= HANDLE && Math.abs(my - cy) <= HANDLE) {
-        return name;
-      }
+    for (const [name, rx, ry] of pts) {
+      if (Math.abs(lx - rx) <= HANDLE && Math.abs(ly - ry) <= HANDLE) return name;
     }
     return null;
   }
@@ -327,74 +369,113 @@ export function LogoCompositor({
     }
   }
 
+  function patchElement(id: string, patch: Partial<DesignElement>) {
+    onElementsChange(elementsRef.current.map((e) => (e.id === id ? { ...e, ...patch } : e)));
+  }
+
   function onPointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
     const { mx, my } = clientToCanvas(e.clientX, e.clientY);
-    if (hasLogo && logoImgRef.current) {
-      const corner = selected ? hitCorner(mx, my) : null;
+    const ordered = [...elementsRef.current].filter((x) => x.visible).reverse();
+    for (const el of ordered) {
+      if (el.locked) continue;
+      const inside = hitRotatedRect(mx, my, el.x, el.y, el.width, el.height, el.rotation);
+      if (!inside) continue;
+      onSelectElement(el.id);
+      const corner = hitCorner(mx, my, el);
       if (corner) {
-        const { ax, ay } = anchorForCorner(corner, logoX, logoY, logoW, logoH);
-        dragRef.current = { type: "resize", corner, anchorX: ax, anchorY: ay };
-        (e.target as HTMLCanvasElement).setPointerCapture(e.pointerId);
-        return;
+        const { ax, ay } = anchorForCorner(corner, el.x, el.y, el.width, el.height);
+        dragRef.current = { type: "resize", id: el.id, corner, anchorX: ax, anchorY: ay };
+      } else {
+        dragRef.current = {
+          type: "move",
+          id: el.id,
+          startMx: mx,
+          startMy: my,
+          origX: el.x,
+          origY: el.y,
+        };
       }
-      if (mx >= logoX && mx <= logoX + logoW && my >= logoY && my <= logoY + logoH) {
-        dragRef.current = { type: "move", offX: mx - logoX, offY: my - logoY };
-        setSelected(true);
-        (e.target as HTMLCanvasElement).setPointerCapture(e.pointerId);
-        return;
-      }
+      (e.target as HTMLCanvasElement).setPointerCapture(e.pointerId);
+      scheduleDraw();
+      return;
     }
-    setSelected(false);
+    onSelectElement(null);
+    scheduleDraw();
   }
 
   function onPointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
     const d = dragRef.current;
     if (!d) return;
     const { mx, my } = clientToCanvas(e.clientX, e.clientY);
+    const el = elementsRef.current.find((x) => x.id === d.id);
+    if (!el || el.locked) return;
+
     if (d.type === "move") {
-      setLogoX(mx - d.offX);
-      setLogoY(my - d.offY);
+      const dx = mx - d.startMx;
+      const dy = my - d.startMy;
+      patchElement(el.id, { x: d.origX + dx, y: d.origY + dy });
     } else {
       const { anchorX, anchorY, corner } = d;
-      let w = 20;
-      let nx = anchorX;
-      let ny = anchorY;
-      if (corner === "se") {
-        w = Math.max(20, mx - anchorX);
-        const h = w * aspect;
-        nx = anchorX;
-        ny = anchorY;
-        setLogoW(w);
-        setLogoH(h);
-        setLogoX(nx);
-        setLogoY(ny);
-      } else if (corner === "nw") {
-        w = Math.max(20, anchorX - mx);
-        const h = w * aspect;
-        nx = anchorX - w;
-        ny = anchorY - h;
-        setLogoW(w);
-        setLogoH(h);
-        setLogoX(nx);
-        setLogoY(ny);
-      } else if (corner === "ne") {
-        w = Math.max(20, mx - anchorX);
-        const h = w * aspect;
-        nx = anchorX;
-        ny = anchorY - h;
-        setLogoW(w);
-        setLogoH(h);
-        setLogoX(nx);
-        setLogoY(ny);
+      if (el.type === "image") {
+        const aspect = el.height > 0 ? el.height / el.width : 1;
+        let w = 20;
+        let nx = anchorX;
+        let ny = anchorY;
+        if (corner === "se") {
+          w = Math.max(20, mx - anchorX);
+          const h = w * aspect;
+          nx = anchorX;
+          ny = anchorY;
+          patchElement(el.id, { x: nx, y: ny, width: w, height: h });
+        } else if (corner === "nw") {
+          w = Math.max(20, anchorX - mx);
+          const h = w * aspect;
+          nx = anchorX - w;
+          ny = anchorY - h;
+          patchElement(el.id, { x: nx, y: ny, width: w, height: h });
+        } else if (corner === "ne") {
+          w = Math.max(20, mx - anchorX);
+          const h = w * aspect;
+          nx = anchorX;
+          ny = anchorY - h;
+          patchElement(el.id, { x: nx, y: ny, width: w, height: h });
+        } else {
+          w = Math.max(20, anchorX - mx);
+          const h = w * aspect;
+          nx = anchorX - w;
+          ny = anchorY;
+          patchElement(el.id, { x: nx, y: ny, width: w, height: h });
+        }
       } else {
-        w = Math.max(20, anchorX - mx);
-        const h = w * aspect;
-        nx = anchorX - w;
-        ny = anchorY;
-        setLogoW(w);
-        setLogoH(h);
-        setLogoX(nx);
-        setLogoY(ny);
+        const c = canvasRef.current?.getContext("2d");
+        if (!c) return;
+        let w = 20;
+        if (corner === "se") {
+          w = Math.max(20, mx - anchorX);
+        } else if (corner === "nw") {
+          w = Math.max(20, anchorX - mx);
+        } else if (corner === "ne") {
+          w = Math.max(20, mx - anchorX);
+        } else {
+          w = Math.max(20, anchorX - mx);
+        }
+        const text = el.text ?? "YOUR TEXT";
+        const family = el.fontFamily ?? "Bebas Neue";
+        const bold = Boolean(el.bold);
+        const letter = el.letterSpacing ?? 0;
+        const baseFs = el.fontSize ?? 48;
+        const scale = w / Math.max(1, el.width);
+        const fontSize = Math.max(20, Math.min(120, baseFs * scale));
+        const { w: tw, h: th } = measureTextBox(c, text, fontSize, family, bold, letter);
+        const ocx = el.x + el.width / 2;
+        const ocy = el.y + el.height / 2;
+        patchElement(el.id, {
+          fontSize,
+          x: ocx - tw / 2,
+          y: ocy - th / 2,
+          width: tw,
+          height: th,
+        });
       }
     }
     scheduleDraw();
@@ -410,15 +491,6 @@ export function LogoCompositor({
     scheduleDraw();
   }
 
-  function onDoubleClick(e: React.PointerEvent<HTMLCanvasElement>) {
-    const { mx, my } = clientToCanvas(e.clientX, e.clientY);
-    if (!hasLogo) return;
-    if (mx >= logoX && mx <= logoX + logoW && my >= logoY && my <= logoY + logoH) {
-      setSelected(true);
-      scheduleDraw();
-    }
-  }
-
   return (
     <canvas
       ref={canvasRef}
@@ -430,15 +502,11 @@ export function LogoCompositor({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
-      onDoubleClick={onDoubleClick}
     />
   );
 }
 
-export function downloadCanvasPreview(
-  canvas: HTMLCanvasElement | null,
-  styleNumber: string
-) {
+export function downloadCanvasPreview(canvas: HTMLCanvasElement | null, styleNumber: string) {
   if (!canvas) return;
   const a = document.createElement("a");
   a.href = canvas.toDataURL("image/png");

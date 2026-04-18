@@ -16,3 +16,14 @@ export function getGarmentImageUrls(styleNumber: string): GarmentImageUrls {
   const key = styleNumber.trim().toUpperCase();
   return EXAMPLES[key] ?? { front: null, back: null };
 }
+
+export function getGarmentMockupUrl(
+  category: string,
+  view: "front" | "back",
+  colorName: string
+): string | null {
+  void category;
+  void view;
+  void colorName;
+  return null;
+}
