@@ -34,3 +34,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.claude/
+SanMar-Web-Services-Integration-Guide-24.3.pdf
+esportiko.sketch
+esportikoftp.md
+sanmar/

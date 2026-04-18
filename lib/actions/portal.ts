@@ -222,6 +222,14 @@ export async function submitPortalOrder(
     throw new Error("Failed to submit");
   }
 
+  const submittedRow = updated as OrderRow;
+  if (submittedRow.source === "ghl_quote_webhook") {
+    await supabase
+      .from("accounts")
+      .update({ onboarding_completed: true })
+      .eq("id", account.id);
+  }
+
   await sendOrderToGHL(updated as OrderRow, {
     ...account,
     team_name: values.team_name,
@@ -358,4 +366,18 @@ export async function removeArtworkAsset(assetId: string): Promise<void> {
   await supabase.storage.from("artwork").remove([row.storage_path]);
   await supabase.from("artwork_assets").delete().eq("id", assetId);
   revalidatePath("/portal/artwork");
+}
+
+
+export async function dismissGhlQuoteOnboardingBanner(): Promise<void> {
+  const { supabase, account } = await requireAccount();
+  const { error } = await supabase
+    .from("accounts")
+    .update({ onboarding_completed: true })
+    .eq("id", account.id);
+  if (error) {
+    console.error("dismissGhlQuoteOnboardingBanner", error);
+    throw new Error("Could not update account");
+  }
+  revalidatePath("/portal/dashboard");
 }

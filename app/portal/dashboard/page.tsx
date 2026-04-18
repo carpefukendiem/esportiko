@@ -5,6 +5,7 @@ import { ensureAccount } from "@/lib/portal/ensureAccount";
 import { dashboardWelcomeDisplayName } from "@/lib/portal/dashboardWelcomeName";
 import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
 import { OrderStatusBadge } from "@/components/portal/OrderStatusBadge";
+import { GhlQuoteDraftBanner } from "@/components/portal/GhlQuoteDraftBanner";
 import type { OrderRow, OrderStatus, SavedConfigurationRow } from "@/types/portal";
 
 export default async function PortalDashboardPage() {
@@ -22,7 +23,7 @@ export default async function PortalDashboardPage() {
   );
   if (!account) return <PortalAccountSetupFailed />;
 
-  const [{ data: orders }, { data: configs }] = await Promise.all([
+  const [{ data: orders }, { data: configs }, { data: ghlDraft }] = await Promise.all([
     supabase
       .from("orders")
       .select("*")
@@ -35,10 +36,23 @@ export default async function PortalDashboardPage() {
       .eq("account_id", account.id)
       .order("created_at", { ascending: false })
       .limit(6),
+    supabase
+      .from("orders")
+      .select("id")
+      .eq("account_id", account.id)
+      .eq("status", "draft")
+      .eq("source", "ghl_quote_webhook")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
 
   const list = (orders ?? []) as OrderRow[];
   const saved = (configs ?? []) as SavedConfigurationRow[];
+
+  const showGhlQuoteBanner =
+    account.onboarding_completed === false &&
+    Boolean(ghlDraft && typeof ghlDraft.id === "string");
 
   const welcomeName = dashboardWelcomeDisplayName(
     account,
@@ -47,6 +61,10 @@ export default async function PortalDashboardPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-10">
+      {showGhlQuoteBanner && ghlDraft && typeof ghlDraft.id === "string" ? (
+        <GhlQuoteDraftBanner orderId={ghlDraft.id} />
+      ) : null}
+
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-sans text-2xl font-semibold text-white md:text-3xl">
