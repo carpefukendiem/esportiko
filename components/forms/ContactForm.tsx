@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { TextField } from "@/components/forms/fields/TextField";
 import { EmailField } from "@/components/forms/fields/EmailField";
 import { PhoneField } from "@/components/forms/fields/PhoneField";
@@ -27,6 +28,16 @@ const SERVICE_INTEREST = [
   { value: "Business Apparel", label: "Business Apparel" },
 ];
 
+const APPAREL_OPTIONS = [
+  "Jerseys",
+  "Hoodies",
+  "T-Shirts",
+  "Polos",
+  "Hats",
+  "Bags / totes",
+  "Other",
+];
+
 const CONTACT_ERROR = formSubmitErrorMessage;
 
 export function ContactForm() {
@@ -43,6 +54,7 @@ export function ContactForm() {
       subject: "",
       message: "",
       serviceInterest: "general",
+      garmentInterests: [],
     },
     mode: "onTouched",
   });
@@ -68,6 +80,9 @@ export function ContactForm() {
     const p = (values.phone ?? "").trim();
     if (e) payload.email = e;
     if (p) payload.phone = p;
+    if (values.garmentInterests?.length) {
+      payload.garment_types = values.garmentInterests;
+    }
 
     const ok = await submit(payload);
     if (ok) setThanksName(values.name.trim());
@@ -124,6 +139,47 @@ export function ContactForm() {
         control={control}
         options={SERVICE_INTEREST}
         placeholder="Select"
+      />
+      <Controller
+        name="garmentInterests"
+        control={control}
+        render={({ field, fieldState }) => (
+          <fieldset className="space-y-3">
+            <legend className="font-sans text-label font-medium uppercase tracking-wider text-gray-soft">
+              Apparel you have in mind (optional)
+            </legend>
+            <p className="text-body-sm text-gray-soft">
+              Helps us route your message and pre-fill quote details when we set
+              up your portal.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {APPAREL_OPTIONS.map((opt) => (
+                <label
+                  key={opt}
+                  className="flex cursor-pointer items-center gap-3 rounded-md border border-slate bg-navy-light px-3 py-3"
+                >
+                  <Checkbox
+                    checked={field.value?.includes(opt)}
+                    onCheckedChange={(checked) => {
+                      const cur = field.value ?? [];
+                      field.onChange(
+                        checked
+                          ? [...cur, opt]
+                          : cur.filter((x: string) => x !== opt)
+                      );
+                    }}
+                  />
+                  <span className="text-body-sm text-off-white">{opt}</span>
+                </label>
+              ))}
+            </div>
+            {fieldState.error ? (
+              <p className="text-body-sm text-error" role="alert">
+                {fieldState.error.message}
+              </p>
+            ) : null}
+          </fieldset>
+        )}
       />
       <TextareaField
         name="message"

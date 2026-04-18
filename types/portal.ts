@@ -14,6 +14,7 @@ export type AccountRow = {
   contact_name: string | null;
   contact_email: string | null;
   contact_phone: string | null;
+  ghl_contact_id?: string | null;
   default_roster: DefaultRosterJson;
   use_default_roster_for_new_orders: boolean;
   /** Present when onboarding wizard / extended profile columns exist */
@@ -47,6 +48,7 @@ export type OrderRow = {
   artwork_deferred: boolean;
   roster_incomplete: boolean;
   ghl_contact_id: string | null;
+  source?: string | null;
   created_at: string;
   updated_at: string;
 };

@@ -13,6 +13,7 @@ export const contactFormSchema = z.object({
   subject: z.string().min(1, "Subject is required"),
   message: z.string().min(10, "Please add a bit more detail (10+ characters)"),
   serviceInterest: z.string().optional(),
+  garmentInterests: z.array(z.string()).optional(),
 });
 
 export type ContactFormValues = z.infer<typeof contactFormSchema>;
@@ -38,4 +39,5 @@ export const contactLeadApiSchema = z.object({
   subject: z.string(),
   message: z.string(),
   serviceInterest: z.string().optional(),
+  garment_types: z.array(z.string()).optional(),
 });
