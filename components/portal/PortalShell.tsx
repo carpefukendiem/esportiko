@@ -11,6 +11,7 @@ const nav = [
   { href: "/portal/dashboard", label: "Dashboard", icon: IconHome },
   { href: "/portal/orders", label: "My Orders", icon: IconOrders },
   { href: "/portal/new-order", label: "New Order", icon: IconPlus },
+  { href: "/portal/designs", label: "Saved Designs", icon: IconDesigns },
   { href: "/portal/roster", label: "Roster", icon: IconUsers },
   { href: "/portal/artwork", label: "Artwork", icon: IconImage },
   { href: "/portal/settings", label: "Account Settings", icon: IconGear },
@@ -164,6 +165,13 @@ function IconUsers({ className }: { className?: string }) {
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
       <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+function IconDesigns({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M7 7h6v6H7zM11 11h6v6h-6zM4 4h6v6H4z" />
     </svg>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FAQAccordion } from "@/components/ui/FAQAccordion";
+import { ServiceHero } from "@/components/ui/ServiceHero";
 import { faqCategories } from "@/lib/data/faq";
 import { buildMetadata } from "@/lib/seo";
 
@@ -34,16 +35,12 @@ export default function FaqPage() {
 
   return (
     <>
+      <ServiceHero
+        backgroundImage="/images/faq-bg.png"
+        heading="Frequently Asked Questions"
+        subheading="Practical answers for coaches, business owners, and event organizers planning custom apparel."
+      />
       <SectionContainer className="bg-texture-dark">
-        <div className="mx-auto mb-10 max-w-3xl text-center">
-          <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-body text-gray-soft">
-            Practical answers for coaches, business owners, and event organizers
-            planning custom apparel.
-          </p>
-        </div>
         <div className="mx-auto max-w-3xl">
           <Tabs defaultValue={defaultTab} className="w-full">
             <div className="overflow-x-auto pb-2">
