@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { isPublicAdminEmail } from "@/lib/auth/admin-public";
 import { cn } from "@/lib/utils/cn";
 import { PortalShellCollapsedProvider } from "@/components/portal/PortalShellContext";
 
@@ -11,7 +12,6 @@ const nav = [
   { href: "/portal/dashboard", label: "Dashboard", icon: IconHome },
   { href: "/portal/orders", label: "My Orders", icon: IconOrders },
   { href: "/portal/new-order", label: "New Order", icon: IconPlus },
-  { href: "/portal/designs", label: "Saved Designs", icon: IconDesigns },
   { href: "/portal/roster", label: "Roster", icon: IconUsers },
   { href: "/portal/artwork", label: "Artwork", icon: IconImage },
   { href: "/portal/settings", label: "Account Settings", icon: IconGear },
@@ -31,6 +31,14 @@ export function PortalShell({
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const [showAdminLink, setShowAdminLink] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    void supabase.auth.getUser().then(({ data }) => {
+      setShowAdminLink(isPublicAdminEmail(data.user?.email));
+    });
+  }, []);
 
   const signOut = async () => {
     const supabase = createClient();
@@ -75,6 +83,20 @@ export function PortalShell({
                 </Link>
               );
             })}
+            {showAdminLink ? (
+              <a
+                href="/admin"
+                target="_blank"
+                rel="noreferrer"
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 font-sans text-sm font-medium text-amber-200/90 transition-colors hover:bg-[#1C2333] hover:text-amber-100"
+                )}
+                title={collapsed ? "Admin" : undefined}
+              >
+                <IconShield className="h-5 w-5 shrink-0" />
+                {!collapsed && <span>Admin</span>}
+              </a>
+            ) : null}
           </nav>
 
           <div className="border-t border-[#2A3347] p-2">
@@ -168,13 +190,6 @@ function IconUsers({ className }: { className?: string }) {
     </svg>
   );
 }
-function IconDesigns({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M7 7h6v6H7zM11 11h6v6h-6zM4 4h6v6H4z" />
-    </svg>
-  );
-}
 function IconImage({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -192,6 +207,15 @@ function IconGear({ className }: { className?: string }) {
     </svg>
   );
 }
+function IconShield({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M12 3 4 6v6c0 5 3.5 8.5 8 9.5 4.5-1 8-4.5 8-9.5V6l-8-3Z" />
+      <path d="M9 12h6" />
+    </svg>
+  );
+}
+
 function IconOut({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

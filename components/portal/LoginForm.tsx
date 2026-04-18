@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import { isPublicAdminEmail } from "@/lib/auth/admin-public";
 import { getSiteUrl } from "@/lib/site-url";
 import { brandLogo } from "@/lib/data/media";
 
@@ -22,6 +23,7 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next") ?? "/portal/dashboard";
+  const authError = searchParams.get("error");
   const [oauthLoading, setOauthLoading] = useState(false);
 
   const {
@@ -44,7 +46,13 @@ export function LoginForm() {
       setFormError("root", { message: error.message });
       return;
     }
-    router.push(nextPath.startsWith("/") ? nextPath : `/${nextPath}`);
+    const next = nextPath.startsWith("/") ? nextPath : `/${nextPath}`;
+    if (next.startsWith("/admin") && !isPublicAdminEmail(data.email)) {
+      router.push("/portal/dashboard");
+      router.refresh();
+      return;
+    }
+    router.push(next);
     router.refresh();
   };
 
@@ -70,11 +78,10 @@ export function LoginForm() {
         <Image
           src={brandLogo.src}
           alt="Esportiko"
-          width={180}
-          height={120}
-          className="h-10 w-auto max-h-10 max-w-[min(100%,12rem)] object-contain object-center"
+          width={brandLogo.width}
+          height={brandLogo.height}
+          className="h-10 w-auto"
           priority
-          sizes="(max-width: 768px) 70vw, 12rem"
         />
       </div>
 
@@ -98,6 +105,12 @@ export function LoginForm() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {authError === "not-authorized" ? (
+          <p className="text-sm font-medium text-red-500" role="alert">
+            You don&apos;t have access to that area. Sign in with an admin email or return to the
+            team portal.
+          </p>
+        ) : null}
         {errors.root && (
           <p className="text-sm font-medium text-red-500" role="alert">
             {errors.root.message}
@@ -143,12 +156,6 @@ export function LoginForm() {
               {errors.password.message}
             </p>
           )}
-          <Link
-            href="/forgot-password"
-            className="text-sm text-[#8A94A6] hover:text-white transition-colors block text-right mb-2"
-          >
-            Forgot password?
-          </Link>
         </div>
         <button
           type="submit"
@@ -160,11 +167,12 @@ export function LoginForm() {
       </form>
 
       <p className="mt-6 text-center font-sans text-sm font-medium text-[#8A94A6]">
+        New team?{" "}
         <Link
-          href="/signup"
+          href="/team-orders"
           className="text-[#3B7BF8] hover:underline"
         >
-          Create an account
+          Request access
         </Link>
       </p>
     </div>

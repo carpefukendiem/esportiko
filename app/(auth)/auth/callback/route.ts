@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { isAdminEmail } from "@/lib/auth/admin-email";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
 import { getRequestOrigin } from "@/lib/request-origin";
 
@@ -23,10 +24,9 @@ export async function GET(request: NextRequest) {
   }
 
   const cookieStore = cookies();
-  const redirectTo = `${origin}${safeNext}`;
 
   // Session cookies must be attached to this response (Route Handler + redirect).
-  const response = NextResponse.redirect(redirectTo);
+  const response = NextResponse.redirect(`${origin}${safeNext}`);
 
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
@@ -62,6 +62,12 @@ export async function GET(request: NextRequest) {
       user.email ?? undefined,
       user
     );
+  }
+
+  if (safeNext.startsWith("/admin")) {
+    if (!user?.email || !isAdminEmail(user.email)) {
+      response.headers.set("Location", `${origin}/portal/dashboard`);
+    }
   }
 
   return response;

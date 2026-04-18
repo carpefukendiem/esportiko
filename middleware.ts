@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdminEmail } from "@/lib/auth/admin-email";
 import { updateSession } from "@/lib/supabase/middleware";
 
 /** Catalog browse is public; cap Supabase wait so a slow auth.getUser() never blocks HTML. */
@@ -55,8 +56,19 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  if (path.startsWith("/admin")) {
+    if (!user) {
+      const login = new URL("/login", request.url);
+      login.searchParams.set("next", path);
+      return NextResponse.redirect(login);
+    }
+  }
+
   if (path === "/login" && user) {
-    return NextResponse.redirect(new URL("/portal/dashboard", request.url));
+    const nextParam = request.nextUrl.searchParams.get("next") ?? "";
+    const goAdmin = nextParam.startsWith("/admin") && isAdminEmail(user.email ?? "");
+    const dest = goAdmin ? "/admin" : "/portal/dashboard";
+    return NextResponse.redirect(new URL(dest, request.url));
   }
 
   return response;
