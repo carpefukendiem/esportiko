@@ -65,6 +65,9 @@ export async function middleware(request: NextRequest) {
   }
 
   if (path === "/login" && user) {
+    if (isAdminEmail(user.email ?? "")) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
     const nextParam = request.nextUrl.searchParams.get("next") ?? "";
     const goAdmin = nextParam.startsWith("/admin") && isAdminEmail(user.email ?? "");
     const dest = goAdmin ? "/admin" : "/portal/dashboard";

@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
 
   const cookieStore = cookies();
 
-  // Session cookies must be attached to this response (Route Handler + redirect).
-  const response = NextResponse.redirect(`${origin}${safeNext}`);
+  // Redirect target updated after session + role checks; cookies attach to this response.
+  const response = NextResponse.redirect(`${origin}/portal/dashboard`);
 
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
@@ -54,21 +54,24 @@ export async function GET(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Ensure `accounts` row exists (Google OAuth or email confirmation first sign-in).
-  if (user) {
-    await ensureAccount(
-      supabase,
-      user.id,
-      user.email ?? undefined,
-      user
-    );
-  }
+  let location = `${origin}${safeNext}`;
 
-  if (safeNext.startsWith("/admin")) {
-    if (!user?.email || !isAdminEmail(user.email)) {
-      response.headers.set("Location", `${origin}/portal/dashboard`);
+  if (user?.email && isAdminEmail(user.email)) {
+    location = `${origin}/admin`;
+  } else {
+    if (user) {
+      await ensureAccount(
+        supabase,
+        user.id,
+        user.email ?? undefined,
+        user
+      );
+    }
+    if (safeNext.startsWith("/admin") && (!user?.email || !isAdminEmail(user.email))) {
+      location = `${origin}/portal/dashboard`;
     }
   }
 
+  response.headers.set("Location", location);
   return response;
 }

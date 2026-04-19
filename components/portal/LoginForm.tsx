@@ -46,12 +46,12 @@ export function LoginForm() {
       setFormError("root", { message: error.message });
       return;
     }
-    const next = nextPath.startsWith("/") ? nextPath : `/${nextPath}`;
-    if (next.startsWith("/admin") && !isPublicAdminEmail(data.email)) {
-      router.push("/portal/dashboard");
+    if (isPublicAdminEmail(data.email)) {
+      router.push("/admin");
       router.refresh();
       return;
     }
+    const next = nextPath.startsWith("/") ? nextPath : `/${nextPath}`;
     router.push(next);
     router.refresh();
   };
