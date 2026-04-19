@@ -15,7 +15,7 @@ export function AdminSignOutButton() {
         router.push("/login");
         router.refresh();
       }}
-      className="font-sans text-sm font-medium text-[#8A94A6] hover:text-white"
+      className="font-sans text-sm text-[#3B7BF8] hover:underline"
     >
       Sign out
     </button>

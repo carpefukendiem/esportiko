@@ -243,7 +243,7 @@ export async function submitPortalOrder(
 
 export async function reorderAndRedirect(orderId: string): Promise<void> {
   const newId = await cloneOrderToDraft(orderId);
-  redirect(`/portal/orders/${newId}/edit`);
+  redirect(`/portal/orders/${newId}/quick-reorder?from=${orderId}`);
 }
 
 export async function cloneOrderToDraft(orderId: string): Promise<string> {
@@ -304,6 +304,138 @@ export async function cloneOrderToDraft(orderId: string): Promise<string> {
   revalidatePath("/portal/orders");
   revalidatePath("/portal/dashboard");
   return newId;
+}
+
+export type QuickReorderRosterRow = {
+  player_name?: string | null;
+  player_number?: string | null;
+  size?: string | null;
+  quantity: number;
+};
+
+/**
+ * Replaces `order_items` for a draft; syncs `orders.quantity` to roster sum.
+ * Drops lines with no player name (per quick-reorder UX).
+ */
+export async function updateDraftRoster(
+  orderId: string,
+  roster: QuickReorderRosterRow[]
+): Promise<void> {
+  const { supabase, account } = await requireAccount();
+
+  const { data: order } = await supabase
+    .from("orders")
+    .select("id, account_id, status")
+    .eq("id", orderId)
+    .single();
+
+  if (!order || order.account_id !== account.id || order.status !== "draft") {
+    throw new Error("Cannot update this order");
+  }
+
+  await supabase.from("order_items").delete().eq("order_id", orderId);
+
+  const rows = roster
+    .filter((r) => (r.player_name ?? "").trim().length > 0)
+    .map((r) => ({
+      order_id: orderId,
+      player_name: (r.player_name ?? "").trim(),
+      player_number: (r.player_number ?? "").trim() || null,
+      size: (r.size ?? "").trim() || null,
+      quantity: Math.max(1, Math.floor(Number(r.quantity) || 1)),
+    }));
+
+  if (rows.length) {
+    const { error: insErr } = await supabase.from("order_items").insert(rows);
+    if (insErr) {
+      console.error("updateDraftRoster insert", insErr);
+      throw new Error("Could not save roster");
+    }
+  }
+
+  const totalQty = rows.reduce((s, r) => s + r.quantity, 0);
+  const { error: upErr } = await supabase
+    .from("orders")
+    .update({
+      quantity: totalQty > 0 ? totalQty : null,
+      roster_incomplete: rows.length === 0,
+    })
+    .eq("id", orderId);
+
+  if (upErr) {
+    console.error("updateDraftRoster order", upErr);
+    throw new Error("Could not update order");
+  }
+
+  revalidatePath(`/portal/orders/${orderId}/quick-reorder`);
+  revalidatePath(`/portal/orders/${orderId}`);
+  revalidatePath("/portal/orders");
+  revalidatePath("/portal/dashboard");
+}
+
+/**
+ * Submit quick-reorder draft (roster already on `order_items`).
+ */
+export async function submitQuickReorder(
+  orderId: string,
+  fromOriginalId?: string | null
+): Promise<void> {
+  const { supabase, account } = await requireAccount();
+
+  const { data: order } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("id", orderId)
+    .single();
+
+  if (!order || (order as OrderRow).account_id !== account.id) {
+    throw new Error("Order not found");
+  }
+  if ((order as OrderRow).status !== "draft") {
+    throw new Error("Order is not a draft");
+  }
+
+  const { data: items } = await supabase
+    .from("order_items")
+    .select("*")
+    .eq("order_id", orderId);
+
+  if (!items?.length) {
+    const q = new URLSearchParams();
+    if (fromOriginalId) q.set("from", fromOriginalId);
+    q.set("error", "empty-roster");
+    redirect(`/portal/orders/${orderId}/quick-reorder?${q.toString()}`);
+  }
+
+  const { data: updated, error: upErr } = await supabase
+    .from("orders")
+    .update({
+      status: "submitted",
+      roster_incomplete: false,
+    })
+    .eq("id", orderId)
+    .select("*")
+    .single();
+
+  if (upErr || !updated) {
+    console.error("submitQuickReorder", upErr);
+    throw new Error("Failed to submit order");
+  }
+
+  const submittedRow = updated as OrderRow;
+  if (submittedRow.source === "ghl_quote_webhook") {
+    await supabase
+      .from("accounts")
+      .update({ onboarding_completed: true })
+      .eq("id", account.id);
+  }
+
+  await sendOrderToGHL(submittedRow, account);
+
+  revalidatePath(`/portal/orders/${orderId}`);
+  revalidatePath("/portal/orders");
+  revalidatePath("/portal/dashboard");
+  redirect(`/portal/orders/${orderId}?submitted=1`);
 }
 
 export async function updateAccountProfile(payload: {

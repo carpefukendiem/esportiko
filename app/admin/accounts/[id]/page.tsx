@@ -45,7 +45,7 @@ export default async function AdminAccountPage({ params }: { params: { id: strin
   return (
     <div className="space-y-10">
       <nav className="font-sans text-sm text-[#8A94A6]">
-        <Link href="/admin" className="hover:text-white">
+        <Link href="/admin/accounts" className="hover:text-white">
           Admin
         </Link>
         <span className="mx-2">→</span>
