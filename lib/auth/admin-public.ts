@@ -1,3 +1,5 @@
+"use client";
+
 /** Client-safe allowlist (must stay in sync with `ADMIN_EMAILS` on the server). */
 export function parsePublicAdminEmails(): string[] {
   const raw = process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "";

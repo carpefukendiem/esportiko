@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,10 +21,15 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const nextPath = searchParams.get("next") ?? "/portal/dashboard";
-  const authError = searchParams.get("error");
+  const [nextPath, setNextPath] = useState("/portal/dashboard");
+  const [authError, setAuthError] = useState<string | null>(null);
   const [oauthLoading, setOauthLoading] = useState(false);
+
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    setNextPath(q.get("next") ?? "/portal/dashboard");
+    setAuthError(q.get("error"));
+  }, []);
 
   const {
     register,
@@ -165,6 +170,15 @@ export function LoginForm() {
           Sign in
         </button>
       </form>
+
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-sans text-sm font-medium">
+        <Link href="/forgot-password" className="text-[#3B7BF8] hover:underline">
+          Forgot password?
+        </Link>
+        <Link href="/signup" className="text-[#3B7BF8] hover:underline">
+          Create an account
+        </Link>
+      </div>
 
       <p className="mt-6 text-center font-sans text-sm font-medium text-[#8A94A6]">
         New team?{" "}
