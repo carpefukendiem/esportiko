@@ -7,12 +7,12 @@ import { buildMetadata } from "@/lib/seo";
 import {
   getDisplayCategories,
   getDisplayCategoryBySlug,
-  getProductsByDisplayCategory,
 } from "@/lib/catalog/fetcher";
+import { getCatalogProductsForCategoryPage } from "@/lib/catalog/catalog-pages";
 
 export const revalidate = 3600;
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   const categories = getDisplayCategories();
   const legacy = [{ category: "tshirts" }, { category: "jerseys-uniforms" }];
   return [...categories.map((c) => ({ category: c.slug })), ...legacy];
@@ -34,7 +34,7 @@ export function generateMetadata({
   });
 }
 
-export default function ApparelCategoryPage({
+export default async function ApparelCategoryPage({
   params,
 }: {
   params: { category: string };
@@ -44,7 +44,7 @@ export default function ApparelCategoryPage({
     notFound();
   }
 
-  const products = getProductsByDisplayCategory(category.slug);
+  const products = await getCatalogProductsForCategoryPage(category.slug);
 
   return (
     <>

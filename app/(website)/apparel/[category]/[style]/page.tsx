@@ -15,6 +15,10 @@ import {
   getProductsByDisplayCategory,
   getRelatedProducts,
 } from "@/lib/catalog/fetcher";
+import {
+  getCatalogProductInCategoryPage,
+} from "@/lib/catalog/catalog-pages";
+import { enrichCatalogProductsWithSanMarImages } from "@/lib/catalog/enrichSanMarCatalogFromDb";
 
 export const revalidate = 3600;
 
@@ -52,7 +56,7 @@ export function generateMetadata({
   });
 }
 
-export default function ApparelStyleDetailPage({
+export default async function ApparelStyleDetailPage({
   params,
 }: {
   params: { category: string; style: string };
@@ -64,12 +68,14 @@ export default function ApparelStyleDetailPage({
     notFound();
   }
 
-  const product = getProductInDisplayCategory(catSlug, styleId);
+  const product = await getCatalogProductInCategoryPage(catSlug, styleId);
   if (!product) {
     notFound();
   }
 
-  const related = getRelatedProducts(category.slug, product.styleNumber);
+  const related = await enrichCatalogProductsWithSanMarImages(
+    getRelatedProducts(category.slug, product.styleNumber)
+  );
 
   return (
     <>

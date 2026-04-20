@@ -82,15 +82,6 @@ function seedProductToCatalogProduct(
     images: {
       productImageUrl: img,
       thumbnailUrl: img,
-      frontModelUrl: override
-        ? override
-        : firstColor
-          ? getSanMarImageUrl(p.style_number, firstColor, "Front", "1200x1200")
-          : undefined,
-      backModelUrl:
-        override || !firstColor
-          ? undefined
-          : getSanMarImageUrl(p.style_number, firstColor, "Back", "1200x1200"),
     },
     decorationTypes: seedDecorationTypes(p.decoration_methods),
   };

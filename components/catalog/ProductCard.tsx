@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Shirt } from "lucide-react";
 import type { CatalogProduct, ProductColor } from "@/lib/catalog/types";
-import { isSanMarCatalogUrl } from "@/lib/catalog/sanmarImages";
+import { isSanMarHostedImageUrl } from "@/lib/catalog/sanmarImages";
 import { ColorSwatchRow } from "@/components/catalog/ColorSwatchRow";
 import { DecorationBadge } from "@/components/catalog/DecorationBadge";
 import { ProductStatusBadge } from "@/components/catalog/ProductStatusBadge";
@@ -21,22 +21,50 @@ export function ProductCard({
   const [active, setActive] = useState<ProductColor | undefined>(
     product.colors[0]
   );
-  const [imgError, setImgError] = useState(false);
+  const [imgIndex, setImgIndex] = useState(0);
+  const [imgExhausted, setImgExhausted] = useState(false);
+
+  const imageCandidates = useMemo(() => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    const add = (url: string | undefined) => {
+      if (!url || url.includes("placeholder") || seen.has(url)) return;
+      seen.add(url);
+      out.push(url);
+    };
+
+    // Flat lay first (FTP / Supabase); never prefer model URLs.
+    add(active?.flatImageUrl);
+    add(active?.modelImageUrl);
+    add(product.images.frontFlatUrl);
+    add(product.images.productImageUrl);
+    add(product.images.thumbnailUrl);
+    for (const c of product.colors) {
+      add(c.flatImageUrl);
+      add(c.modelImageUrl);
+    }
+
+    return out;
+  }, [
+    active?.flatImageUrl,
+    active?.modelImageUrl,
+    product.colors,
+    product.images.frontFlatUrl,
+    product.images.productImageUrl,
+    product.images.thumbnailUrl,
+  ]);
 
   useEffect(() => {
-    setImgError(false);
-  }, [active?.catalogColor, product.uniqueKey]);
+    setImgIndex(0);
+    setImgExhausted(false);
+  }, [active?.catalogColor, product.uniqueKey, imageCandidates.length]);
 
   if (product.status === "Discontinued") {
     return null;
   }
 
-  const img =
-    active?.modelImageUrl ??
-    product.images.productImageUrl ??
-    product.images.thumbnailUrl;
-  const missingImage = !img || img.includes("placeholder");
-  const usePlaceholder = missingImage || imgError;
+  const img = imageCandidates[imgIndex];
+  const usePlaceholder = !img || imgExhausted;
 
   return (
     <motion.div
@@ -59,13 +87,20 @@ export function ProductCard({
               src={img}
               alt={`${product.productTitle} in ${active?.displayColor ?? ""}`}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+              className="object-contain p-3 transition-transform duration-300 group-hover:scale-[1.01]"
               sizes="(max-width: 768px) 50vw, 25vw"
               loading="lazy"
-              unoptimized={isSanMarCatalogUrl(img)}
+              unoptimized={isSanMarHostedImageUrl(img)}
               onError={() => {
                 console.error("SanMar image failed to load:", img);
-                setImgError(true);
+                setImgIndex((current) => {
+                  const next = current + 1;
+                  if (next >= imageCandidates.length) {
+                    setImgExhausted(true);
+                    return current;
+                  }
+                  return next;
+                });
               }}
             />
           )}

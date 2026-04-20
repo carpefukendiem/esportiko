@@ -10,9 +10,10 @@ Required env vars:
   SANMAR_SFTP_USER
   SANMAR_SFTP_PASSWORD
   SANMAR_REMOTE_PATH     (default: /SanMarPDD/SanMar_EPDD.csv)
-  SUPABASE_URL
+  SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL)
   SUPABASE_SERVICE_ROLE_KEY
 """
+
 import csv
 import io
 import os
@@ -20,14 +21,50 @@ import sys
 import time
 import paramiko
 import requests
+from dotenv import load_dotenv
+
+# Local dev convenience: allow running script without exporting vars manually.
+load_dotenv(".env.local")
+load_dotenv()
+
+
+def require_env(name):
+    value = os.environ.get(name, "").strip()
+    if value:
+        return value
+    print(f"Missing required environment variable: {name}", flush=True)
+    print(
+        "Set it in your shell or add it to .env.local before running sync_sanmar.py",
+        flush=True,
+    )
+    sys.exit(1)
+
 
 SFTP_HOST = os.environ.get("SANMAR_SFTP_HOST", "ftp.sanmar.com")
 SFTP_PORT = int(os.environ.get("SANMAR_SFTP_PORT", "2200"))
-SFTP_USER = os.environ["SANMAR_SFTP_USER"]
-SFTP_PASS = os.environ["SANMAR_SFTP_PASSWORD"]
+SFTP_USER = require_env("SANMAR_SFTP_USER")
+SFTP_PASS = require_env("SANMAR_SFTP_PASSWORD")
 REMOTE_PATH = os.environ.get("SANMAR_REMOTE_PATH", "/SanMarPDD/SanMar_EPDD.csv")
-SUPABASE_URL = os.environ["SUPABASE_URL"].rstrip("/")
-SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+SUPABASE_URL = (
+    os.environ.get("SUPABASE_URL")
+    or os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
+    or ""
+).rstrip("/")
+if not SUPABASE_URL:
+    print(
+        "Missing required environment variable: SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL)",
+        flush=True,
+    )
+    sys.exit(1)
+SUPABASE_KEY = require_env("SUPABASE_SERVICE_ROLE_KEY")
+
+env_presence = {
+    "SANMAR_SFTP_USER": bool(SFTP_USER),
+    "SANMAR_SFTP_PASSWORD": bool(SFTP_PASS),
+    "SUPABASE_URL": bool(SUPABASE_URL),
+    "SUPABASE_SERVICE_ROLE_KEY": bool(SUPABASE_KEY),
+}
+print(f"[env] Required vars present: {env_presence}", flush=True)
 
 # Curated allowlist - matches lib/catalog/curated.ts (uppercased, flattened).
 CURATED_STYLES = {

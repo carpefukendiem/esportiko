@@ -24,8 +24,8 @@ const COLOR_SEGMENT_OVERRIDES: Record<string, string> = {
   "safety orange": "SafetyOrange",
   "cardinal red": "Cardinal",
   maroon: "Maroon",
-  "sports grey": "SportsGrey",
-  "sport grey": "SportsGrey",
+  "sports grey": "SportGrey",
+  "sport grey": "SportGrey",
   "athletic heather": "AthleticHeather",
   "heather navy": "HeatherNavy",
   "iron grey": "IronGrey",
@@ -92,6 +92,12 @@ function sanitizeView(view: string): string {
 /** True when URL is served from SanMar’s public imglib CDN (use with next/image unoptimized). */
 export function isSanMarCatalogUrl(url: string): boolean {
   return url.includes("catalog.sanmar.com");
+}
+
+/** Any known SanMar CDN / site host (model, flat, or imglib). Use with next/image unoptimized. */
+export function isSanMarHostedImageUrl(url: string): boolean {
+  if (!url) return false;
+  return /sanmar\.com/i.test(url);
 }
 
 /**

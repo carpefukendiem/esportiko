@@ -5,9 +5,7 @@ import Image from "next/image";
 import { Shirt } from "lucide-react";
 import { ColorSwatchRow } from "@/components/catalog/ColorSwatchRow";
 import type { CatalogProduct, ProductColor } from "@/lib/catalog/types";
-import { getSanMarImageUrls, isSanMarCatalogUrl } from "@/lib/catalog/sanmarImages";
-
-const DETAIL_VIEWS = ["Front", "Back", "Side"] as const;
+import { isSanMarHostedImageUrl } from "@/lib/catalog/sanmarImages";
 
 export function ProductDetailMedia({ product }: { product: CatalogProduct }) {
   const [active, setActive] = useState<ProductColor | undefined>(
@@ -21,21 +19,24 @@ export function ProductDetailMedia({ product }: { product: CatalogProduct }) {
     setFailedViews(new Set());
   }, [active?.catalogColor, product.uniqueKey]);
 
-  const urls = useMemo(() => {
+  const gallery = useMemo(() => {
     if (!active) return [];
-    return getSanMarImageUrls(
-      product.styleNumber,
-      active.displayColor,
-      [...DETAIL_VIEWS],
-      "1200x1200"
-    );
-  }, [active, product.styleNumber]);
+    const front =
+      active.flatImageUrl ||
+      active.modelImageUrl ||
+      product.images.frontFlatUrl ||
+      product.images.productImageUrl ||
+      "";
+    const back =
+      active.backFlatImageUrl || product.images.backFlatUrl || "";
+    const slots = [
+      { url: front, label: "Front" as const },
+      { url: back, label: "Back" as const },
+    ].filter((s) => s.url && !s.url.includes("placeholder"));
+    return slots;
+  }, [active, product]);
 
-  const mainSrc =
-    urls[activeViewIdx] ??
-    active?.modelImageUrl ??
-    product.images.frontModelUrl ??
-    product.images.productImageUrl;
+  const mainSrc = gallery[activeViewIdx]?.url ?? "";
   const mainFailed =
     failedViews.has(activeViewIdx) ||
     !mainSrc ||
@@ -43,56 +44,60 @@ export function ProductDetailMedia({ product }: { product: CatalogProduct }) {
 
   return (
     <div>
-      <div className="relative aspect-square w-full overflow-hidden rounded-card bg-navy-mid">
+      <div className="relative aspect-square w-full overflow-hidden rounded-card bg-white">
         {mainFailed ? (
-          <div className="flex h-full items-center justify-center">
+          <div className="flex h-full items-center justify-center bg-navy-mid">
             <Shirt className="h-28 w-28 text-gray-muted/40" aria-hidden />
           </div>
         ) : (
           <Image
             src={mainSrc}
-            alt={`${product.productTitle} in ${active?.displayColor ?? ""} — ${DETAIL_VIEWS[activeViewIdx] ?? "Front"}`}
+            alt={`${product.productTitle} in ${active?.displayColor ?? ""} — ${gallery[activeViewIdx]?.label ?? "Front"}`}
             fill
-            className="object-contain p-4"
+            className="object-contain p-6"
             sizes="(max-width: 768px) 100vw, 50vw"
             priority
-            onError={() =>
-              setFailedViews((prev) => new Set(prev).add(activeViewIdx))
-            }
+            unoptimized={isSanMarHostedImageUrl(mainSrc)}
+            onError={() => {
+              console.error("SanMar flat image failed to load:", mainSrc);
+              setFailedViews((prev) => new Set(prev).add(activeViewIdx));
+            }}
           />
         )}
       </div>
-      {urls.length > 0 ? (
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          {urls.map((url, idx) => {
+      {gallery.length > 1 ? (
+        <div
+          className={`mt-4 grid gap-2 ${gallery.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}
+        >
+          {gallery.map((slot, idx) => {
             const isFailed = failedViews.has(idx);
             return (
               <button
-                key={DETAIL_VIEWS[idx]}
+                key={slot.label}
                 type="button"
                 onClick={() => setActiveViewIdx(idx)}
-                className={`relative aspect-square overflow-hidden rounded-lg border bg-navy-mid transition-colors ${
+                className={`relative aspect-square overflow-hidden rounded-lg border bg-white transition-colors ${
                   activeViewIdx === idx
                     ? "border-blue-accent ring-1 ring-blue-accent/50"
                     : "border-slate/25 hover:border-slate/50"
                 }`}
-                aria-label={`View ${DETAIL_VIEWS[idx]}`}
+                aria-label={`${slot.label} view`}
               >
                 {isFailed ? (
-                  <div className="flex h-full items-center justify-center">
+                  <div className="flex h-full items-center justify-center bg-navy-mid">
                     <Shirt className="h-8 w-8 text-gray-muted/35" aria-hidden />
                   </div>
                 ) : (
                   <Image
-                    src={url}
+                    src={slot.url}
                     alt=""
                     fill
-                    className="object-contain p-1"
-                    sizes="120px"
+                    className="object-contain p-2"
+                    sizes="200px"
                     loading="lazy"
-                    unoptimized={isSanMarCatalogUrl(url)}
+                    unoptimized={isSanMarHostedImageUrl(slot.url)}
                     onError={() => {
-                      console.error("SanMar image failed to load:", url);
+                      console.error("SanMar flat image failed to load:", slot.url);
                       setFailedViews((prev) => new Set(prev).add(idx));
                     }}
                   />

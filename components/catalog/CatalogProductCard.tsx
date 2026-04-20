@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Shirt } from "lucide-react";
 import type { CatalogProduct } from "@/lib/catalog/types";
-import { isSanMarCatalogUrl } from "@/lib/catalog/sanmarImages";
+import { isSanMarHostedImageUrl } from "@/lib/catalog/sanmarImages";
 import { approximateSwatchColor } from "@/lib/catalog/colorApprox";
 
 export function CatalogProductCard({ product }: { product: CatalogProduct }) {
@@ -13,7 +13,10 @@ export function CatalogProductCard({ product }: { product: CatalogProduct }) {
   const quoteHref = `/request-a-quote?style=${encodeURIComponent(style)}`;
   const swatches = product.colors.slice(0, 8);
   const [imgError, setImgError] = useState(false);
-  const src = product.images.productImageUrl;
+  const src =
+    product.images.frontFlatUrl ||
+    product.colors[0]?.flatImageUrl ||
+    product.images.productImageUrl;
   const showPlaceholder = !src || src.includes("placeholder") || imgError;
 
   return (
@@ -31,10 +34,10 @@ export function CatalogProductCard({ product }: { product: CatalogProduct }) {
             src={src}
             alt=""
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            className="object-contain p-3 transition-transform duration-300 group-hover:scale-[1.01]"
             sizes="(max-width: 640px) 50vw, 25vw"
             loading="lazy"
-            unoptimized={isSanMarCatalogUrl(src)}
+            unoptimized={isSanMarHostedImageUrl(src)}
             onError={() => {
               console.error("SanMar image failed to load:", src);
               setImgError(true);

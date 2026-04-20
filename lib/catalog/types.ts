@@ -34,6 +34,8 @@ export type ProductColor = {
   displayColor: string;
   swatchImageUrl: string;
   modelImageUrl: string;
+  flatImageUrl?: string;
+  backFlatImageUrl?: string;
 };
 
 export type CatalogProduct = {
@@ -52,6 +54,7 @@ export type CatalogProduct = {
     frontModelUrl?: string;
     backModelUrl?: string;
     frontFlatUrl?: string;
+    backFlatUrl?: string;
     specSheetUrl?: string;
   };
   decorationTypes: string[];
