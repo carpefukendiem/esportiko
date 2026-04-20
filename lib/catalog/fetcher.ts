@@ -10,6 +10,7 @@ import {
   SANMAR_SEED_PRODUCTS,
   type SanMarSeedCategory,
 } from "@/lib/data/sanmar-seed";
+import { getSanMarImageUrl } from "@/lib/catalog/sanmarImages";
 import type {
   CatalogProduct,
   DisplayCategory,
@@ -53,13 +54,21 @@ function seedDecorationTypes(
 function seedProductToCatalogProduct(
   p: import("@/lib/data/sanmar-seed").SanMarSeedProduct
 ): CatalogProduct {
+  const override = p.image_url?.trim();
+  const firstColor = p.available_colors[0];
   const colors: ProductColor[] = p.available_colors.map((displayColor) => ({
     catalogColor: displayColor,
     displayColor,
     swatchImageUrl: PLACEHOLDER,
-    modelImageUrl: p.image_url?.trim() ? p.image_url : PLACEHOLDER,
+    modelImageUrl: override
+      ? override
+      : getSanMarImageUrl(p.style_number, displayColor, "Front", "600x600"),
   }));
-  const img = p.image_url?.trim() ? p.image_url : PLACEHOLDER;
+  const img =
+    override ||
+    (firstColor
+      ? getSanMarImageUrl(p.style_number, firstColor, "Front", "600x600")
+      : PLACEHOLDER);
   return {
     uniqueKey: p.style_number.toUpperCase(),
     styleNumber: p.style_number,
@@ -73,7 +82,15 @@ function seedProductToCatalogProduct(
     images: {
       productImageUrl: img,
       thumbnailUrl: img,
-      frontModelUrl: p.image_url?.trim() ? p.image_url : undefined,
+      frontModelUrl: override
+        ? override
+        : firstColor
+          ? getSanMarImageUrl(p.style_number, firstColor, "Front", "1200x1200")
+          : undefined,
+      backModelUrl:
+        override || !firstColor
+          ? undefined
+          : getSanMarImageUrl(p.style_number, firstColor, "Back", "1200x1200"),
     },
     decorationTypes: seedDecorationTypes(p.decoration_methods),
   };

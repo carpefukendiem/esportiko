@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -20,15 +20,22 @@ export function ProductCard({
   const [active, setActive] = useState<ProductColor | undefined>(
     product.colors[0]
   );
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [active?.catalogColor, product.uniqueKey]);
 
   if (product.status === "Discontinued") {
     return null;
   }
+
   const img =
     active?.modelImageUrl ??
     product.images.productImageUrl ??
     product.images.thumbnailUrl;
-  const usePlaceholder = !img || img.includes("placeholder");
+  const missingImage = !img || img.includes("placeholder");
+  const usePlaceholder = missingImage || imgError;
 
   return (
     <motion.div
@@ -53,6 +60,7 @@ export function ProductCard({
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
               sizes="(max-width: 768px) 50vw, 25vw"
+              onError={() => setImgError(true)}
             />
           )}
         </Link>

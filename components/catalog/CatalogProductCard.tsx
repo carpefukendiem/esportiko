@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Shirt } from "lucide-react";
 import type { CatalogProduct } from "@/lib/catalog/types";
@@ -7,16 +11,30 @@ export function CatalogProductCard({ product }: { product: CatalogProduct }) {
   const style = product.styleNumber;
   const quoteHref = `/request-a-quote?style=${encodeURIComponent(style)}`;
   const swatches = product.colors.slice(0, 8);
+  const [imgError, setImgError] = useState(false);
+  const src = product.images.productImageUrl;
+  const showPlaceholder = !src || src.includes("placeholder") || imgError;
 
   return (
     <article className="group flex h-full flex-col rounded-xl border border-[#2A3347] bg-[#1C2333] p-4 transition-colors hover:border-[#3B7BF8]">
-      <div className="relative mb-4 aspect-square w-full rounded-lg bg-[#2A3347]">
+      <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-lg bg-[#2A3347]">
         <span className="absolute left-2 top-2 z-10 font-mono text-xs text-[#8A94A6]">
           {style}
         </span>
-        <div className="flex h-full items-center justify-center">
-          <Shirt className="h-14 w-14 text-[#3B7BF8]" aria-hidden />
-        </div>
+        {showPlaceholder ? (
+          <div className="flex h-full items-center justify-center">
+            <Shirt className="h-14 w-14 text-[#3B7BF8]" aria-hidden />
+          </div>
+        ) : (
+          <Image
+            src={src}
+            alt=""
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            sizes="(max-width: 640px) 50vw, 25vw"
+            onError={() => setImgError(true)}
+          />
+        )}
       </div>
       <p className="text-xs font-medium uppercase tracking-wide text-[#8A94A6]">
         {product.brandName}
