@@ -7,6 +7,7 @@ export const primaryNav: NavItem[] = [
   { label: "Screen Printing", href: "/screen-printing" },
   { label: "Embroidery", href: "/embroidery" },
   { label: "Team Orders", href: "/team-orders" },
+  { label: "Request a Quote", href: "/request-a-quote" },
   { label: "Business Apparel", href: "/business-apparel" },
   { label: "Our Work", href: "/our-work" },
   { label: "Browse Apparel", href: "/apparel" },

@@ -14,7 +14,7 @@ export function RequestQuoteGarmentPicker() {
   const [error, setError] = useState<string | null>(null);
 
   const canProceed = selected.length > 0;
-  const teamHref = canProceed ? `/team-orders?${garmentsQuery(selected)}` : "#";
+  const teamHref = canProceed ? `/start-team-order?${garmentsQuery(selected)}` : "#";
   const businessHref = canProceed
     ? `/start-business-order?${garmentsQuery(selected)}`
     : "#";
@@ -59,7 +59,7 @@ export function RequestQuoteGarmentPicker() {
           )}
           aria-disabled={!canProceed}
         >
-          Team / uniform quote
+          Start team quote
         </Link>
         <Link
           href={businessHref}

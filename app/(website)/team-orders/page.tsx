@@ -108,7 +108,7 @@ export default function TeamOrdersPage() {
               <Link href="/start-team-order">Start Your Team Order</Link>
             </Button>
             <Button asChild variant="secondary">
-              <Link href="/request-a-quote">Request a Quote First</Link>
+              <Link href="/signup">Sign Up</Link>
             </Button>
           </div>
         </div>
@@ -263,8 +263,8 @@ export default function TeamOrdersPage() {
       <CTABand
         primaryHref="/start-team-order"
         primaryLabel="Start Your Team Order"
-        secondaryHref="/request-a-quote"
-        secondaryLabel="Request a Quote"
+        secondaryHref="/login"
+        secondaryLabel="Sign In"
       />
     </>
   );
