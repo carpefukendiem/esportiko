@@ -67,21 +67,21 @@ export const DISPLAY_CATEGORIES: DisplayCategory[] = [
   },
 ];
 
-/** Slugs must match routes under `/apparel/[category]`. */
+/** Slugs must match routes under `/apparel/[category]`. Order = single desktop row (5). */
 const APPAREL_INDEX_SLUG_ORDER = [
   "t-shirts",
-  "hoodies-sweatshirts",
   "polos",
-  "jerseys",
+  "hoodies-sweatshirts",
   "hats",
+  "jerseys",
 ] as const;
 
 const APPAREL_INDEX_LABEL_OVERRIDES: Partial<
   Record<(typeof APPAREL_INDEX_SLUG_ORDER)[number], string>
 > = {
-  "hoodies-sweatshirts": "Hoodies",
-  jerseys: "Jerseys",
-  hats: "Hats",
+  "hoodies-sweatshirts": "Hoodies & Sweatshirts",
+  hats: "Hats & Caps",
+  jerseys: "Performance Wear",
 };
 
 /** Five primary categories for the /apparel index "Browse by category" grid. */

@@ -8,19 +8,56 @@ export const SANMAR_IMGLIB_BASE = "https://catalog.sanmar.com/imglib";
 /** Shown when a constructed URL 404s or fails to load (client onError). */
 export const SANMAR_IMAGE_PLACEHOLDER = "/images/catalog/placeholder.svg";
 
-/** Known mismatches between marketing color labels and SanMar filename segments. */
+/**
+ * Known mismatches between marketing color labels and SanMar filename segments.
+ * Keys: lowercase, normalized single spaces (slashes already flattened to spaces).
+ */
 const COLOR_SEGMENT_OVERRIDES: Record<string, string> = {
-  // Add entries when a seed/display label does not match SanMar’s file segment.
+  "true royal": "TrueRoyal",
+  "true navy": "TrueNavy",
+  "royal blue": "Royal",
+  "navy blue": "Navy",
+  "dark grey": "Charcoal",
+  "dark gray": "Charcoal",
+  "light blue": "LightBlue",
+  "safety green": "SafetyGreen",
+  "safety orange": "SafetyOrange",
+  "cardinal red": "Cardinal",
+  maroon: "Maroon",
+  "sports grey": "SportsGrey",
+  "sport grey": "SportsGrey",
+  "athletic heather": "AthleticHeather",
+  "heather navy": "HeatherNavy",
+  "iron grey": "IronGrey",
+  "iron gray": "IronGrey",
+  "grey steel": "GreySteel",
+  "forest green": "ForestGreen",
+  "kelly green": "KellyGreen",
+  "pink raspberry": "PinkRaspberry",
+  scarlet: "Scarlet",
+  graphite: "Graphite",
+  loden: "Loden",
+  khaki: "Khaki",
+  spruce: "Spruce",
+  charcoal: "Charcoal",
+  asphalt: "Asphalt",
+  "heather grey": "HeatherGrey",
+  "heather gray": "HeatherGrey",
 };
 
 /**
  * Normalizes a catalog/display color string into the filename segment SanMar uses
- * (typically PascalCase words concatenated, e.g. "True Royal" → "TrueRoyal").
+ * (PascalCase words concatenated, e.g. "True Royal" → "TrueRoyal").
+ * Handles slashes in two-tone names (e.g. "Navy/White" → "NavyWhite").
  */
 export function normalizeSanMarColorSegment(colorCode: string): string {
-  const raw = colorCode.trim().replace(/&/g, " and ");
+  const raw = colorCode
+    .trim()
+    .replace(/&/g, " and ")
+    .replace(/\//g, " ");
   if (!raw) return "Unknown";
-  const key = raw.toLowerCase();
+
+  const key = raw.toLowerCase().replace(/\s+/g, " ").trim();
   if (COLOR_SEGMENT_OVERRIDES[key]) return COLOR_SEGMENT_OVERRIDES[key];
 
   const words = raw
@@ -50,6 +87,11 @@ function sanitizeView(view: string): string {
   const v = view.trim();
   if (!v) return "Front";
   return v.charAt(0).toUpperCase() + v.slice(1).toLowerCase();
+}
+
+/** True when URL is served from SanMar’s public imglib CDN (use with next/image unoptimized). */
+export function isSanMarCatalogUrl(url: string): boolean {
+  return url.includes("catalog.sanmar.com");
 }
 
 /**

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Shirt } from "lucide-react";
 import type { CatalogProduct } from "@/lib/catalog/types";
+import { isSanMarCatalogUrl } from "@/lib/catalog/sanmarImages";
 import { approximateSwatchColor } from "@/lib/catalog/colorApprox";
 
 export function CatalogProductCard({ product }: { product: CatalogProduct }) {
@@ -32,7 +33,12 @@ export function CatalogProductCard({ product }: { product: CatalogProduct }) {
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             sizes="(max-width: 640px) 50vw, 25vw"
-            onError={() => setImgError(true)}
+            loading="lazy"
+            unoptimized={isSanMarCatalogUrl(src)}
+            onError={() => {
+              console.error("SanMar image failed to load:", src);
+              setImgError(true);
+            }}
           />
         )}
       </div>

@@ -62,12 +62,12 @@ function seedProductToCatalogProduct(
     swatchImageUrl: PLACEHOLDER,
     modelImageUrl: override
       ? override
-      : getSanMarImageUrl(p.style_number, displayColor, "Front", "600x600"),
+      : getSanMarImageUrl(p.style_number, displayColor, "Front", "400x400"),
   }));
   const img =
     override ||
     (firstColor
-      ? getSanMarImageUrl(p.style_number, firstColor, "Front", "600x600")
+      ? getSanMarImageUrl(p.style_number, firstColor, "Front", "400x400")
       : PLACEHOLDER);
   return {
     uniqueKey: p.style_number.toUpperCase(),

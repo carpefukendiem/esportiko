@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ApparelIndexGrid } from "@/components/catalog/ApparelIndexGrid";
 import { CatalogConversionStrip } from "@/components/catalog/CatalogConversionStrip";
-import { CatalogProductCard } from "@/components/catalog/CatalogProductCard";
 import { buildMetadata } from "@/lib/seo";
-import { getCatalogProductsForIndex } from "@/lib/catalog/fetcher";
 import { getDisplayCategoriesForApparelIndex } from "@/lib/catalog/categories";
 import { media } from "@/lib/data/media";
 
@@ -21,7 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function ApparelCatalogPage() {
   const categories = getDisplayCategoriesForApparelIndex();
-  const products = getCatalogProductsForIndex(24);
 
   return (
     <>
@@ -56,15 +53,7 @@ export default function ApparelCatalogPage() {
       </section>
       <section className="bg-navy py-16 md:py-20">
         <div className="mx-auto max-w-content px-6 md:px-8 lg:px-12">
-          <h2 className="mb-8 font-display text-2xl font-bold uppercase tracking-tight text-white md:text-3xl">
-            Featured styles
-          </h2>
-          <div className="mb-16 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {products.map((p) => (
-              <CatalogProductCard key={p.uniqueKey} product={p} />
-            ))}
-          </div>
-          <h2 className="mb-8 font-display text-2xl font-bold uppercase tracking-tight text-white md:text-3xl">
+          <h2 className="mb-10 font-display text-2xl font-bold uppercase tracking-tight text-white md:text-3xl">
             Browse by category
           </h2>
           <ApparelIndexGrid categories={categories} />

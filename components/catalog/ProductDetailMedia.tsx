@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Shirt } from "lucide-react";
 import { ColorSwatchRow } from "@/components/catalog/ColorSwatchRow";
 import type { CatalogProduct, ProductColor } from "@/lib/catalog/types";
-import { getSanMarImageUrls } from "@/lib/catalog/sanmarImages";
+import { getSanMarImageUrls, isSanMarCatalogUrl } from "@/lib/catalog/sanmarImages";
 
 const DETAIL_VIEWS = ["Front", "Back", "Side"] as const;
 
@@ -89,9 +89,12 @@ export function ProductDetailMedia({ product }: { product: CatalogProduct }) {
                     fill
                     className="object-contain p-1"
                     sizes="120px"
-                    onError={() =>
-                      setFailedViews((prev) => new Set(prev).add(idx))
-                    }
+                    loading="lazy"
+                    unoptimized={isSanMarCatalogUrl(url)}
+                    onError={() => {
+                      console.error("SanMar image failed to load:", url);
+                      setFailedViews((prev) => new Set(prev).add(idx));
+                    }}
                   />
                 )}
               </button>

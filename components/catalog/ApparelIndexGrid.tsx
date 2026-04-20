@@ -1,9 +1,5 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { CategoryCard } from "@/components/catalog/CategoryCard";
 import type { DisplayCategory } from "@/lib/catalog/types";
-import { fadeInUp, staggerContainer } from "@/lib/utils/motion";
 
 export function ApparelIndexGrid({
   categories,
@@ -11,21 +7,10 @@ export function ApparelIndexGrid({
   categories: DisplayCategory[];
 }) {
   return (
-    <motion.div
-      className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4"
-      initial="visible"
-      animate="visible"
-      variants={staggerContainer}
-    >
-      {categories.map((c, i) => (
-        <motion.div
-          key={c.slug}
-          variants={fadeInUp}
-          transition={{ delay: i * 0.05 }}
-        >
-          <CategoryCard category={c} />
-        </motion.div>
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
+      {categories.map((c) => (
+        <CategoryCard key={c.slug} category={c} />
       ))}
-    </motion.div>
+    </div>
   );
 }

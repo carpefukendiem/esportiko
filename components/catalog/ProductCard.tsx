@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Shirt } from "lucide-react";
 import type { CatalogProduct, ProductColor } from "@/lib/catalog/types";
+import { isSanMarCatalogUrl } from "@/lib/catalog/sanmarImages";
 import { ColorSwatchRow } from "@/components/catalog/ColorSwatchRow";
 import { DecorationBadge } from "@/components/catalog/DecorationBadge";
 import { ProductStatusBadge } from "@/components/catalog/ProductStatusBadge";
@@ -60,7 +61,12 @@ export function ProductCard({
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
               sizes="(max-width: 768px) 50vw, 25vw"
-              onError={() => setImgError(true)}
+              loading="lazy"
+              unoptimized={isSanMarCatalogUrl(img)}
+              onError={() => {
+                console.error("SanMar image failed to load:", img);
+                setImgError(true);
+              }}
             />
           )}
         </Link>
