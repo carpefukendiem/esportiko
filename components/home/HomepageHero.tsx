@@ -60,23 +60,27 @@ export function HomepageHero() {
           className="object-cover object-center"
         />
         <div
-          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-navy/90 via-navy/60 to-transparent"
+          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-navy/95 via-navy/75 to-transparent"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-navy/80 to-transparent"
+          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-navy/35 to-transparent"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_left_center,rgba(10,22,40,0.6)_0%,transparent_60%)]"
           aria-hidden
         />
 
-        <div className="relative z-[2] mx-auto flex h-full min-h-[inherit] max-w-content flex-col justify-end px-6 pb-12 pt-28 text-center md:px-8 md:pb-16 md:pt-32 md:text-left lg:px-12 lg:pb-20">
+        <div className="relative z-[2] mx-auto flex h-full min-h-[inherit] max-w-content flex-col justify-start px-6 pb-10 pt-[max(5.5rem,min(38vh,15rem))] text-center md:justify-center md:px-8 md:py-20 md:text-left lg:px-12 lg:py-24">
           <motion.h1
-            className="font-display text-4xl font-bold leading-tight tracking-tight text-white md:text-6xl lg:text-7xl"
+            className="font-display text-4xl font-bold leading-tight tracking-tight text-white [text-shadow:_0_2px_20px_rgb(10_22_40_/_0.8),_0_1px_3px_rgb(0_0_0_/_0.6)] md:text-6xl lg:text-7xl"
             {...bannerMotion(0)}
           >
             Custom Apparel Built for Your Team.
           </motion.h1>
           <motion.h2
-            className="mx-auto mt-4 max-w-2xl font-sans text-lg text-off-white/90 md:mt-6 md:text-xl lg:mx-0 lg:text-2xl"
+            className="mx-auto mt-4 max-w-2xl font-sans text-lg text-off-white/90 [text-shadow:_0_2px_20px_rgb(10_22_40_/_0.8),_0_1px_3px_rgb(0_0_0_/_0.6)] md:mt-6 md:text-xl lg:mx-0 lg:text-2xl"
             {...bannerMotion(reduceMotion ? 0 : 0.1)}
           >
             Screen printing, embroidery, and team uniforms for schools, clubs, and businesses across Santa Barbara and
@@ -93,7 +97,7 @@ export function HomepageHero() {
               asChild
               variant="secondary"
               width="full"
-              className="border-white/80 text-white hover:bg-white/10 md:w-auto"
+              className="border-0 bg-blue-accent text-white hover:bg-blue-light md:w-auto"
             >
               <Link href="/team-orders">Explore Team Orders</Link>
             </Button>
@@ -102,11 +106,10 @@ export function HomepageHero() {
       </div>
 
       {/* Part 2: apparel showcase */}
-      <div className="mx-auto max-w-content px-6 py-16 md:px-8 md:py-24 lg:px-12">
-        {/* Optional eyebrow — remove the following <p> block to hide */}
-        <p className="mb-6 text-center font-sans text-label text-blue-accent md:text-left">
-          TRUSTED BY LOCAL TEAMS
-        </p>
+      <div className="mx-auto max-w-content px-6 pt-6 pb-12 md:px-8 md:pt-12 md:pb-20 lg:px-12">
+        <h2 className="mb-10 text-center font-display text-xl font-semibold uppercase tracking-wide text-white md:mb-12 md:text-2xl lg:text-3xl">
+          Trusted by Local Teams & Schools
+        </h2>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-6 lg:gap-8">
           {cards.map((card, i) => (
