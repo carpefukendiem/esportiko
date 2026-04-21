@@ -98,7 +98,7 @@ export function HeroSection() {
         </div>
 
         {/* Right column — image, absolutely fills the right half */}
-        <div className="relative w-full h-[360px] sm:h-[440px] lg:absolute lg:right-0 lg:top-0 lg:bottom-0 lg:w-[52%] lg:h-full">
+        <div className="relative h-[360px] w-full sm:h-[440px] lg:absolute lg:bottom-0 lg:right-0 lg:top-0 lg:w-[52%]">
           {/* Glow */}
           <div
             className="pointer-events-none absolute inset-0 z-0 bg-blue-accent/10 blur-[80px]"

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { homePageInView } from "@/lib/utils/motion";
 
 const BANNER = "/images/home/hero-banner.png";
 const CARD_AYSO = "/images/home/card-ayso.png";
@@ -33,7 +34,7 @@ export function HomepageHero() {
       : {
           initial: { opacity: 0, y: 28 },
           whileInView: { opacity: 1, y: 0 },
-          viewport: { once: true, margin: "-48px" },
+          viewport: homePageInView,
           transition: { duration: 0.55, ease: "easeOut" as const, delay },
         };
 

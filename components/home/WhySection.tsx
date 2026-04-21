@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Award, ClipboardList, Headphones, MapPin } from "lucide-react";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { fadeInUp } from "@/lib/utils/motion";
+import { fadeInUp, homePageInView } from "@/lib/utils/motion";
 
 const points = [
   {
@@ -39,7 +39,7 @@ export function WhySection() {
             className="font-display text-h2 font-semibold uppercase tracking-tight text-white"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={homePageInView}
             variants={fadeInUp}
           >
             Let&apos;s Build Your Next Apparel Order
@@ -52,7 +52,7 @@ export function WhySection() {
               className="rounded-xl border border-slate bg-navy-light/60 p-6"
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-40px" }}
+              viewport={homePageInView}
               variants={fadeInUp}
               transition={{ delay: i * 0.05 }}
             >

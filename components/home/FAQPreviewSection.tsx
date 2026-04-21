@@ -6,7 +6,7 @@ import { SectionContainer } from "@/components/ui/SectionContainer";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { FAQAccordion } from "@/components/ui/FAQAccordion";
 import { getHomeFaqPreview } from "@/lib/data/faq";
-import { fadeInUp } from "@/lib/utils/motion";
+import { fadeInUp, homePageInView } from "@/lib/utils/motion";
 
 export function FAQPreviewSection() {
   const items = getHomeFaqPreview();
@@ -19,7 +19,7 @@ export function FAQPreviewSection() {
             className="font-display text-h2 font-semibold uppercase tracking-tight text-white"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={homePageInView}
             variants={fadeInUp}
           >
             Common Questions
@@ -29,7 +29,7 @@ export function FAQPreviewSection() {
           className="mx-auto max-w-3xl"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
+          viewport={homePageInView}
           variants={fadeInUp}
         >
           <FAQAccordion items={items} />
