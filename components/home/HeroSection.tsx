@@ -25,7 +25,7 @@ export function HeroSection() {
       <div className="mx-auto flex max-w-content flex-col lg:flex-row lg:items-center px-6 md:px-8 lg:px-12 py-12 md:py-16 lg:py-0 lg:min-h-[680px] gap-8 lg:gap-0">
         {/* Left column — text */}
         <div className="relative z-10 w-full min-w-0 pr-2 sm:pr-4 lg:w-[52%] lg:shrink-0 lg:py-16 lg:pr-10 xl:pr-14">
-          <h1 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-white">
+          <h2 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-white">
             <span className="block">
               {wordsA.map((w) => {
                 const i = idx++;
@@ -54,7 +54,7 @@ export function HeroSection() {
                 );
               })}
             </span>
-          </h1>
+          </h2>
           <motion.p
             className="mb-8 max-w-xl text-body text-off-white"
             initial={{ opacity: 0 }}
@@ -113,7 +113,7 @@ export function HeroSection() {
             src={media.hero.apparelStack}
             alt="Custom Esportiko apparel — hoodie, jersey, and caps ready for screen printing and embroidery"
             fill
-            priority
+            loading="lazy"
             sizes="(max-width: 1024px) 100vw, 52vw"
             className="object-contain object-center lg:object-right lg:object-center"
           />

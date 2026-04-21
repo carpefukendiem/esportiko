@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { HomepageHero } from "@/components/home/HomepageHero";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SplitPathSection } from "@/components/home/SplitPathSection";
 import { ServicesSection } from "@/components/home/ServicesSection";
@@ -20,6 +21,7 @@ export function generateMetadata(): Metadata {
 export default function HomePage() {
   return (
     <>
+      <HomepageHero />
       <HeroSection />
       <SplitPathSection />
       <ServicesSection />
