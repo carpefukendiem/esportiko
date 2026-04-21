@@ -72,7 +72,7 @@ export function HomepageHero() {
           aria-hidden
         />
 
-        <div className="relative z-[2] mx-auto flex h-full min-h-[inherit] max-w-content flex-col justify-start px-6 pb-10 pt-[max(5.5rem,min(38vh,15rem))] text-center md:justify-center md:px-8 md:py-20 md:text-left lg:px-12 lg:py-24">
+        <div className="relative z-[2] mx-auto flex h-full min-h-[inherit] max-w-content flex-col justify-start px-6 pb-0 pt-[max(5.5rem,min(38vh,15rem))] text-center md:justify-center md:px-8 md:pb-0 md:pt-20 md:text-left lg:px-12 lg:pt-24">
           <motion.h1
             className="font-display text-4xl font-bold leading-tight tracking-tight text-white [text-shadow:_0_2px_20px_rgb(10_22_40_/_0.8),_0_1px_3px_rgb(0_0_0_/_0.6)] md:text-6xl lg:text-7xl"
             {...bannerMotion(0)}
@@ -90,14 +90,14 @@ export function HomepageHero() {
             className="mx-auto mt-8 flex w-full max-w-md flex-col gap-3 md:mx-0 md:max-w-none md:flex-row md:items-center md:gap-4"
             {...bannerMotion(reduceMotion ? 0 : 0.2)}
           >
-            <Button asChild variant="primary" width="full" className="md:w-auto">
+            <Button asChild variant="primary" width="full" className="font-semibold text-white md:w-auto">
               <Link href="/request-a-quote">Request a Quote</Link>
             </Button>
             <Button
               asChild
               variant="secondary"
               width="full"
-              className="border-0 bg-blue-accent text-white hover:bg-blue-light md:w-auto"
+              className="border-0 bg-white font-semibold text-navy shadow-none transition-all duration-200 hover:bg-off-white hover:shadow-lg md:w-auto"
             >
               <Link href="/team-orders">Explore Team Orders</Link>
             </Button>
@@ -105,33 +105,37 @@ export function HomepageHero() {
         </div>
       </div>
 
-      {/* Part 2: apparel showcase */}
-      <div className="mx-auto max-w-content px-6 pt-6 pb-12 md:px-8 md:pt-12 md:pb-20 lg:px-12">
-        <h2 className="mb-10 text-center font-display text-xl font-semibold uppercase tracking-wide text-white md:mb-12 md:text-2xl lg:text-3xl">
-          Trusted by Local Teams & Schools
-        </h2>
+      {/* Part 2: apparel showcase — continuous with banner; heading is the seam */}
+      <div className="mx-auto max-w-content">
+        <div className="px-6 pt-6 pb-6 md:px-8 md:pt-8 md:pb-8 lg:px-12">
+          <h2 className="text-center font-display text-2xl font-semibold uppercase tracking-widest text-white md:text-3xl lg:text-4xl">
+            Trusted by Local Teams & Schools
+          </h2>
+        </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-6 lg:gap-8">
-          {cards.map((card, i) => (
-            <motion.div key={card.src} {...cardMotion(reduceMotion ? 0 : i * 0.12)}>
-              <Link
-                href="/team-orders"
-                className={cn(
-                  "group relative block aspect-square overflow-hidden rounded-2xl border border-white/5 shadow-2xl shadow-black/40 ring-1 ring-white/10 transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-accent focus-visible:ring-offset-2 focus-visible:ring-offset-navy",
-                  card.bg
-                )}
-              >
-                <Image
-                  src={card.src}
-                  alt={card.alt}
-                  fill
-                  loading="lazy"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover object-center brightness-[0.98] transition-[filter] duration-300 group-hover:brightness-105"
-                />
-              </Link>
-            </motion.div>
-          ))}
+        <div className="px-6 pb-16 md:px-8 md:pb-20 lg:px-12">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-6 lg:gap-8">
+            {cards.map((card, i) => (
+              <motion.div key={card.src} {...cardMotion(reduceMotion ? 0 : i * 0.12)}>
+                <Link
+                  href="/team-orders"
+                  className={cn(
+                    "group relative block aspect-square overflow-hidden rounded-2xl border border-white/5 shadow-2xl shadow-black/40 ring-1 ring-white/10 transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-accent focus-visible:ring-offset-2 focus-visible:ring-offset-navy",
+                    card.bg
+                  )}
+                >
+                  <Image
+                    src={card.src}
+                    alt={card.alt}
+                    fill
+                    loading="lazy"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover object-center brightness-[0.98] transition-[filter] duration-300 group-hover:brightness-105"
+                  />
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
