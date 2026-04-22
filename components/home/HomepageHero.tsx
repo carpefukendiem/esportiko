@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 import { homePageInView } from "@/lib/utils/motion";
 
-const BANNER = "/images/home/hero-banner.png";
+const BANNER = "/images/Esportiko-home-page-hero-bg.png";
 const CARD_AYSO = "/images/home/card-ayso.png";
 const CARD_DP = "/images/home/card-dp-football.png";
 const CARD_SBSC = "/images/home/card-sbsc.png";
 
-/** PR note: hero-banner.png should be optimized to ~400KB or less for LCP; current asset may be larger until final export. */
+/** PR note: Esportiko-home-page-hero-bg.png should be optimized to ~400KB or less for LCP; current asset may be larger until final export. */
 export function HomepageHero() {
   const reduceMotion = useReducedMotion();
 
@@ -50,15 +50,15 @@ export function HomepageHero() {
 
   return (
     <section aria-label="Homepage hero" className="bg-navy">
-      {/* Part 1: full-bleed banner — overflow clips bottom ~30px; image scaled so jerseys read larger */}
-      <div className="relative h-[calc(70vh-30px)] min-h-[calc(500px-30px)] w-full overflow-hidden md:h-[calc(75vh-30px)] md:min-h-[calc(600px-30px)] lg:h-[calc(85vh-30px)] lg:min-h-[calc(600px-30px)]">
+      {/* Part 1: full-bleed banner */}
+      <div className="relative w-full min-h-[500px] h-[70vh] md:h-[75vh] md:min-h-[600px] lg:h-[85vh] lg:min-h-[600px]">
         <Image
           src={BANNER}
           alt="Custom team jerseys, hats, and apparel by Esportiko"
           fill
           priority
           sizes="100vw"
-          className="scale-[1.2] object-cover object-center"
+          className="object-cover object-center"
         />
         <div
           className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-navy/95 via-navy/75 to-transparent"
@@ -73,7 +73,7 @@ export function HomepageHero() {
           aria-hidden
         />
 
-        <div className="relative z-[2] mx-auto flex h-full min-h-[inherit] max-w-content -translate-y-[25px] flex-col justify-start px-6 pb-0 pt-[max(5.5rem,min(38vh,15rem))] text-center md:justify-center md:px-8 md:pb-0 md:pt-20 md:text-left lg:px-12 lg:pt-24">
+        <div className="relative z-[2] mx-auto flex h-full min-h-[inherit] max-w-content flex-col justify-start px-6 pb-0 pt-[max(5.5rem,min(38vh,15rem))] text-center md:justify-center md:px-8 md:pb-0 md:pt-20 md:text-left lg:px-12 lg:pt-24">
           <motion.h1
             className="font-display text-4xl font-bold leading-tight tracking-tight text-white [text-shadow:_0_2px_20px_rgb(10_22_40_/_0.8),_0_1px_3px_rgb(0_0_0_/_0.6)] md:text-6xl lg:text-7xl"
             {...bannerMotion(0)}
