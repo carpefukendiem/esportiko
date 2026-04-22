@@ -90,9 +90,10 @@ export function AdminOrderActions(props: {
       <div className="border-t border-[#1C2333] pt-6">
         <h3 className="font-sans text-sm font-semibold text-white">Email customer</h3>
         <p className="mt-1 text-xs text-[#8A94A6]">
-          Sends via Resend when <code className="text-white">RESEND_API_KEY</code> and{" "}
-          <code className="text-white">RESEND_FROM_EMAIL</code> are set; otherwise the message is
-          only logged in <code className="text-white">admin_messages</code>.
+          Sends via Resend when <code className="text-white">RESEND_API_KEY</code> and a sender
+          (<code className="text-white">RESEND_FROM_EMAIL</code> or <code className="text-white">RESEND_FROM</code>)
+          are set on the server (Vercel: Production + redeploy). Otherwise the message is only logged
+          in <code className="text-white">admin_messages</code>.
         </p>
         <input
           className="mt-3 w-full rounded-lg border border-[#2A3347] bg-[#0A0F1A] px-3 py-2 text-sm text-white"
@@ -117,7 +118,13 @@ export function AdminOrderActions(props: {
                 subject,
                 body,
               });
-              setMsg(res.emailed ? "Email sent and logged." : "Message logged (email not sent — configure Resend).");
+              setMsg(
+                res.emailed
+                  ? "Email sent and logged."
+                  : res.emailDetail
+                    ? `Message logged. Email not sent: ${res.emailDetail}`
+                    : "Message logged (email not sent)."
+              );
               setBody("");
               router.refresh();
             })

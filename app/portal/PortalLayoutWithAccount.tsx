@@ -1,5 +1,3 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/lib/auth/admin-email";
@@ -7,6 +5,7 @@ import { ensureAccount } from "@/lib/portal/ensureAccount";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { PortalAccountHeader } from "@/components/portal/PortalAccountHeader";
 import { PortalAccountSetupFailed } from "@/components/portal/PortalAccountSetupFailed";
+import { PortalTeamProfileGate } from "@/components/portal/PortalTeamProfileGate";
 
 export async function PortalLayoutWithAccount({
   user,
@@ -27,20 +26,11 @@ export async function PortalLayoutWithAccount({
     return <PortalAccountSetupFailed />;
   }
 
-  const pathname = headers().get("x-es-pathname") ?? "";
-  const onSettings =
-    pathname === "/portal/settings" ||
-    pathname.startsWith("/portal/settings/");
-
   const needsTeamProfile =
     !String(account.sport ?? "").trim() ||
     !String(account.contact_name ?? "").trim();
 
   const isAdmin = Boolean(user.email && isAdminEmail(user.email));
-
-  if (needsTeamProfile && !onSettings && !isAdmin) {
-    redirect("/portal/settings?onboarding=true");
-  }
 
   return (
     <PortalShell
@@ -48,7 +38,9 @@ export async function PortalLayoutWithAccount({
         <PortalAccountHeader account={account} email={user.email ?? undefined} />
       }
     >
-      {children}
+      <PortalTeamProfileGate needsTeamProfile={needsTeamProfile} isAdmin={isAdmin}>
+        {children}
+      </PortalTeamProfileGate>
     </PortalShell>
   );
 }

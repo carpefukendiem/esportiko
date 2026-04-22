@@ -81,12 +81,18 @@ export function AdminAccountControls(props: {
                 onClick={() =>
                   start(async () => {
                     setMsg(null);
-                    await sendMessageToCustomer({
+                    const res = await sendMessageToCustomer({
                       accountId: props.accountId,
                       subject,
                       body,
                     });
-                    setMsg("Sent / logged.");
+                    setMsg(
+                      res.emailed
+                        ? "Email sent and logged."
+                        : res.emailDetail
+                          ? `Message logged. Email not sent: ${res.emailDetail}`
+                          : "Message logged (email not sent)."
+                    );
                     setBody("");
                     setOpen(false);
                     router.refresh();
