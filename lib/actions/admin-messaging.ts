@@ -1,5 +1,7 @@
 "use server";
 
+import { headers } from "next/headers";
+import { loadResendEnv, postResendEmail } from "@/lib/email/resend-config";
 import { requireAdmin } from "@/lib/auth/admin";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
@@ -12,12 +14,14 @@ type SendArgs = {
 
 /**
  * Logs an admin message and optionally sends email via Resend when
- * `RESEND_API_KEY` and `RESEND_FROM_EMAIL` are configured.
+ * `RESEND_API_KEY` and `RESEND_FROM_EMAIL` (or `RESEND_FROM`) are configured.
  */
 export async function sendMessageToCustomer(args: SendArgs): Promise<{
   ok: true;
   emailed: boolean;
+  emailDetail?: string;
 }> {
+  void headers().get("host");
   const user = await requireAdmin();
   const admin = getSupabaseAdmin();
 
@@ -45,31 +49,26 @@ export async function sendMessageToCustomer(args: SendArgs): Promise<{
     throw new Error("Could not log message");
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
+  const cfg = loadResendEnv();
   let emailed = false;
+  let emailDetail: string | undefined;
 
-  if (apiKey && from) {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from,
-        to: [to],
-        subject: args.subject.trim(),
-        text: args.body.trim(),
-      }),
+  if (!cfg.ok) {
+    emailDetail = cfg.reason;
+  } else {
+    const sent = await postResendEmail({
+      apiKey: cfg.apiKey,
+      from: cfg.from,
+      to,
+      subject: args.subject.trim(),
+      text: args.body.trim(),
     });
-    if (!res.ok) {
-      const t = await res.text();
-      console.error("Resend error", res.status, t);
+    if (!sent.ok) {
+      emailDetail = sent.message;
     } else {
       emailed = true;
     }
   }
 
-  return { ok: true, emailed };
+  return { ok: true, emailed, emailDetail };
 }
