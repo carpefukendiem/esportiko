@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { BusinessOrderForm } from "@/components/forms/BusinessOrderForm";
 import { buildMetadata } from "@/lib/seo";
@@ -15,7 +16,9 @@ export function generateMetadata(): Metadata {
 export default function StartBusinessOrderPage() {
   return (
     <SectionContainer className="bg-texture-dark">
-      <BusinessOrderForm />
+      <Suspense fallback={null}>
+        <BusinessOrderForm />
+      </Suspense>
     </SectionContainer>
   );
 }

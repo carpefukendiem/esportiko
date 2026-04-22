@@ -50,15 +50,15 @@ export function HomepageHero() {
 
   return (
     <section aria-label="Homepage hero" className="bg-navy">
-      {/* Part 1: full-bleed banner */}
-      <div className="relative w-full min-h-[500px] h-[70vh] md:h-[75vh] md:min-h-[600px] lg:h-[85vh] lg:min-h-[600px]">
+      {/* Part 1: full-bleed banner — overflow clips bottom ~30px; image scaled so jerseys read larger */}
+      <div className="relative h-[calc(70vh-30px)] min-h-[calc(500px-30px)] w-full overflow-hidden md:h-[calc(75vh-30px)] md:min-h-[calc(600px-30px)] lg:h-[calc(85vh-30px)] lg:min-h-[calc(600px-30px)]">
         <Image
           src={BANNER}
           alt="Custom team jerseys, hats, and apparel by Esportiko"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center"
+          className="scale-[1.2] object-cover object-center"
         />
         <div
           className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-navy/95 via-navy/75 to-transparent"
@@ -73,7 +73,7 @@ export function HomepageHero() {
           aria-hidden
         />
 
-        <div className="relative z-[2] mx-auto flex h-full min-h-[inherit] max-w-content flex-col justify-start px-6 pb-0 pt-[max(5.5rem,min(38vh,15rem))] text-center md:justify-center md:px-8 md:pb-0 md:pt-20 md:text-left lg:px-12 lg:pt-24">
+        <div className="relative z-[2] mx-auto flex h-full min-h-[inherit] max-w-content -translate-y-[25px] flex-col justify-start px-6 pb-0 pt-[max(5.5rem,min(38vh,15rem))] text-center md:justify-center md:px-8 md:pb-0 md:pt-20 md:text-left lg:px-12 lg:pt-24">
           <motion.h1
             className="font-display text-4xl font-bold leading-tight tracking-tight text-white [text-shadow:_0_2px_20px_rgb(10_22_40_/_0.8),_0_1px_3px_rgb(0_0_0_/_0.6)] md:text-6xl lg:text-7xl"
             {...bannerMotion(0)}
@@ -106,16 +106,16 @@ export function HomepageHero() {
         </div>
       </div>
 
-      {/* Part 2: apparel showcase — continuous with banner; heading is the seam */}
-      <div className="mx-auto max-w-content">
-        <div className="px-6 pt-6 pb-6 md:px-8 md:pt-8 md:pb-8 lg:px-12">
+      {/* Part 2: apparel showcase — ~20% wider than content max so cards read larger; 1:1 tiles */}
+      <div className="mx-auto w-full max-w-[min(100%,90rem)] px-5 md:px-6 lg:px-8">
+        <div className="px-1 pt-6 pb-6 md:px-2 md:pt-8 md:pb-8 lg:px-4">
           <h2 className="text-center font-display text-2xl font-semibold uppercase tracking-widest text-white md:text-3xl lg:text-4xl">
             Trusted by Local Teams & Schools
           </h2>
         </div>
 
-        <div className="px-6 pb-16 md:px-8 md:pb-20 lg:px-12">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-6 lg:gap-8">
+        <div className="px-1 pb-16 md:px-2 md:pb-20 lg:px-4">
+          <div className="grid grid-cols-1 gap-7 md:grid-cols-3 md:gap-7 lg:gap-10">
             {cards.map((card, i) => (
               <motion.div key={card.src} {...cardMotion(reduceMotion ? 0 : i * 0.12)}>
                 <Link
@@ -130,7 +130,7 @@ export function HomepageHero() {
                     alt={card.alt}
                     fill
                     loading="lazy"
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 768px) 100vw, 38vw"
                     className="object-cover object-center brightness-[0.98] transition-[filter] duration-300 group-hover:brightness-105"
                   />
                 </Link>

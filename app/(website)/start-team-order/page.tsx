@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { TeamOrderForm } from "@/components/forms/TeamOrderForm";
@@ -30,7 +31,9 @@ export default function StartTeamOrderPage() {
         </Link>
         .
       </div>
-      <TeamOrderForm />
+      <Suspense fallback={null}>
+        <TeamOrderForm />
+      </Suspense>
     </SectionContainer>
   );
 }

@@ -65,7 +65,8 @@ export default function RequestAQuotePage() {
             Pick the path that matches your project.
           </h1>
           <p className="mx-auto max-w-2xl text-body text-off-white/80">
-            and we&apos;ll send back a detailed quote — no back-and-forth.
+            Answer a few focused questions and we&apos;ll send back a detailed quote — no
+            endless back-and-forth.
           </p>
         </div>
 

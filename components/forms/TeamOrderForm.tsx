@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useForm, Controller, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -24,6 +24,7 @@ import {
 import { captureLeadMeta } from "@/lib/utils/leadMeta";
 import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
 import { formSubmitErrorMessage } from "@/lib/data/site";
+import { parseGarmentsQueryParam } from "@/lib/utils/garmentsQuery";
 import {
   SPORT_OPTIONS,
   SEASON_OPTIONS,
@@ -72,8 +73,10 @@ const TEAM_QUOTE_ERROR = formSubmitErrorMessage;
 
 export function TeamOrderForm() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const garmentsFromUrlApplied = useRef(false);
   const [step, setStep] = useState(0);
-  const { submit, isLoading, isSuccess, isError } = useFormSubmit();
+  const { submit, isLoading, isSuccess, isError, errorMessage } = useFormSubmit();
   const [thanks, setThanks] = useState<{
     contactName: string;
     teamName: string;
@@ -109,9 +112,23 @@ export function TeamOrderForm() {
     register,
     handleSubmit,
     trigger,
+    setValue,
     watch,
     formState: { errors },
   } = form;
+
+  useEffect(() => {
+    if (garmentsFromUrlApplied.current) return;
+    const list = parseGarmentsQueryParam(searchParams.get("garments"));
+    if (list.length === 0) return;
+    garmentsFromUrlApplied.current = true;
+    const matched = list.filter((g) =>
+      (APPAREL_OPTIONS as readonly string[]).includes(g)
+    );
+    if (matched.length > 0) {
+      setValue("apparelItems", matched, { shouldDirty: true, shouldValidate: true });
+    }
+  }, [searchParams, setValue]);
 
   const rosterReady = watch("rosterReady");
 
@@ -395,7 +412,7 @@ export function TeamOrderForm() {
 
       {isError ? (
         <p className="text-body-sm text-error" role="alert">
-          {TEAM_QUOTE_ERROR}
+          {errorMessage?.trim() ? errorMessage : TEAM_QUOTE_ERROR}
         </p>
       ) : null}
 

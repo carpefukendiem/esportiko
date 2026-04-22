@@ -42,7 +42,7 @@ const CONTACT_ERROR = formSubmitErrorMessage;
 
 export function ContactForm() {
   const pathname = usePathname();
-  const { submit, isLoading, isSuccess, isError } = useFormSubmit();
+  const { submit, isLoading, isSuccess, isError, errorMessage } = useFormSubmit();
   const [thanksName, setThanksName] = useState<string | null>(null);
 
   const { control, handleSubmit } = useForm<ContactFormValues>({
@@ -190,7 +190,7 @@ export function ContactForm() {
       />
       {isError ? (
         <p className="text-body-sm text-error" role="alert">
-          {CONTACT_ERROR}
+          {errorMessage?.trim() ? errorMessage : CONTACT_ERROR}
         </p>
       ) : null}
       <Button type="submit" variant="primary" width="full" disabled={isLoading}>
