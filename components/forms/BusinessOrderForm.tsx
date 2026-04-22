@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import {
 import { captureLeadMeta } from "@/lib/utils/leadMeta";
 import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
 import { formSubmitErrorMessage } from "@/lib/data/site";
+import { parseGarmentsQueryParam } from "@/lib/utils/garmentsQuery";
 
 const PROJECT_TYPES = [
   { value: "Staff Uniforms", label: "Staff Uniforms" },
@@ -57,8 +58,10 @@ const BUSINESS_QUOTE_ERROR = formSubmitErrorMessage;
 
 export function BusinessOrderForm() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const garmentsFromUrlApplied = useRef(false);
   const [step, setStep] = useState(0);
-  const { submit, isLoading, isSuccess, isError } = useFormSubmit();
+  const { submit, isLoading, isSuccess, isError, errorMessage } = useFormSubmit();
   const [thanks, setThanks] = useState<{
     contactName: string;
     businessName: string;
@@ -89,7 +92,15 @@ export function BusinessOrderForm() {
     mode: "onTouched",
   });
 
-  const { control, handleSubmit, trigger } = form;
+  const { control, handleSubmit, trigger, setValue } = form;
+
+  useEffect(() => {
+    if (garmentsFromUrlApplied.current) return;
+    const list = parseGarmentsQueryParam(searchParams.get("garments"));
+    if (list.length === 0) return;
+    garmentsFromUrlApplied.current = true;
+    setValue("garmentsNeeded", list.join(", "), { shouldDirty: true, shouldValidate: true });
+  }, [searchParams, setValue]);
 
   const goNext = async () => {
     const ok = await trigger(stepFieldGroups[step]);
@@ -286,7 +297,7 @@ export function BusinessOrderForm() {
 
       {isError ? (
         <p className="text-body-sm text-error" role="alert">
-          {BUSINESS_QUOTE_ERROR}
+          {errorMessage?.trim() ? errorMessage : BUSINESS_QUOTE_ERROR}
         </p>
       ) : null}
 

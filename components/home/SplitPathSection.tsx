@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { PathCard } from "@/components/ui/PathCard";
-import { fadeInUp } from "@/lib/utils/motion";
+import { fadeInUp, homePageInView } from "@/lib/utils/motion";
 import { media } from "@/lib/data/media";
 
 export function SplitPathSection() {
@@ -25,7 +25,7 @@ export function SplitPathSection() {
             className="font-display text-h2 font-bold uppercase tracking-tight text-navy"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={homePageInView}
             variants={fadeInUp}
           >
             What Are You Ordering?
@@ -36,7 +36,7 @@ export function SplitPathSection() {
             className="h-full"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-40px" }}
+            viewport={homePageInView}
             variants={fadeInUp}
           >
             <PathCard
@@ -52,7 +52,7 @@ export function SplitPathSection() {
             className="h-full"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-40px" }}
+            viewport={homePageInView}
             variants={fadeInUp}
           >
             <PathCard

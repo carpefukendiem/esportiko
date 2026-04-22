@@ -40,7 +40,7 @@ const ROSTER_ERROR = formSubmitErrorMessage;
 
 export function TeamRosterDetailsForm() {
   const pathname = usePathname();
-  const { submit, isLoading, isSuccess, isError } = useFormSubmit();
+  const { submit, isLoading, isSuccess, isError, errorMessage } = useFormSubmit();
   const [thanks, setThanks] = useState<{
     contactName: string;
     teamName: string;
@@ -162,7 +162,7 @@ export function TeamRosterDetailsForm() {
           className="rounded-lg border border-error/50 bg-error/10 px-4 py-3 text-body-sm text-error"
           role="alert"
         >
-          {ROSTER_ERROR}
+          {errorMessage?.trim() ? errorMessage : ROSTER_ERROR}
         </p>
       ) : null}
 

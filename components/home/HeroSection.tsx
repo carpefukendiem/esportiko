@@ -21,11 +21,11 @@ export function HeroSection() {
   let idx = 0;
 
   return (
-    <section className="relative overflow-hidden bg-texture-dark geometric-bg min-h-[600px] lg:min-h-[680px]">
-      <div className="mx-auto flex max-w-content flex-col lg:flex-row lg:items-center px-6 md:px-8 lg:px-12 py-12 md:py-16 lg:py-0 lg:min-h-[680px] gap-8 lg:gap-0">
+    <section className="relative min-h-[600px] overflow-hidden bg-off-white lg:min-h-[680px]">
+      <div className="mx-auto flex max-w-content flex-col gap-8 px-6 py-12 md:px-8 md:py-16 lg:min-h-[680px] lg:flex-row lg:items-center lg:gap-0 lg:px-12 lg:py-0">
         {/* Left column — text */}
         <div className="relative z-10 w-full min-w-0 pr-2 sm:pr-4 lg:w-[52%] lg:shrink-0 lg:py-16 lg:pr-10 xl:pr-14">
-          <h2 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-white">
+          <h2 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-navy">
             <span className="block">
               {wordsA.map((w) => {
                 const i = idx++;
@@ -56,7 +56,7 @@ export function HeroSection() {
             </span>
           </h2>
           <motion.p
-            className="mb-8 max-w-xl text-body text-off-white"
+            className="mb-8 max-w-xl text-body text-slate"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.45, duration: 0.5 }}
@@ -72,10 +72,10 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.55, duration: 0.45, ease: "easeOut" }}
           >
-            <Button asChild variant="primary" width="full" className="sm:w-auto">
+            <Button asChild variant="primary" width="full" className="sm:w-auto ring-offset-off-white">
               <Link href="/request-a-quote">Start Your Project</Link>
             </Button>
-            <Button asChild variant="ghost" width="full" className="sm:w-auto">
+            <Button asChild variant="ghost" width="full" className="sm:w-auto ring-offset-off-white">
               <Link href="/our-work">View Our Work</Link>
             </Button>
           </motion.div>
@@ -85,20 +85,20 @@ export function HeroSection() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.45 }}
           >
-            <p className="font-sans text-body-sm italic text-gray-soft">
+            <p className="font-sans text-body-sm italic text-gray-muted">
               Trusted by:
             </p>
             <div className="flex flex-wrap gap-2">
-              <TrustChip>Teams</TrustChip>
-              <TrustChip>Businesses</TrustChip>
-              <TrustChip>Schools</TrustChip>
-              <TrustChip>Events</TrustChip>
+              <TrustChip className="border-slate/30 bg-white text-slate shadow-sm">Teams</TrustChip>
+              <TrustChip className="border-slate/30 bg-white text-slate shadow-sm">Businesses</TrustChip>
+              <TrustChip className="border-slate/30 bg-white text-slate shadow-sm">Schools</TrustChip>
+              <TrustChip className="border-slate/30 bg-white text-slate shadow-sm">Events</TrustChip>
             </div>
           </motion.div>
         </div>
 
         {/* Right column — image, absolutely fills the right half */}
-        <div className="relative w-full h-[360px] sm:h-[440px] lg:absolute lg:right-0 lg:top-0 lg:bottom-0 lg:w-[52%] lg:h-full">
+        <div className="relative h-[360px] w-full sm:h-[440px] lg:absolute lg:bottom-0 lg:right-0 lg:top-0 lg:w-[52%]">
           {/* Glow */}
           <div
             className="pointer-events-none absolute inset-0 z-0 bg-blue-accent/10 blur-[80px]"
@@ -106,7 +106,7 @@ export function HeroSection() {
           />
           {/* Gradient fade on left edge so it blends into text column */}
           <div
-            className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-gradient-to-r from-[#0a0f1e] to-transparent lg:w-48"
+            className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-gradient-to-r from-off-white to-transparent lg:w-48"
             aria-hidden
           />
           <Image

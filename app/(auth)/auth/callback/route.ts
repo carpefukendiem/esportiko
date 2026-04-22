@@ -8,7 +8,10 @@ import { getRequestOrigin } from "@/lib/request-origin";
 export async function GET(request: NextRequest) {
   const url = request.nextUrl;
   const code = url.searchParams.get("code");
-  const nextPath = url.searchParams.get("next") ?? "/portal/dashboard";
+  const nextPath =
+    url.searchParams.get("next")?.trim() ||
+    url.searchParams.get("redirect")?.trim() ||
+    "/portal/dashboard";
   const origin = getRequestOrigin(request);
   const safeNext = nextPath.startsWith("/") ? nextPath : `/${nextPath}`;
 

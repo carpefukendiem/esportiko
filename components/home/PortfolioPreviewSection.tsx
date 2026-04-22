@@ -7,7 +7,7 @@ import { SectionContainer } from "@/components/ui/SectionContainer";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Button } from "@/components/ui/button";
 import { portfolioItems } from "@/lib/data/portfolio";
-import { fadeInUp } from "@/lib/utils/motion";
+import { fadeInUp, homePageInView } from "@/lib/utils/motion";
 
 const preview = portfolioItems.slice(0, 5);
 
@@ -21,7 +21,7 @@ export function PortfolioPreviewSection() {
             className="font-display text-h2 font-semibold uppercase tracking-tight text-white"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={homePageInView}
             variants={fadeInUp}
           >
             Work That Earns the Second Look
@@ -34,7 +34,7 @@ export function PortfolioPreviewSection() {
               className="relative aspect-[3/4] w-[72vw] max-w-[280px] flex-shrink-0 snap-center overflow-hidden rounded-xl border border-slate bg-navy sm:w-64 md:w-auto md:max-w-none"
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-40px" }}
+              viewport={homePageInView}
               variants={fadeInUp}
               transition={{ delay: i * 0.04 }}
             >
@@ -53,7 +53,7 @@ export function PortfolioPreviewSection() {
           className="text-center"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={homePageInView}
           variants={fadeInUp}
         >
           <Button asChild variant="secondary">

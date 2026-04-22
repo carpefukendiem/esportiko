@@ -27,7 +27,12 @@ export function LoginForm() {
 
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
-    setNextPath(q.get("next") ?? "/portal/dashboard");
+    const raw =
+      q.get("next")?.trim() ||
+      q.get("redirect")?.trim() ||
+      "/portal/dashboard";
+    const safe = raw.startsWith("/") ? raw : `/${raw}`;
+    setNextPath(safe);
     setAuthError(q.get("error"));
   }, []);
 
