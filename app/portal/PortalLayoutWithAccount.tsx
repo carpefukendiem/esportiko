@@ -1,4 +1,5 @@
 import type { User } from "@supabase/supabase-js";
+import { unstable_noStore as noStore } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/lib/auth/admin-email";
 import { ensureAccount } from "@/lib/portal/ensureAccount";
@@ -14,6 +15,7 @@ export async function PortalLayoutWithAccount({
   user: User;
   children: React.ReactNode;
 }) {
+  noStore();
   const supabase = createClient();
   const account = await ensureAccount(
     supabase,
@@ -38,7 +40,11 @@ export async function PortalLayoutWithAccount({
         <PortalAccountHeader account={account} email={user.email ?? undefined} />
       }
     >
-      <PortalTeamProfileGate needsTeamProfile={needsTeamProfile} isAdmin={isAdmin}>
+      <PortalTeamProfileGate
+        needsTeamProfile={needsTeamProfile}
+        isAdmin={isAdmin}
+        userEmail={user.email ?? null}
+      >
         {children}
       </PortalTeamProfileGate>
     </PortalShell>

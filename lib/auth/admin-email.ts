@@ -5,8 +5,9 @@
  * behavior and does not send real admins through portal team setup.
  */
 export function parseAdminEmails(): string[] {
-  const raw = process.env.ADMIN_EMAILS ?? "";
-  const pub = process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "";
+  // Bracket access so Next is less likely to bake in empty values at build time.
+  const raw = process.env["ADMIN_EMAILS"] ?? "";
+  const pub = process.env["NEXT_PUBLIC_ADMIN_EMAILS"] ?? "";
   const seen = new Set<string>();
   const out: string[] = [];
   for (const part of [...raw.split(","), ...pub.split(",")]) {

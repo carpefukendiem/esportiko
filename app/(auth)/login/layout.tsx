@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
+/** Title is set per-request on `login/page.tsx` via `generateMetadata`. */
 export const metadata: Metadata = {
-  title: "Team portal sign in",
   robots: { index: false, follow: false },
 };
 

@@ -19,10 +19,19 @@ const loginSchema = z.object({
 
 type LoginValues = z.infer<typeof loginSchema>;
 
-export function LoginForm() {
+type LoginFormProps = {
+  /** From `?next=` / `?redirect=` (set by middleware when opening protected routes). */
+  initialNext?: string;
+  initialAuthError?: string | null;
+};
+
+export function LoginForm({
+  initialNext = "/portal/dashboard",
+  initialAuthError = null,
+}: LoginFormProps) {
   const router = useRouter();
-  const [nextPath, setNextPath] = useState("/portal/dashboard");
-  const [authError, setAuthError] = useState<string | null>(null);
+  const [nextPath, setNextPath] = useState(initialNext);
+  const [authError, setAuthError] = useState<string | null>(initialAuthError);
   const [oauthLoading, setOauthLoading] = useState(false);
 
   useEffect(() => {
@@ -57,7 +66,8 @@ export function LoginForm() {
       return;
     }
     if (isPublicAdminEmail(data.email)) {
-      router.push("/admin");
+      const dest = nextPath.startsWith("/admin") ? nextPath : "/admin";
+      router.push(dest);
       router.refresh();
       return;
     }
@@ -94,6 +104,18 @@ export function LoginForm() {
           priority
         />
       </div>
+
+      {nextPath.startsWith("/admin") ? (
+        <p
+          className="mb-6 rounded-lg border border-amber-500/35 bg-amber-500/10 px-3 py-2.5 text-center font-sans text-sm leading-snug text-amber-100"
+          role="status"
+        >
+          <strong className="font-semibold text-white">Admin</strong> — sign in with an allowlisted email.
+          Use your <strong className="font-semibold text-white">live site</strong> (e.g.{" "}
+          <span className="font-mono text-xs">esportiko.vercel.app/admin/orders</span>), not{" "}
+          <span className="font-mono text-xs">localhost</span>, unless you are running the app locally.
+        </p>
+      ) : null}
 
       <button
         type="button"
