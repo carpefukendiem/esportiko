@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { TrustChip } from "@/components/ui/TrustChip";
 import { media } from "@/lib/data/media";
+import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 
 const wordMotion = (i: number) => ({
   initial: { opacity: 0, y: 12 },
@@ -21,8 +22,9 @@ export function HeroSection() {
   let idx = 0;
 
   return (
-    <section className="relative min-h-[600px] overflow-hidden bg-off-white lg:min-h-[680px]">
-      <div className="mx-auto flex max-w-content flex-col gap-8 px-6 py-12 md:px-8 md:py-16 lg:min-h-[680px] lg:flex-row lg:items-center lg:gap-0 lg:px-12 lg:py-0">
+    <section className="relative min-h-[600px] overflow-hidden bg-[#f5f7fa] lg:min-h-[680px]">
+      <NoiseOverlay opacity={0.03} />
+      <div className="relative z-10 mx-auto flex max-w-content flex-col gap-8 px-6 py-12 md:px-8 md:py-16 lg:min-h-[680px] lg:flex-row lg:items-center lg:gap-0 lg:px-12 lg:py-0">
         {/* Left column — text */}
         <div className="relative z-10 w-full min-w-0 pr-2 sm:pr-4 lg:w-[52%] lg:shrink-0 lg:py-16 lg:pr-10 xl:pr-14">
           <h2 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-navy">
@@ -56,7 +58,7 @@ export function HeroSection() {
             </span>
           </h2>
           <motion.p
-            className="mb-8 max-w-xl text-body text-slate"
+            className="mb-8 max-w-xl text-body leading-relaxed text-slate"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.45, duration: 0.5 }}

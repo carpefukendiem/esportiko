@@ -31,7 +31,7 @@ const points = [
 
 export function WhySection() {
   return (
-    <section className="bg-navy bg-texture-dark">
+    <section className="border-y border-slate/60 bg-texture-dark">
       <SectionContainer>
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <SectionLabel className="mb-4">WHY ESPORTIKO</SectionLabel>
@@ -63,7 +63,7 @@ export function WhySection() {
               <h4 className="mb-2 font-display text-lg font-semibold text-white md:text-xl">
                 {p.title}
               </h4>
-              <p className="text-body-sm text-gray-soft">{p.body}</p>
+              <p className="text-body-sm leading-relaxed text-gray-soft">{p.body}</p>
             </motion.article>
           ))}
         </div>

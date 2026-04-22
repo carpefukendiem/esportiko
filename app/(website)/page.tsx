@@ -9,6 +9,18 @@ import { FAQPreviewSection } from "@/components/home/FAQPreviewSection";
 import { CTABand } from "@/components/ui/CTABand";
 import { buildMetadata } from "@/lib/seo";
 
+/*
+ * SECTION RHYTHM (dark / light alternation):
+ * 1. HomepageHero     — DARK (bg-navy)
+ * 2. HeroSection       — LIGHT soft paper + noise (#f5f7fa)
+ * 3. SplitPathSection  — LIGHT warm gradient + noise (CSS, no PNG)
+ * 4. ServicesSection   — DARK mid (bg-texture-navy-mid)
+ * 5. PortfolioPreview  — LIGHT soft paper + noise
+ * 6. WhySection        — DARK deepest (bg-texture-dark)
+ * 7. FAQPreviewSection — LIGHT crisp white + noise + accordion light
+ * 8. CTABand           — LIGHT warm gradient + navy CTAs
+ * 9. Footer (layout)   — DARK (bg-navy)
+ */
 export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Custom Apparel Santa Barbara & Central Coast",
@@ -28,7 +40,7 @@ export default function HomePage() {
       <PortfolioPreviewSection />
       <WhySection />
       <FAQPreviewSection />
-      <CTABand />
+      <CTABand variant="light" />
     </>
   );
 }

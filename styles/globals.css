@@ -3,16 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --color-navy: #0b1221;
-  --color-navy-mid: #111827;
-  --color-navy-light: #1a2640;
+  /* Deepest / mid / elevated dark surfaces (rhythm + depth) */
+  --color-navy: #0a1628;
+  --color-navy-mid: #0f1d33;
+  --color-navy-light: #14253f;
   --color-slate: #253352;
   --color-blue-accent: #2563eb;
   --color-blue-light: #3b82f6;
   --color-blue-muted: #1e3a6e;
   --color-white: #ffffff;
   --color-off-white: #f0f4f8;
-  --color-gray-soft: #94a3b8;
+  --color-gray-soft: #cbd5e1;
   --color-gray-muted: #475569;
   --color-success: #10b981;
   --color-error: #ef4444;
@@ -26,10 +27,11 @@
 
   html {
     @apply scroll-smooth;
+    font-size: 17px;
   }
 
   body {
-    @apply bg-navy font-sans text-off-white antialiased;
+    @apply bg-navy font-sans antialiased leading-relaxed tracking-[0.005em] text-[#e2e8f0];
   }
 
   h1,

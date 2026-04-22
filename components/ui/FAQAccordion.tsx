@@ -7,20 +7,45 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import type { FaqEntry } from "@/lib/data/faq";
+import { cn } from "@/lib/utils/cn";
 
-export function FAQAccordion({ items }: { items: FaqEntry[] }) {
+export function FAQAccordion({
+  items,
+  tone = "dark",
+}: {
+  items: FaqEntry[];
+  tone?: "dark" | "light";
+}) {
+  const light = tone === "light";
   return (
     <Accordion type="single" collapsible className="w-full space-y-2">
       {items.map((item, i) => (
         <AccordionItem
           key={item.question}
           value={`item-${i}`}
-          className="rounded-xl border border-slate bg-navy-light/60 px-4"
+          className={cn(
+            "rounded-xl px-4",
+            light
+              ? "border border-navy/10 bg-white shadow-sm"
+              : "border border-slate bg-navy-light/60"
+          )}
         >
-          <AccordionTrigger className="text-left font-sans text-body font-medium text-off-white hover:no-underline">
+          <AccordionTrigger
+            className={cn(
+              "text-left font-sans text-body font-medium hover:no-underline",
+              light &&
+                "text-navy data-[state=open]:text-navy [&>svg]:!text-slate-500 focus-visible:ring-offset-white",
+              !light && "text-off-white focus-visible:ring-offset-navy [&_svg]:text-gray-soft"
+            )}
+          >
             {item.question}
           </AccordionTrigger>
-          <AccordionContent className="font-sans text-body-sm text-gray-soft">
+          <AccordionContent
+            className={cn(
+              "font-sans text-body-sm leading-relaxed",
+              light ? "text-slate-700" : "text-gray-soft"
+            )}
+          >
             {item.answer}
           </AccordionContent>
         </AccordionItem>

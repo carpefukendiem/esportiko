@@ -9,7 +9,7 @@ import { fadeInUp, homePageInView } from "@/lib/utils/motion";
 
 export function ServicesSection() {
   return (
-    <section className="bg-texture-dark border-y border-slate/60">
+    <section className="border-y border-slate/60 bg-texture-navy-mid">
       <SectionContainer>
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <SectionLabel className="mb-4">WHAT WE DO</SectionLabel>

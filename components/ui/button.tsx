@@ -13,6 +13,11 @@ const buttonVariants = cva(
         secondary:
           "border border-slate-500 bg-transparent px-6 py-3 text-white hover:bg-navy-light",
         ghost: "text-blue-accent hover:underline px-2 py-2 bg-transparent",
+        /** Primary CTA on light sections (max contrast vs navy). */
+        navy: "border border-transparent bg-navy px-6 py-3 text-white hover:bg-navy-mid",
+        /** Secondary on light sections. */
+        navyOutline:
+          "border border-navy/30 bg-transparent px-6 py-3 text-navy hover:bg-navy/5",
       },
       width: {
         auto: "w-auto",

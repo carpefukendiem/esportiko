@@ -19,6 +19,7 @@ import {
 import { captureLeadMeta } from "@/lib/utils/leadMeta";
 import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
 import { formSubmitErrorMessage, sitePhone } from "@/lib/data/site";
+import { cn } from "@/lib/utils/cn";
 
 const SERVICE_INTEREST = [
   { value: "general", label: "General inquiry" },
@@ -40,10 +41,14 @@ const APPAREL_OPTIONS = [
 
 const CONTACT_ERROR = formSubmitErrorMessage;
 
-export function ContactForm() {
+const lightFieldDescendants =
+  "[&_label]:!text-navy/85 [&_legend]:!text-navy/80 [&_input]:!border-navy/20 [&_input]:!bg-white [&_input]:!text-navy [&_input]:placeholder:!text-slate-400 [&_textarea]:!border-navy/20 [&_textarea]:!bg-white [&_textarea]:!text-navy [&_textarea]:placeholder:!text-slate-400 [&_button[role=combobox]]:!border-navy/20 [&_button[role=combobox]]:!bg-white [&_button[role=combobox]]:!text-navy [&_fieldset>p.text-body-sm]:!text-slate-600 [&_label~p.text-body-sm]:!text-slate-600 [&_fieldset_label.flex]:!border-navy/15 [&_fieldset_label.flex]:!bg-[#f5f7fa] [&_fieldset_label_span]:!text-navy";
+
+export function ContactForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
   const pathname = usePathname();
   const { submit, isLoading, isSuccess, isError, errorMessage } = useFormSubmit();
   const [thanksName, setThanksName] = useState<string | null>(null);
+  const light = tone === "light";
 
   const { control, handleSubmit } = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -94,10 +99,15 @@ export function ContactForm() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="rounded-xl border border-slate bg-navy-mid/80 px-6 py-10 text-center md:px-8"
+        className={cn(
+          "rounded-xl px-6 py-10 text-center md:px-8",
+          light
+            ? "border border-navy/15 bg-white text-navy shadow-sm"
+            : "border border-slate bg-navy-mid/80 text-off-white"
+        )}
         role="status"
       >
-        <p className="text-body text-off-white">
+        <p className={cn("text-body leading-relaxed", light ? "text-navy/90" : "text-off-white")}>
           Thanks {thanksName.split(/\s+/)[0] ?? thanksName} — we got your
           message and will follow up
           within 1 business day. Need something faster? Call or text us at{" "}
@@ -116,7 +126,12 @@ export function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-6 rounded-xl border border-slate bg-navy-mid/80 p-6 md:p-8"
+      className={cn(
+        "space-y-6 rounded-xl border p-6 md:p-8",
+        light
+          ? cn("border-navy/15 bg-white shadow-sm", lightFieldDescendants)
+          : "border-slate bg-navy-mid/80"
+      )}
       noValidate
     >
       <TextField name="name" label="Name" control={control} />
@@ -156,7 +171,10 @@ export function ContactForm() {
               {APPAREL_OPTIONS.map((opt) => (
                 <label
                   key={opt}
-                  className="flex cursor-pointer items-center gap-3 rounded-md border border-slate bg-navy-light px-3 py-3"
+                  className={cn(
+                    "flex cursor-pointer items-center gap-3 rounded-md border px-3 py-3",
+                    light ? "border-navy/15 bg-[#f5f7fa]" : "border-slate bg-navy-light"
+                  )}
                 >
                   <Checkbox
                     checked={field.value?.includes(opt)}
@@ -169,7 +187,14 @@ export function ContactForm() {
                       );
                     }}
                   />
-                  <span className="text-body-sm text-off-white">{opt}</span>
+                  <span
+                    className={cn(
+                      "text-body-sm",
+                      light ? "text-navy" : "text-off-white"
+                    )}
+                  >
+                    {opt}
+                  </span>
                 </label>
               ))}
             </div>
@@ -193,7 +218,13 @@ export function ContactForm() {
           {errorMessage?.trim() ? errorMessage : CONTACT_ERROR}
         </p>
       ) : null}
-      <Button type="submit" variant="primary" width="full" disabled={isLoading}>
+      <Button
+        type="submit"
+        variant={light ? "navy" : "primary"}
+        width="full"
+        disabled={isLoading}
+        className={light ? "focus-visible:ring-offset-white" : undefined}
+      >
         {isLoading ? "Sending..." : "Send message"}
       </Button>
     </form>

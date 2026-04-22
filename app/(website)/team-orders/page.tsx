@@ -10,7 +10,19 @@ import { TrustChip } from "@/components/ui/TrustChip";
 import { getFaqsByCategoryId } from "@/lib/data/faq";
 import { buildMetadata } from "@/lib/seo";
 import { media } from "@/lib/data/media";
+import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 
+/*
+ * SECTION RHYTHM:
+ * 1. Hero                 — DARK (image + overlays)
+ * 2. Who this is for      — LIGHT soft paper + noise
+ * 3. What’s included      — DARK deepest (texture-dark)
+ * 4. How it works         — DARK mid (texture-navy-mid)
+ * 5. Why Esportiko        — DARK deepest
+ * 6. Sports               — DARK elevated (texture-navy-light)
+ * 7. FAQs                 — LIGHT white + accordion light
+ * 8. CTA                  — DARK (CTABand default)
+ */
 const garmentExamples: { label: string; src: string; alt: string }[] = [
   {
     label: "Jerseys",
@@ -113,24 +125,29 @@ export default function TeamOrdersPage() {
           </div>
         </div>
       </section>
-      <SectionContainer className="bg-texture-navy-mid border-y border-slate/60">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="mb-8 text-center font-display text-h2 font-semibold text-white">
-            Who this is for
-          </h2>
-          <div className="flex flex-wrap justify-center gap-3">
-            {personas.map((p) => (
-              <div
-                key={p.role}
-                className="max-w-xs rounded-xl border border-slate bg-navy-light/70 p-4 text-center"
-              >
-                <TrustChip className="mb-2">{p.role}</TrustChip>
-                <p className="text-body-sm text-gray-soft">{p.line}</p>
-              </div>
-            ))}
+      <section className="relative overflow-hidden border-y border-navy/10 bg-[#f5f7fa]">
+        <NoiseOverlay opacity={0.035} />
+        <SectionContainer className="relative z-10">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="mb-8 text-center font-display text-h2 font-semibold text-navy">
+              Who this is for
+            </h2>
+            <div className="flex flex-wrap justify-center gap-3">
+              {personas.map((p) => (
+                <div
+                  key={p.role}
+                  className="max-w-xs rounded-xl border border-navy/10 bg-white p-4 text-center shadow-sm"
+                >
+                  <TrustChip className="mb-2 border-navy/15 bg-[#f0f2f5] text-navy">
+                    {p.role}
+                  </TrustChip>
+                  <p className="text-body-sm leading-relaxed text-slate-700">{p.line}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </SectionContainer>
+        </SectionContainer>
+      </section>
       <SectionContainer className="bg-texture-dark">
         <div className="mx-auto max-w-3xl">
           <h2 className="mb-6 font-display text-h2 font-semibold text-white">
@@ -164,7 +181,7 @@ export default function TeamOrdersPage() {
           </div>
         </div>
       </SectionContainer>
-      <SectionContainer className="bg-texture-navy-mid border-y border-slate/60">
+      <SectionContainer className="border-y border-slate/60 bg-texture-navy-mid">
         <div className="mx-auto max-w-3xl">
           <h2 className="mb-8 font-display text-h2 font-semibold text-white">
             How it works
@@ -235,7 +252,7 @@ export default function TeamOrdersPage() {
           </div>
         </div>
       </SectionContainer>
-      <SectionContainer className="bg-texture-navy-mid border-y border-slate/60">
+      <SectionContainer className="border-y border-slate/60 bg-texture-navy-light">
         <div className="mx-auto max-w-3xl">
           <h2 className="mb-6 font-display text-h2 font-semibold text-white">
             Sports we support
@@ -252,14 +269,17 @@ export default function TeamOrdersPage() {
           </div>
         </div>
       </SectionContainer>
-      <SectionContainer className="bg-texture-dark">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="mb-6 font-display text-h2 font-semibold text-white">
-            Team order FAQs
-          </h2>
-          <FAQAccordion items={faqItems} />
-        </div>
-      </SectionContainer>
+      <section className="relative overflow-hidden border-y border-navy/10 bg-white">
+        <NoiseOverlay opacity={0.03} />
+        <SectionContainer className="relative z-10">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="mb-6 font-display text-h2 font-semibold text-navy">
+              Team order FAQs
+            </h2>
+            <FAQAccordion items={faqItems} tone="light" />
+          </div>
+        </SectionContainer>
+      </section>
       <CTABand
         primaryHref="/start-team-order"
         primaryLabel="Start Your Team Order"

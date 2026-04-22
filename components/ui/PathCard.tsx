@@ -27,7 +27,7 @@ export function PathCard({
         <h3 className="font-display text-2xl font-bold tracking-tight text-navy md:text-[1.65rem]">
           {title}
         </h3>
-        <p className="mt-3 text-body text-gray-muted">{description}</p>
+        <p className="mt-3 text-body leading-relaxed text-navy/80">{description}</p>
         <Button
           asChild
           variant="primary"

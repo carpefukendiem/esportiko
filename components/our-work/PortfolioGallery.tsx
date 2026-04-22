@@ -6,6 +6,13 @@ import Link from "next/link";
 import { portfolioItems, type PortfolioCategory } from "@/lib/data/portfolio";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils/cn";
+
+const tabsListLight =
+  "inline-flex h-auto min-h-11 w-max flex-wrap justify-start gap-1 rounded-lg border border-navy/15 bg-slate-100 p-1 text-slate-700";
+
+const tabsTriggerLight =
+  "min-h-11 px-4 focus-visible:ring-offset-white data-[state=active]:bg-navy data-[state=active]:text-white data-[state=inactive]:text-slate-600";
 
 const filters: ("All" | PortfolioCategory)[] = [
   "All",
@@ -30,9 +37,9 @@ export function PortfolioGallery() {
     <div>
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <div className="overflow-x-auto pb-2">
-          <TabsList className="inline-flex h-auto min-h-11 w-max flex-wrap justify-start gap-1">
+          <TabsList className={cn(tabsListLight)}>
             {filters.map((f) => (
-              <TabsTrigger key={f} value={f} className="min-h-11 px-4">
+              <TabsTrigger key={f} value={f} className={cn(tabsTriggerLight)}>
                 {f}
               </TabsTrigger>
             ))}
@@ -43,7 +50,7 @@ export function PortfolioGallery() {
         {filtered.map((item) => (
           <article
             key={item.id}
-            className="group relative aspect-[4/5] overflow-hidden rounded-xl border border-slate bg-navy"
+            className="group relative aspect-[4/5] overflow-hidden rounded-xl border border-navy/15 bg-navy shadow-sm"
           >
             <Image
               src={item.image}
@@ -62,7 +69,7 @@ export function PortfolioGallery() {
         ))}
       </div>
       <div className="mt-12 text-center">
-        <Button asChild variant="primary">
+        <Button asChild variant="primary" className="ring-offset-[#f5f7fa]">
           <Link href="/request-a-quote">Start Your Project</Link>
         </Button>
       </div>

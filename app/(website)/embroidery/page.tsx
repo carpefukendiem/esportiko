@@ -6,7 +6,9 @@ import { ProcessStep } from "@/components/ui/ProcessStep";
 import { ServiceHero } from "@/components/ui/ServiceHero";
 import { getFaqsByCategoryId } from "@/lib/data/faq";
 import { buildMetadata } from "@/lib/seo";
+import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 
+/* SECTION RHYTHM: Hero DARK → what you get LIGHT → process DARK → FAQ LIGHT → CTA DARK. */
 export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Embroidery",
@@ -98,14 +100,15 @@ export default function EmbroideryPage() {
           </div>
         </div>
       </SectionContainer>
-      <SectionContainer className="bg-texture-dark">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="mb-6 font-display text-h2 font-semibold text-white">
-            Embroidery FAQs
-          </h2>
-          <FAQAccordion items={faqItems} />
-        </div>
-      </SectionContainer>
+      <section className="relative overflow-hidden border-y border-navy/10 bg-white">
+        <NoiseOverlay opacity={0.03} />
+        <SectionContainer className="relative z-10">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="mb-6 font-display text-h2 font-semibold text-navy">Embroidery FAQs</h2>
+            <FAQAccordion items={faqItems} tone="light" />
+          </div>
+        </SectionContainer>
+      </section>
       <CTABand
         primaryHref="/start-business-order"
         primaryLabel="Start Business Order"

@@ -46,7 +46,7 @@ const config: Config = {
           "clamp(1.5rem, 2.5vw, 2rem)",
           { lineHeight: "1.2" },
         ],
-        body: ["1rem", { lineHeight: "1.6" }],
+        body: ["1rem", { lineHeight: "1.625" }],
         "body-sm": ["0.875rem", { lineHeight: "1.55" }],
         label: [
           "0.8125rem",
