@@ -34,10 +34,15 @@ export function SiteHeader() {
               : "bg-transparent"
           )}
         >
-          <div className="mx-auto flex h-full max-w-content items-center justify-between gap-4 px-4 md:px-6 lg:pl-2 lg:pr-8 xl:pl-0 xl:pr-10">
+          <div className="mx-auto flex h-full max-w-content items-center gap-0 px-4 md:px-6 lg:justify-between lg:gap-4 lg:pl-2 lg:pr-8 xl:pl-0 xl:pr-10">
+            {/* Same width as menu control so logo stays visually centered below lg */}
+            <div className="hidden w-11 shrink-0 max-lg:block" aria-hidden />
             <Link
               href="/"
-              className="flex shrink-0 items-center gap-2 text-white focus-visible:outline-none lg:-translate-x-3 xl:-translate-x-6 2xl:-translate-x-8"
+              className={cn(
+                "flex min-w-0 items-center gap-2 text-white focus-visible:outline-none",
+                "flex-1 justify-center lg:flex-none lg:justify-start lg:-translate-x-3 xl:-translate-x-6 2xl:-translate-x-8"
+              )}
               aria-label="Esportiko home"
             >
               <EsportikoLogo
@@ -56,7 +61,7 @@ export function SiteHeader() {
               ))}
               <MyTeamNav />
             </nav>
-            <div className="flex items-center gap-2">
+            <div className="flex w-11 shrink-0 items-center justify-end gap-2 lg:w-auto">
               <Button
                 asChild
                 variant="primary"
