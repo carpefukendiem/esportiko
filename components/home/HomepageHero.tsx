@@ -49,7 +49,7 @@ export function HomepageHero() {
   ];
 
   return (
-    <section aria-label="Homepage hero" className="bg-navy">
+    <section id="home-hero" aria-label="Homepage hero" className="bg-navy">
       {/* Part 1: full-bleed banner */}
       <div className="relative w-full min-h-[500px] h-[70vh] md:h-[75vh] md:min-h-[600px] lg:h-[85vh] lg:min-h-[600px]">
         <Image
@@ -73,12 +73,12 @@ export function HomepageHero() {
           aria-hidden
         />
 
-        <div className="relative z-[2] mx-auto flex h-full min-h-[inherit] max-w-content flex-col justify-start px-6 pb-0 pt-[max(5.5rem,min(38vh,15rem))] text-center md:justify-center md:px-8 md:pb-0 md:pt-20 md:text-left lg:px-12 lg:pt-24">
+        <div className="relative z-[2] mx-auto flex h-full min-h-[inherit] max-w-content flex-col justify-start px-6 pb-0 pt-[max(5.75rem,18vh)] text-center md:justify-center md:px-8 md:pb-0 md:pt-20 md:text-left lg:px-12 lg:pt-24">
           <motion.h1
             className="font-display text-4xl font-bold leading-tight tracking-tight text-white [text-shadow:_0_2px_20px_rgb(10_22_40_/_0.8),_0_1px_3px_rgb(0_0_0_/_0.6)] md:text-6xl lg:text-7xl"
             {...bannerMotion(0)}
           >
-            Custom Apparel Built for Your Team.
+            Custom Apparel Built For Your Needs.
           </motion.h1>
           <motion.h2
             className="mx-auto mt-4 max-w-2xl font-sans text-lg text-off-white/90 [text-shadow:_0_2px_20px_rgb(10_22_40_/_0.8),_0_1px_3px_rgb(0_0_0_/_0.6)] md:mt-6 md:text-xl lg:mx-0 lg:text-2xl"
