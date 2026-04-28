@@ -35,7 +35,7 @@ export function SiteHeader() {
           )}
         >
           {/* Mobile / tablet: spacer | centered logo | hamburger (matches lg:hidden menu) */}
-          <div className="mx-auto flex h-full max-w-content items-center gap-0 px-4 md:px-6 lg:hidden">
+          <div className="mx-auto flex h-full max-w-content items-center gap-0 px-4 py-5 md:px-6 lg:hidden">
             <div className="w-11 shrink-0" aria-hidden />
             <Link
               href="/"
@@ -43,7 +43,7 @@ export function SiteHeader() {
               aria-label="Esportiko home"
             >
               <EsportikoLogo
-                className="h-[48px] w-auto max-w-[min(78vw,440px)] md:h-[72px] md:max-w-[min(52vw,560px)]"
+                className="h-[64px] w-auto max-w-[min(78vw,440px)] md:h-[72px] md:max-w-[min(52vw,560px)]"
                 priority
               />
             </Link>
