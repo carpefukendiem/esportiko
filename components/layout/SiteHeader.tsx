@@ -34,15 +34,12 @@ export function SiteHeader() {
               : "bg-transparent"
           )}
         >
-          <div className="mx-auto flex h-full max-w-content items-center gap-0 px-4 md:px-6 lg:justify-between lg:gap-4 lg:pl-2 lg:pr-8 xl:pl-0 xl:pr-10">
-            {/* Same width as menu control so logo stays visually centered below lg */}
-            <div className="hidden w-11 shrink-0 max-lg:block" aria-hidden />
+          {/* Mobile / tablet: spacer | centered logo | hamburger (matches lg:hidden menu) */}
+          <div className="mx-auto flex h-full max-w-content items-center gap-0 px-4 md:px-6 lg:hidden">
+            <div className="w-11 shrink-0" aria-hidden />
             <Link
               href="/"
-              className={cn(
-                "flex min-w-0 items-center gap-2 text-white focus-visible:outline-none",
-                "flex-1 justify-center lg:flex-none lg:justify-start lg:-translate-x-3 xl:-translate-x-6 2xl:-translate-x-8"
-              )}
+              className="flex min-w-0 flex-1 justify-center gap-2 text-white focus-visible:outline-none"
               aria-label="Esportiko home"
             >
               <EsportikoLogo
@@ -50,10 +47,31 @@ export function SiteHeader() {
                 priority
               />
             </Link>
-            <nav
-              aria-label="Primary"
-              className="hidden items-center gap-5 lg:flex lg:gap-6"
+            <div className="flex w-11 shrink-0 justify-end">
+              <button
+                type="button"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-off-white hover:bg-navy-light"
+                aria-label="Open menu"
+                aria-expanded={mobileOpen}
+                onClick={() => setMobileOpen(true)}
+              >
+                <Menu className="h-6 w-6" />
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop */}
+          <div className="mx-auto hidden h-full max-w-content items-center justify-between gap-4 px-4 md:px-6 lg:flex lg:pl-2 lg:pr-8 xl:pl-0 xl:pr-10">
+            <Link
+              href="/"
+              className="flex shrink-0 items-center gap-2 text-white focus-visible:outline-none lg:-translate-x-3 xl:-translate-x-6 2xl:-translate-x-8"
+              aria-label="Esportiko home"
             >
+              <EsportikoLogo
+                className="h-[48px] w-auto max-w-[min(78vw,440px)] md:h-[72px] md:max-w-[min(52vw,560px)]"
+              />
+            </Link>
+            <nav aria-label="Primary" className="flex items-center gap-5 lg:gap-6">
               {primaryNav.map((item) => (
                 <NavLink key={item.href} href={item.href}>
                   {item.label}
@@ -61,23 +79,10 @@ export function SiteHeader() {
               ))}
               <MyTeamNav />
             </nav>
-            <div className="flex w-11 shrink-0 items-center justify-end gap-2 lg:w-auto">
-              <Button
-                asChild
-                variant="primary"
-                className="hidden px-5 py-2.5 lg:inline-flex"
-              >
+            <div className="flex items-center gap-2">
+              <Button asChild variant="primary" className="px-5 py-2.5 lg:inline-flex">
                 <Link href="/contact">Contact</Link>
               </Button>
-              <button
-                type="button"
-                className="flex h-11 w-11 items-center justify-center rounded-md text-off-white hover:bg-navy-light lg:hidden"
-                aria-label="Open menu"
-                aria-expanded={mobileOpen}
-                onClick={() => setMobileOpen(true)}
-              >
-                <Menu className="h-6 w-6" />
-              </button>
             </div>
           </div>
         </header>

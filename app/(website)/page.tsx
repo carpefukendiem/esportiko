@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { HomepageHero } from "@/components/home/HomepageHero";
+import { HomeStickyMobileQuoteCTA } from "@/components/home/HomeStickyMobileQuoteCTA";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SplitPathSection } from "@/components/home/SplitPathSection";
 import { ServicesSection } from "@/components/home/ServicesSection";
@@ -29,6 +30,7 @@ export default function HomePage() {
       <WhySection />
       <FAQPreviewSection />
       <CTABand />
+      <HomeStickyMobileQuoteCTA />
     </>
   );
 }
