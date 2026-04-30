@@ -1,0 +1,21 @@
+{
+  "name": "Esportiko",
+  "short_name": "Esportiko",
+  "description": "Custom apparel built for your team — screen printing, embroidery, and team uniforms in Santa Barbara and the Central Coast.",
+  "icons": [
+    {
+      "src": "/favicons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#0a1628",
+  "background_color": "#0a1628",
+  "display": "standalone",
+  "start_url": "/"
+}
