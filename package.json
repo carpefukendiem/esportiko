@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "generate:seed-urls": "tsx scripts/generate-seed-urls.ts",
+"generate:favicons": "tsx scripts/generate-favicons.ts",
     "audit:our-work": "tsx scripts/audit-our-work.ts"
   },
   "dependencies": {

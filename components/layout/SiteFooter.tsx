@@ -51,6 +51,14 @@ export function SiteFooter() {
                   </Link>
                 </li>
               ))}
+              <li className="pt-2">
+                <Link
+                  href="/admin/login"
+                  className="text-sm text-slate-400 hover:text-white transition-colors"
+                >
+                  Admin
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
@@ -84,11 +92,24 @@ export function SiteFooter() {
             </Button>
           </div>
         </div>
-        <div className="mt-12 flex flex-col gap-3 border-t border-slate pt-8 text-body-sm text-gray-soft sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Esportiko. All rights reserved.</p>
-          <Link href="/privacy" className="hover:text-off-white hover:underline">
-            Privacy Policy
-          </Link>
+        <div className="mt-12 border-t border-slate pt-8">
+          <div className="flex flex-col gap-3 text-body-sm text-gray-soft sm:flex-row sm:items-center sm:justify-between">
+            <p>© {new Date().getFullYear()} Esportiko. All rights reserved.</p>
+            <Link href="/privacy" className="hover:text-off-white hover:underline">
+              Privacy Policy
+            </Link>
+          </div>
+          <p className="mt-2 text-xs text-slate-400 text-center md:text-right">
+            Made with <span aria-label="love">❤</span> by{" "}
+            <a
+              href="https://www.rankingsb.com"
+              target="_blank"
+              rel="noopener"
+              className="underline transition-colors hover:text-white"
+            >
+              Ranking SB
+            </a>
+          </p>
         </div>
       </div>
     </footer>
