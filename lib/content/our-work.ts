@@ -18,6 +18,15 @@ export interface WorkItem {
 
 export const WORK_ITEMS: WorkItem[] = [
   {
+    id: "all-stars-santa-barbara",
+    title: "Santa Barbara All-Stars",
+    client: "Santa Barbara All-Stars",
+    category: "teams",
+    imagePath: "/images/our-work/teams/all-stars-santa-barbara.webp",
+    alt: "Custom Santa Barbara All-Stars team apparel by Esportiko",
+    featured: true,
+  },
+  {
     id: "santa-barbara-dons-screenprinting",
     title: "Santa Barbara Dons Screen Printing",
     client: "Santa Barbara Dons",
@@ -33,6 +42,14 @@ export const WORK_ITEMS: WorkItem[] = [
     imagePath: "/images/our-work/teams/softball-jersey-screenprinting.webp",
     alt: "Custom screen-printed softball jersey with team graphics and numbers",
     featured: true,
+  },
+  {
+    id: "custom-jersey-screenprinting",
+    title: "Custom Jersey Screen Printing",
+    category: "teams",
+    imagePath: "/images/our-work/teams/custom-jersey-screenprinting.webp",
+    alt: "Custom jerseys with bold screen-printed graphics for teams and leagues",
+    featured: false,
   },
   {
     id: "santa-barbara-city-screenprinting",
@@ -76,11 +93,35 @@ export const WORK_ITEMS: WorkItem[] = [
     featured: true,
   },
   {
+    id: "business-apparel-screenprinting",
+    title: "Business Apparel Screen Printing",
+    category: "business",
+    imagePath: "/images/our-work/business/business-apparel-screenprinting.webp",
+    alt: "Layered business apparel with coordinated screen-printed branding",
+    featured: false,
+  },
+  {
+    id: "business-screenprinting",
+    title: "Business Screen Printing",
+    category: "business",
+    imagePath: "/images/our-work/business/business-screenprinting.webp",
+    alt: "Folded business shirts and polos ready for company-wide screen printing",
+    featured: false,
+  },
+  {
     id: "screenprint-business-shirts",
     title: "Business Screen-Printed Shirts",
     category: "business",
     imagePath: "/images/our-work/business/screenprint-business-shirts.webp",
     alt: "Coordinated business shirts with company logo screen printing",
+    featured: false,
+  },
+  {
+    id: "business-t-shirt-screenprinting",
+    title: "Business T-Shirt Screen Printing",
+    category: "business",
+    imagePath: "/images/our-work/business/business-t-shirt-screenprinting.webp",
+    alt: "Retail-ready T-shirts with crisp multi-color screen printing for brands",
     featured: false,
   },
   {
@@ -111,7 +152,8 @@ export const WORK_ITEMS: WorkItem[] = [
     id: "martial-arts-school-screenprinting",
     title: "Martial Arts School Screen Printing",
     category: "screen-printing",
-    imagePath: "/images/our-work/screen-printing/martial-arts-school-screenprinting.webp",
+    imagePath:
+      "/images/our-work/screen-printing/martial-arts-school-screenprinting.webp",
     alt: "Martial arts school apparel with detailed screen-printed artwork",
     featured: false,
   },
