@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { PortfolioGallery } from "@/components/our-work/PortfolioGallery";
+import { CATEGORIES, WORK_ITEMS } from "@/lib/content/our-work";
 import { buildMetadata } from "@/lib/seo";
 
 export function generateMetadata(): Metadata {
@@ -24,7 +25,7 @@ export default function OurWorkPage() {
           and organized team programs. Use the filters to explore by category.
         </p>
       </div>
-      <PortfolioGallery />
+      <PortfolioGallery items={WORK_ITEMS} categories={CATEGORIES} />
     </SectionContainer>
   );
 }
