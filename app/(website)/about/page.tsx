@@ -49,32 +49,45 @@ export default function AboutPage() {
         </div>
       </SectionContainer>
 
-      <section className="relative overflow-hidden bg-navy">
-        <div className="relative aspect-[16/9] w-full md:aspect-[21/9]">
-          <Image
-            src="/images/about/expert-screenprint-techs.webp"
-            alt="Esportiko's local screen printing team at work in our Santa Barbara shop"
-            fill
-            sizes="100vw"
-            quality={80}
-            className="object-cover object-center"
-            priority
-          />
-          <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/30 to-transparent"
-            aria-hidden
-          />
-        </div>
-        <div className="relative -mt-24 pb-16 md:-mt-32 md:pb-24">
+      <section className="relative min-h-[70vh] overflow-hidden bg-navy md:min-h-[80vh]">
+        {/* Background image — full bleed, full coverage */}
+        <Image
+          src="/images/about/expert-screenprint-techs.webp"
+          alt="Esportiko&apos;s local screen printing team at work in our Santa Barbara shop"
+          fill
+          sizes="100vw"
+          quality={85}
+          priority
+          className="object-cover object-center"
+        />
+
+        {/* Layered overlays for text legibility */}
+        {/* Base darkening — universal contrast floor */}
+        <div className="absolute inset-0 bg-navy/40" aria-hidden />
+
+        {/* Directional gradient — heavier on left where text sits */}
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-navy/85 via-navy/55 to-navy/20 md:from-navy/80 md:via-navy/40 md:to-transparent"
+          aria-hidden
+        />
+
+        {/* Subtle vignette at bottom to ground the section into the next */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-navy to-transparent"
+          aria-hidden
+        />
+
+        {/* Content — properly contained, vertically centered, left-aligned */}
+        <div className="relative flex min-h-[70vh] items-center md:min-h-[80vh]">
           <div className="container">
-            <div className="max-w-2xl">
-              <p className="mb-3 font-display text-sm uppercase tracking-[0.2em] text-blue-light">
+            <div className="max-w-xl">
+              <p className="mb-4 font-display text-sm uppercase tracking-[0.2em] text-blue-light">
                 Built in Santa Barbara
               </p>
-              <h2 className="mb-5 font-display text-h2 font-semibold uppercase tracking-tight text-white">
+              <h2 className="mb-6 font-display text-h2 font-semibold uppercase tracking-tight text-white drop-shadow-lg">
                 Hands-on craft. Every order.
               </h2>
-              <p className="text-lg leading-relaxed text-slate-200">
+              <p className="text-lg leading-relaxed text-slate-100 drop-shadow">
                 Every shirt that leaves our shop has been touched by a real person who cares
                 how it turned out. We&apos;re a local team that treats screen printing as a
                 craft — not a checkbox — and our customers feel the difference.
