@@ -11,7 +11,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Business Apparel",
     description:
-      "Branded staff uniforms, restaurant apparel, event merch, and company swag with screen print or embroidery for Central Coast businesses.",
+      "Branded staff uniforms, restaurant apparel, event merch, and company swag with screen print or embroidery — built in Goleta, serving Santa Barbara and Central Coast businesses.",
     path: "/business-apparel",
   });
 }

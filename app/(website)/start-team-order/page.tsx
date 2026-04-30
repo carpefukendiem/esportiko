@@ -9,7 +9,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Start Team Order",
     description:
-      "Submit your team or school uniform project with roster-ready intake. Esportiko serves Santa Barbara, Goleta, and the Central Coast.",
+      "Submit your team or school uniform project with roster-ready intake. Built in Goleta — serving Santa Barbara and the Central Coast.",
     path: "/start-team-order",
   });
 }

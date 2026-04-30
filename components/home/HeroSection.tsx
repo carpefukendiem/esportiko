@@ -63,8 +63,8 @@ export function HeroSection() {
           >
             Esportiko makes it easy to build premium custom apparel projects —
             screen printing, embroidery, team uniforms, and branded merchandise
-            for teams, businesses, schools, and events across Santa Barbara and
-            the Central Coast.
+            for teams, businesses, schools, and events across Goleta, Santa
+            Barbara, and the Central Coast.
           </motion.p>
           <motion.div
             className="mb-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"

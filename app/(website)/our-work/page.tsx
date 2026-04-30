@@ -8,7 +8,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Our Work",
     description:
-      "Browse custom hats, jerseys, hoodies, polos, and team uniforms produced for Central Coast clients. Filter by category.",
+      "Browse custom hats, jerseys, hoodies, polos, and team uniforms produced in Goleta for Santa Barbara and Central Coast clients. Filter by category.",
     path: "/our-work",
   });
 }

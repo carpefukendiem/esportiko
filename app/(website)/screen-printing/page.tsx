@@ -11,7 +11,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Screen Printing",
     description:
-      "Durable screen printing for team apparel, events, and business merch in Santa Barbara and the Central Coast. Request a quote for your next run.",
+      "Durable screen printing for team apparel, events, and business merch — built in Goleta, serving Santa Barbara and the Central Coast. Request a quote for your next run.",
     path: "/screen-printing",
   });
 }

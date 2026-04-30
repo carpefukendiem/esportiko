@@ -8,7 +8,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Start Business Order",
     description:
-      "Request branded apparel, staff uniforms, or event merch. Structured intake for businesses across Santa Barbara and the Central Coast.",
+      "Request branded apparel, staff uniforms, or event merch. Structured intake for businesses across Goleta, Santa Barbara, and the Central Coast.",
     path: "/start-business-order",
   });
 }

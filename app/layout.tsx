@@ -23,7 +23,7 @@ const localBusinessJsonLd = {
   "@type": "LocalBusiness",
   name: "Esportiko",
   description:
-    "Premium custom screen printing, embroidery, team uniforms, and branded apparel serving Santa Barbara, Goleta, and the Central Coast.",
+    "Custom team and business apparel built in Goleta — serving Santa Barbara and the Central Coast. Screen printing, embroidery, and team uniforms.",
   url: "https://esportikosb.com",
   areaServed: [
     "Santa Barbara",
@@ -43,11 +43,11 @@ const localBusinessJsonLd = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://esportikosb.com"),
   title: {
-    default: "Esportiko — Custom Apparel Santa Barbara & Central Coast",
-    template: "%s | Esportiko — Custom Apparel Santa Barbara",
+    default: "Esportiko — Custom Apparel Goleta & Santa Barbara · Central Coast",
+    template: "%s | Esportiko — Custom Apparel Goleta & Santa Barbara",
   },
   description:
-    "Premium screen printing, embroidery, team uniforms, and branded apparel for Goleta, Santa Barbara, and the Central Coast. Start your project.",
+    "Custom team and business apparel built in Goleta — serving Santa Barbara and the Central Coast. Screen printing, embroidery, and team uniforms. Start your project.",
 };
 
 export default function RootLayout({

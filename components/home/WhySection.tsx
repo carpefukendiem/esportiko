@@ -25,7 +25,7 @@ const points = [
   {
     icon: MapPin,
     title: "Right Fit for Your Market",
-    body: "Built for teams, schools, local businesses, and events across the Central Coast.",
+    body: "Based in Goleta, serving teams, schools, local businesses, and events across Santa Barbara and the Central Coast.",
   },
 ] as const;
 

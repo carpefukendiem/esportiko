@@ -9,7 +9,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Contact",
     description:
-      "Contact Esportiko for custom screen printing, embroidery, and team apparel in Santa Barbara, Goleta, and the Central Coast.",
+      "Contact Esportiko for custom screen printing, embroidery, and team apparel — built in Goleta, serving Santa Barbara and the Central Coast.",
     path: "/contact",
   });
 }
@@ -35,8 +35,8 @@ export default function ContactPage() {
                 Studio & service area
               </h2>
               <p className="text-body-sm text-gray-soft">
-                Based in the Goleta / Santa Barbara area, serving Isla Vista,
-                Carpinteria, Ventura, and surrounding Central Coast communities.
+                Based in Goleta, serving Santa Barbara, Isla Vista, Carpinteria, Ventura,
+                and surrounding Central Coast communities.
               </p>
             </div>
             <div className="rounded-xl border border-slate bg-navy-mid p-6">

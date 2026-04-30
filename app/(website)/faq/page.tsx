@@ -10,7 +10,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "FAQ",
     description:
-      "Answers on team orders, screen printing, embroidery, artwork files, turnaround, and pricing for custom apparel buyers on the Central Coast.",
+      "Answers on team orders, screen printing, embroidery, artwork files, turnaround, and pricing — Esportiko is built in Goleta and serves Santa Barbara and the Central Coast.",
     path: "/faq",
   });
 }

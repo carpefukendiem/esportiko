@@ -12,9 +12,9 @@ import { buildMetadata } from "@/lib/seo";
 
 export function generateMetadata(): Metadata {
   return buildMetadata({
-    title: "Custom Apparel Santa Barbara & Central Coast",
+    title: "Custom Apparel Goleta & Santa Barbara · Central Coast",
     description:
-      "Premium screen printing, embroidery, team uniforms, and branded apparel for teams and businesses across Goleta, Santa Barbara, and the Central Coast.",
+      "Premium screen printing, embroidery, team uniforms, and branded apparel built in Goleta — serving teams and businesses across Santa Barbara and the Central Coast.",
     path: "/",
   });
 }

@@ -16,7 +16,7 @@ export function ServiceCard({ service }: { service: Service }) {
       <div className="relative aspect-[4/3] w-full bg-navy">
         <Image
           src={service.image}
-          alt={`${service.name} custom apparel example for Santa Barbara area clients`}
+          alt={`${service.name} custom apparel example for Goleta and Santa Barbara area clients`}
           fill
           className="object-cover opacity-90 transition-opacity group-hover:opacity-100"
           sizes="(max-width: 768px) 100vw, 25vw"

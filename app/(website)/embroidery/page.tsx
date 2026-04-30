@@ -11,7 +11,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Embroidery",
     description:
-      "Professional embroidery for hats, polos, jackets, and staff uniforms in Santa Barbara and the Central Coast. Elevated brand presence, stitch by stitch.",
+      "Professional embroidery for hats, polos, jackets, and staff uniforms — built in Goleta, serving Santa Barbara and the Central Coast. Elevated brand presence, stitch by stitch.",
     path: "/embroidery",
   });
 }

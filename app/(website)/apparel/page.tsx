@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: "Browse Apparel",
     description:
-      "Explore our full catalog of customizable apparel for teams, businesses, and events across Santa Barbara and the Central Coast.",
+      "Explore our full catalog of customizable apparel for teams, businesses, and events — built in Goleta, serving Santa Barbara and the Central Coast.",
     path: "/apparel",
   });
 }

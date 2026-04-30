@@ -29,7 +29,7 @@ export function generateMetadata({
   }
   return buildMetadata({
     title: `${cat.label} | Browse Apparel`,
-    description: `Browse ${cat.label.toLowerCase()} styles available for customization. Santa Barbara and Central Coast.`,
+    description: `Browse ${cat.label.toLowerCase()} styles available for customization. Goleta, Santa Barbara, and the Central Coast.`,
     path: `/apparel/${cat.slug}`,
   });
 }

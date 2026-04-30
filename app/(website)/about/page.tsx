@@ -10,7 +10,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "About",
     description:
-      "Esportiko is a local custom apparel shop in Goleta and Santa Barbara serving teams and businesses on the Central Coast.",
+      "Custom team and business apparel built in Goleta — serving Santa Barbara and the Central Coast. Screen printing, embroidery, and team uniforms from a local shop you can reach directly.",
     path: "/about",
   });
 }
@@ -52,7 +52,7 @@ const DIFFERENTIATORS = [
   {
     title: "Local, Hands-On, Accountable",
     description:
-      "We're not a faceless online portal. Every order goes through real people in our Santa Barbara shop, and you can reach us directly when something needs attention.",
+      "We're not a faceless online portal. Every order goes through real people in our Goleta shop, and you can reach us directly when something needs attention.",
   },
   {
     title: "Built for Team Orders",
@@ -80,7 +80,7 @@ export default function AboutPage() {
       <section className="relative min-h-[88vh] overflow-hidden bg-navy md:min-h-[92vh]">
         <Image
           src="/images/about/expert-screenprint-techs.webp"
-          alt="Esportiko's local screen printing team at work in our Santa Barbara shop"
+          alt="Esportiko's local screen printing team at work in our Goleta shop"
           fill
           sizes="100vw"
           quality={85}
@@ -103,13 +103,16 @@ export default function AboutPage() {
         <div className="relative flex min-h-[88vh] items-center pt-20 md:min-h-[92vh] md:pt-24">
           <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl">
-              <p className="mb-5 font-display text-sm uppercase tracking-[0.2em] text-blue-light">
-                Built in Santa Barbara
-              </p>
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 backdrop-blur-md">
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-light" aria-hidden />
+                <p className="font-display text-xs font-bold uppercase tracking-[0.18em] text-white sm:text-sm">
+                  Built in Goleta · Serving Santa Barbara
+                </p>
+              </div>
               <h1 className="mb-6 font-display text-h1 font-semibold uppercase leading-[1.05] tracking-tight text-white drop-shadow-lg">
                 Real craft. Real people.
                 <br />
-                Real Santa Barbara.
+                Real local.
               </h1>
               <p className="mb-10 max-w-xl text-lg leading-relaxed text-on-dark-strong drop-shadow md:text-xl">
                 We&apos;re a local apparel shop built for teams, schools, and businesses who want
@@ -143,10 +146,10 @@ export default function AboutPage() {
             </h2>
             <div className="space-y-6">
               <p className="text-lg leading-relaxed text-on-light">
-                Esportiko is a Santa Barbara-based custom apparel shop serving teams, schools,
-                and businesses across Goleta, Santa Barbara, and the Central Coast. We handle
-                screen printing, embroidery, and full team uniform programs — start to finish,
-                right here.
+                Esportiko is a Goleta-based custom apparel shop serving teams, schools, and
+                businesses across Santa Barbara and the Central Coast. We handle screen
+                printing, embroidery, and full team uniform programs — start to finish, right
+                here.
               </p>
               <p className="text-lg leading-relaxed text-on-light">
                 We started Esportiko because too many local teams and businesses were stuck
