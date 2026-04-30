@@ -119,11 +119,7 @@ export default function AboutPage() {
                 <Button asChild width="full" className="sm:w-auto">
                   <Link href="/request-a-quote">Start a Project</Link>
                 </Button>
-                <Button
-                  asChild
-                  width="full"
-                  className="border-2 border-white bg-white/10 text-white backdrop-blur-sm hover:bg-white hover:text-navy sm:w-auto"
-                >
+                <Button asChild variant="secondary" width="full" className="sm:w-auto">
                   <Link href="/our-work">See Our Work</Link>
                 </Button>
               </div>
