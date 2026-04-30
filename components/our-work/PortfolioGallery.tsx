@@ -30,8 +30,8 @@ export function PortfolioGallery({
         onValueChange={(v) => setTab(v as TabValue)}
         className="w-full"
       >
-        <div className="overflow-x-auto pb-2">
-          <TabsList className="inline-flex h-auto min-h-11 w-max flex-wrap justify-start gap-1">
+        <div className="flex justify-center overflow-x-auto pb-2">
+          <TabsList className="inline-flex h-auto min-h-11 w-max shrink-0 flex-wrap justify-start gap-1">
             <TabsTrigger value="all" className="min-h-11 px-4">
               All
             </TabsTrigger>
