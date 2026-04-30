@@ -3,37 +3,41 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { portfolioItems, type PortfolioCategory } from "@/lib/data/portfolio";
+import { workCategoryLabel, type WorkItem } from "@/lib/content/our-work";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 
-const filters: ("All" | PortfolioCategory)[] = [
-  "All",
-  "Hats",
-  "Jerseys",
-  "Polos",
-  "Hoodies",
-  "Tees",
-  "Business Apparel",
-  "Team Uniforms",
-];
+type TabValue = "all" | WorkItem["category"];
 
-export function PortfolioGallery() {
-  const [tab, setTab] = useState<string>("All");
+export function PortfolioGallery({
+  items,
+  categories,
+}: {
+  items: WorkItem[];
+  categories: { slug: WorkItem["category"]; label: string }[];
+}) {
+  const [tab, setTab] = useState<TabValue>("all");
 
   const filtered = useMemo(() => {
-    if (tab === "All") return portfolioItems;
-    return portfolioItems.filter((p) => p.category === tab);
-  }, [tab]);
+    if (tab === "all") return items;
+    return items.filter((p) => p.category === tab);
+  }, [tab, items]);
 
   return (
     <div>
-      <Tabs value={tab} onValueChange={setTab} className="w-full">
+      <Tabs
+        value={tab}
+        onValueChange={(v) => setTab(v as TabValue)}
+        className="w-full"
+      >
         <div className="overflow-x-auto pb-2">
           <TabsList className="inline-flex h-auto min-h-11 w-max flex-wrap justify-start gap-1">
-            {filters.map((f) => (
-              <TabsTrigger key={f} value={f} className="min-h-11 px-4">
-                {f}
+            <TabsTrigger value="all" className="min-h-11 px-4">
+              All
+            </TabsTrigger>
+            {categories.map((c) => (
+              <TabsTrigger key={c.slug} value={c.slug} className="min-h-11 px-4">
+                {c.label}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -46,7 +50,7 @@ export function PortfolioGallery() {
             className="group relative aspect-[4/5] overflow-hidden rounded-xl border border-slate bg-navy"
           >
             <Image
-              src={item.image}
+              src={item.imagePath}
               alt={item.alt}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
@@ -55,7 +59,7 @@ export function PortfolioGallery() {
             />
             <div className="pointer-events-none absolute inset-0 flex items-end bg-navy/0 transition-colors duration-300 group-hover:bg-navy/70">
               <span className="w-full translate-y-full p-4 font-sans text-body-sm font-medium text-white transition-transform duration-300 group-hover:translate-y-0">
-                {item.title} — {item.category}
+                {item.title} — {workCategoryLabel(item.category)}
               </span>
             </div>
           </article>
