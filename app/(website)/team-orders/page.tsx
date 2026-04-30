@@ -43,7 +43,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Team Orders",
     description:
-      "Organized team uniform ordering with roster intake, names and numbers, and size breakdowns for Santa Barbara and Central Coast programs.",
+      "Organized team uniform ordering with roster intake, names and numbers, and size breakdowns for Goleta, Santa Barbara, and Central Coast programs.",
     path: "/team-orders",
   });
 }

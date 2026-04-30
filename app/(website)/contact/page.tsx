@@ -9,7 +9,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Contact",
     description:
-      "Contact Esportiko for custom screen printing, embroidery, and team apparel in Santa Barbara, Goleta, and the Central Coast.",
+      "Contact Esportiko for custom screen printing, embroidery, and team apparel — built in Goleta, serving Santa Barbara and the Central Coast.",
     path: "/contact",
   });
 }
@@ -23,7 +23,7 @@ export default function ContactPage() {
             <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
               Contact
             </h1>
-            <p className="mb-8 text-body text-gray-soft">
+            <p className="mb-8 text-body text-on-dark-muted">
               Share project context and we will respond with next steps. For
               roster-heavy programs, the team order form often moves faster.
             </p>
@@ -35,8 +35,8 @@ export default function ContactPage() {
                 Studio & service area
               </h2>
               <p className="text-body-sm text-gray-soft">
-                Based in the Goleta / Santa Barbara area, serving Isla Vista,
-                Carpinteria, Ventura, and surrounding Central Coast communities.
+                Based in Goleta, serving Santa Barbara, Isla Vista, Carpinteria, Ventura,
+                and surrounding Central Coast communities.
               </p>
             </div>
             <div className="rounded-xl border border-slate bg-navy-mid p-6">

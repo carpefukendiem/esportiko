@@ -16,7 +16,7 @@ export function SectionLabel({
         variant === "dark" &&
           "border-slate bg-navy-light text-gray-soft",
         variant === "light" &&
-          "border-navy/15 bg-white text-navy shadow-sm",
+          "border-navy/15 bg-white text-on-light-strong shadow-sm",
         className
       )}
     >

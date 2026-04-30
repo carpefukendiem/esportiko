@@ -25,7 +25,7 @@ export function HeroSection() {
       <div className="mx-auto flex max-w-content flex-col gap-8 px-6 py-12 md:px-8 md:py-16 lg:min-h-[680px] lg:flex-row lg:items-center lg:gap-0 lg:px-12 lg:py-0">
         {/* Left column — text */}
         <div className="relative z-10 w-full min-w-0 pr-2 sm:pr-4 lg:w-[52%] lg:shrink-0 lg:py-16 lg:pr-10 xl:pr-14">
-          <h2 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-navy">
+          <h2 className="mb-6 font-display text-display font-bold uppercase tracking-tight text-on-light-strong">
             <span className="block">
               {wordsA.map((w) => {
                 const i = idx++;
@@ -56,15 +56,15 @@ export function HeroSection() {
             </span>
           </h2>
           <motion.p
-            className="mb-8 max-w-xl text-body text-slate"
+            className="mb-8 max-w-xl text-body text-on-light"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.45, duration: 0.5 }}
           >
             Esportiko makes it easy to build premium custom apparel projects —
             screen printing, embroidery, team uniforms, and branded merchandise
-            for teams, businesses, schools, and events across Santa Barbara and
-            the Central Coast.
+            for teams, businesses, schools, and events across Goleta, Santa
+            Barbara, and the Central Coast.
           </motion.p>
           <motion.div
             className="mb-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
@@ -85,14 +85,14 @@ export function HeroSection() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.45 }}
           >
-            <p className="font-sans text-body-sm italic text-gray-muted">
+            <p className="font-sans text-body-sm italic text-on-light-muted">
               Trusted by:
             </p>
             <div className="flex flex-wrap gap-2">
-              <TrustChip className="border-slate/30 bg-white text-slate shadow-sm">Teams</TrustChip>
-              <TrustChip className="border-slate/30 bg-white text-slate shadow-sm">Businesses</TrustChip>
-              <TrustChip className="border-slate/30 bg-white text-slate shadow-sm">Schools</TrustChip>
-              <TrustChip className="border-slate/30 bg-white text-slate shadow-sm">Events</TrustChip>
+              <TrustChip className="border-slate/30 bg-white text-on-light shadow-sm">Teams</TrustChip>
+              <TrustChip className="border-slate/30 bg-white text-on-light shadow-sm">Businesses</TrustChip>
+              <TrustChip className="border-slate/30 bg-white text-on-light shadow-sm">Schools</TrustChip>
+              <TrustChip className="border-slate/30 bg-white text-on-light shadow-sm">Events</TrustChip>
             </div>
           </motion.div>
         </div>

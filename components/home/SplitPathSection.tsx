@@ -28,7 +28,7 @@ export function SplitPathSection() {
               Get started
             </SectionLabel>
             <motion.h2
-              className="font-display text-h2 font-bold uppercase tracking-tight text-navy"
+              className="font-display text-h2 font-bold uppercase tracking-tight text-on-light-strong"
               initial="hidden"
               whileInView="visible"
               viewport={homePageInView}

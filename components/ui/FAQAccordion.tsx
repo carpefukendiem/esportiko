@@ -34,7 +34,7 @@ export function FAQAccordion({
             className={cn(
               "text-left font-sans text-body font-medium hover:no-underline",
               light &&
-                "text-navy data-[state=open]:text-navy [&>svg]:!text-slate-500 focus-visible:ring-offset-white",
+                "text-on-light-strong data-[state=open]:text-on-light-strong [&>svg]:text-on-light-muted focus-visible:ring-offset-white",
               !light && "text-off-white focus-visible:ring-offset-navy [&_svg]:text-gray-soft"
             )}
           >
@@ -43,7 +43,7 @@ export function FAQAccordion({
           <AccordionContent
             className={cn(
               "font-sans text-body-sm leading-relaxed",
-              light ? "text-slate-700" : "text-gray-soft"
+              light ? "text-on-light" : "text-gray-soft"
             )}
           >
             {item.answer}

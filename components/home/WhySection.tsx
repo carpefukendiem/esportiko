@@ -25,7 +25,7 @@ const points = [
   {
     icon: MapPin,
     title: "Right Fit for Your Market",
-    body: "Built for teams, schools, local businesses, and events across the Central Coast.",
+    body: "Based in Goleta, serving teams, schools, local businesses, and events across Santa Barbara and the Central Coast.",
   },
 ] as const;
 
@@ -63,7 +63,7 @@ export function WhySection() {
               <h4 className="mb-2 font-display text-lg font-semibold text-white md:text-xl">
                 {p.title}
               </h4>
-              <p className="text-body-sm text-gray-soft">{p.body}</p>
+              <p className="text-body-sm text-on-dark-muted">{p.body}</p>
             </motion.article>
           ))}
         </div>

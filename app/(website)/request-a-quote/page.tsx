@@ -13,7 +13,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Get a Quote",
     description:
-      "Two streamlined quote funnels — Team/Uniform Orders or Business/Brand Orders. Submit project details and receive a detailed quote from Esportiko.",
+      "Two streamlined quote funnels — Team/Uniform Orders or Business/Brand Orders. Submit project details for a detailed quote from Esportiko, built in Goleta and serving Santa Barbara and the Central Coast.",
     path: "/request-a-quote",
   });
 }

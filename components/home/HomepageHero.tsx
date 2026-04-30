@@ -84,8 +84,8 @@ export function HomepageHero() {
             className="mx-auto mt-4 max-w-2xl font-sans text-lg text-off-white/90 [text-shadow:_0_2px_20px_rgb(10_22_40_/_0.8),_0_1px_3px_rgb(0_0_0_/_0.6)] md:mt-6 md:text-xl lg:mx-0 lg:text-2xl"
             {...bannerMotion(reduceMotion ? 0 : 0.1)}
           >
-            Screen printing, embroidery, and team uniforms for schools, clubs, and businesses across Santa Barbara and
-            the Central Coast.
+            Screen printing, embroidery, and team uniforms for schools, clubs, and businesses across Goleta, Santa
+            Barbara, and the Central Coast.
           </motion.h2>
           <motion.div
             className="mx-auto mt-8 flex w-full max-w-md flex-col gap-3 md:mx-0 md:max-w-none md:flex-row md:items-center md:gap-4"
@@ -98,7 +98,7 @@ export function HomepageHero() {
               asChild
               variant="secondary"
               width="full"
-              className="border-0 bg-white font-semibold text-navy shadow-none transition-all duration-200 hover:bg-off-white hover:shadow-lg md:w-auto"
+              className="border-0 bg-white font-semibold text-on-light-strong shadow-none transition-all duration-200 hover:bg-off-white hover:shadow-lg md:w-auto"
             >
               <Link href="/team-orders">Explore Team Orders</Link>
             </Button>

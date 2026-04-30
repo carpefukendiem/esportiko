@@ -8,7 +8,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "Submit Team Roster",
     description:
-      "After your quote is approved, send jersey numbers, last names, sizes, and quantities for your full roster. Esportiko — Santa Barbara and Central Coast.",
+      "After your quote is approved, send jersey numbers, last names, sizes, and quantities for your full roster. Built in Goleta — serving Santa Barbara and the Central Coast.",
     path: "/submit-team-roster",
   });
 }

@@ -66,7 +66,7 @@ export function SiteFooter() {
               Contact
             </h2>
             <p className="mb-2 text-body-sm text-gray-soft">
-              Goleta / Santa Barbara area
+              Goleta · Santa Barbara · Central Coast
             </p>
             <p className="mb-2 text-body-sm">
               <a

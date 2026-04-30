@@ -24,10 +24,10 @@ export function PathCard({
           className="mb-4 block h-1 w-11 rounded-full bg-blue-accent"
           aria-hidden
         />
-        <h3 className="font-display text-2xl font-bold tracking-tight text-navy md:text-[1.65rem]">
+          <h3 className="font-display text-2xl font-bold tracking-tight text-on-light-strong md:text-[1.65rem]">
           {title}
         </h3>
-        <p className="mt-3 text-body text-gray-muted">{description}</p>
+        <p className="mt-3 text-body text-on-light-muted">{description}</p>
         <Button
           asChild
           variant="primary"

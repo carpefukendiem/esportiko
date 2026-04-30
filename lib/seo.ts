@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 const siteUrl = "https://esportikosb.com";
 
 /** Default suffix for document titles site-wide */
-export const SITE_TITLE_SUFFIX = "Esportiko — Custom Apparel Santa Barbara";
+export const SITE_TITLE_SUFFIX = "Esportiko — Custom Apparel Goleta & Santa Barbara";
 
 /**
  * Removes trailing ` | SITE_TITLE_SUFFIX` so we can pass a short segment to
