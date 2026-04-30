@@ -23,7 +23,7 @@ export default function ContactPage() {
             <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
               Contact
             </h1>
-            <p className="mb-8 text-body text-gray-soft">
+            <p className="mb-8 text-body text-on-dark-muted">
               Share project context and we will respond with next steps. For
               roster-heavy programs, the team order form often moves faster.
             </p>

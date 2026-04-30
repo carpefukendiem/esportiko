@@ -111,7 +111,7 @@ export default function AboutPage() {
                 <br />
                 Real Santa Barbara.
               </h1>
-              <p className="mb-10 max-w-xl text-lg font-medium leading-relaxed text-white drop-shadow-lg md:text-xl">
+              <p className="mb-10 max-w-xl text-lg leading-relaxed text-on-dark-strong drop-shadow md:text-xl">
                 We&apos;re a local apparel shop built for teams, schools, and businesses who want
                 their gear to look like it actually belongs to them.
               </p>
@@ -135,26 +135,26 @@ export default function AboutPage() {
         <NoiseOverlay opacity={0.04} />
         <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl">
-            <p className="mb-4 font-display text-sm uppercase tracking-[0.2em] text-blue-accent">
+            <p className="mb-4 font-display text-sm font-bold uppercase tracking-[0.2em] text-blue-accent">
               Who We Are
             </p>
-            <h2 className="mb-8 font-display text-h2 font-semibold uppercase tracking-tight text-navy">
+            <h2 className="mb-8 font-display text-h2 font-semibold uppercase tracking-tight text-on-light-strong">
               A local shop that takes your project seriously.
             </h2>
-            <div className="space-y-6 text-lg leading-relaxed">
-              <p className="text-slate-800">
+            <div className="space-y-6">
+              <p className="text-lg leading-relaxed text-on-light">
                 Esportiko is a Santa Barbara-based custom apparel shop serving teams, schools,
                 and businesses across Goleta, Santa Barbara, and the Central Coast. We handle
                 screen printing, embroidery, and full team uniform programs — start to finish,
                 right here.
               </p>
-              <p className="text-slate-800">
+              <p className="text-lg leading-relaxed text-on-light">
                 We started Esportiko because too many local teams and businesses were stuck
                 choosing between online vendors that don&apos;t really know them and order mills
                 that treat every job the same. We built something different: a hands-on shop with
                 real craft, real communication, and real accountability.
               </p>
-              <p className="text-slate-800">
+              <p className="text-lg leading-relaxed text-on-light">
                 Whether you&apos;re a coach ordering jerseys for the season or a business owner
                 refreshing your branded apparel, we make the process feel organized, premium, and
                 easy.
@@ -173,7 +173,7 @@ export default function AboutPage() {
             <p className="mb-4 font-display text-sm uppercase tracking-[0.2em] text-blue-light">
               What We Do
             </p>
-            <h2 className="font-display text-h2 font-semibold uppercase tracking-tight text-white">
+            <h2 className="font-display text-h2 font-semibold uppercase tracking-tight text-on-dark-strong">
               Built for teams and businesses, end to end.
             </h2>
           </div>
@@ -184,10 +184,10 @@ export default function AboutPage() {
                 key={service.title}
                 className="rounded-2xl border border-white/10 bg-navy-light/40 p-7 transition-colors hover:border-blue-light/40"
               >
-                <h3 className="mb-3 font-display text-xl font-semibold uppercase tracking-tight text-white">
+                <h3 className="mb-3 font-display text-xl font-semibold uppercase tracking-tight text-on-dark-strong">
                   {service.title}
                 </h3>
-                <p className="text-base leading-relaxed text-slate-200">{service.description}</p>
+                <p className="text-base leading-relaxed text-on-dark">{service.description}</p>
               </article>
             ))}
           </div>
@@ -200,10 +200,10 @@ export default function AboutPage() {
       <section className="relative bg-white py-20 md:py-28">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-14 max-w-2xl text-center">
-            <p className="mb-4 font-display text-sm uppercase tracking-[0.2em] text-blue-accent">
+            <p className="mb-4 font-display text-sm font-bold uppercase tracking-[0.2em] text-blue-accent">
               Why Esportiko
             </p>
-            <h2 className="font-display text-h2 font-semibold uppercase tracking-tight text-navy">
+            <h2 className="font-display text-h2 font-semibold uppercase tracking-tight text-on-light-strong">
               The difference is in how we work.
             </h2>
           </div>
@@ -211,10 +211,10 @@ export default function AboutPage() {
           <div className="grid gap-10 md:grid-cols-2 lg:gap-12">
             {DIFFERENTIATORS.map((item) => (
               <div key={item.title}>
-                <h3 className="mb-3 font-display text-xl font-semibold uppercase tracking-tight text-navy">
+                <h3 className="mb-3 font-display text-xl font-semibold uppercase tracking-tight text-on-light-strong">
                   {item.title}
                 </h3>
-                <p className="text-base leading-relaxed text-slate-700">{item.description}</p>
+                <p className="text-base leading-relaxed text-on-light">{item.description}</p>
               </div>
             ))}
           </div>

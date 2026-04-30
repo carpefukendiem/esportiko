@@ -31,7 +31,7 @@ export function CTABand({
         <NoiseOverlay opacity={0.04} />
         <SectionContainer as="div" className="relative z-10 py-0 md:py-0">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="mb-6 font-display text-h2 font-semibold uppercase tracking-tight text-navy">
+            <h2 className="mb-6 font-display text-h2 font-semibold uppercase tracking-tight text-on-light-strong">
               {headline}
             </h2>
             <div className="flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center sm:justify-center">

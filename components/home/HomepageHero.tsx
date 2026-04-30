@@ -98,7 +98,7 @@ export function HomepageHero() {
               asChild
               variant="secondary"
               width="full"
-              className="border-0 bg-white font-semibold text-navy shadow-none transition-all duration-200 hover:bg-off-white hover:shadow-lg md:w-auto"
+              className="border-0 bg-white font-semibold text-on-light-strong shadow-none transition-all duration-200 hover:bg-off-white hover:shadow-lg md:w-auto"
             >
               <Link href="/team-orders">Explore Team Orders</Link>
             </Button>

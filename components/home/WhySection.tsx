@@ -63,7 +63,7 @@ export function WhySection() {
               <h4 className="mb-2 font-display text-lg font-semibold text-white md:text-xl">
                 {p.title}
               </h4>
-              <p className="text-body-sm text-gray-soft">{p.body}</p>
+              <p className="text-body-sm text-on-dark-muted">{p.body}</p>
             </motion.article>
           ))}
         </div>

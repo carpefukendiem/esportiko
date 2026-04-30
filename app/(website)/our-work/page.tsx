@@ -20,7 +20,7 @@ export default function OurWorkPage() {
         <h1 className="mb-4 font-display text-h1 font-bold uppercase tracking-tight text-white">
           Our Work
         </h1>
-        <p className="text-body text-gray-soft">
+        <p className="text-body text-on-dark-muted">
           A selection of decoration-forward apparel — screen print, embroidery,
           and organized team programs. Use the filters to explore by category.
         </p>

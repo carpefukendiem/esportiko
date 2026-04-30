@@ -57,6 +57,34 @@
   }
 }
 
+@layer components {
+  /* Body text on DARK surfaces — matches the global body default */
+  .text-on-dark {
+    @apply text-[#e2e8f0];
+  }
+
+  .text-on-dark-strong {
+    @apply text-white;
+  }
+
+  .text-on-dark-muted {
+    @apply text-[#cbd5e1];
+  }
+
+  /* Body text on LIGHT surfaces — explicit dark colors */
+  .text-on-light {
+    @apply text-[#1e293b];
+  }
+
+  .text-on-light-strong {
+    @apply text-[#0a1628];
+  }
+
+  .text-on-light-muted {
+    @apply text-[#475569];
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
