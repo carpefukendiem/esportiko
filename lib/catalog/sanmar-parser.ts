@@ -1,9 +1,19 @@
 import "server-only";
 import Papa from "papaparse";
 import { CURATED_STYLE_SET } from "@/lib/catalog/curated";
+import { CUSTOMIZE_STYLE_NUMBERS } from "@/lib/customize/skus";
+
+/** Styles synced to Supabase: apparel curated list plus /customize allowlist. */
+const CUSTOMIZE_STYLE_SET = new Set(
+  CUSTOMIZE_STYLE_NUMBERS.map((s) => s.toUpperCase())
+);
+
+function allowStyle(style: string): boolean {
+  return CURATED_STYLE_SET.has(style) || CUSTOMIZE_STYLE_SET.has(style);
+}
 
 /**
- * Columns we care about from SanMar_EPDD.csv.
+ * Columns we care about from SanMar_EPDD.csv (SanMar integration guide v23).
  * Ignore all PRICE_* and CASE_* fields — this is not an ecommerce site.
  */
 export interface EpddRow {
@@ -14,9 +24,11 @@ export interface EpddRow {
   AVAILABLE_SIZES?: string;
   CATEGORY_NAME?: string;
   SUBCATEGORY_NAME?: string;
+  CATALOG_COLOR?: string;
   COLOR_NAME?: string;
   SANMAR_MAINFRAME_COLOR?: string;
   COLOR_SQUARE_IMAGE?: string;
+  COLOR_SWATCH_IMAGE?: string;
   COLOR_PRODUCT_IMAGE?: string;
   PMS_COLOR?: string;
   SIZE?: string;
@@ -28,6 +40,7 @@ export interface EpddRow {
   BACK_MODEL_IMAGE_URL?: string;
   FRONT_FLAT_IMAGE_URL?: string;
   BACK_FLAT_IMAGE_URL?: string;
+  SPEC_SHEET?: string;
   DECORATION_SPEC_SHEET?: string;
 }
 
@@ -96,8 +109,8 @@ export interface ParseEpddResult {
 }
 
 /**
- * Parse EPDD CSV → one ParsedStyle per STYLE# in the curated allowlist.
- * Non-curated rows are discarded on the first pass for memory efficiency.
+ * Parse EPDD CSV → one ParsedStyle per STYLE# in the curated apparel allowlist
+ * plus curated /customize SKUs. Other rows are skipped for memory efficiency.
  */
 export function parseEpddCsv(csv: string): ParseEpddResult {
   const parsed = Papa.parse<EpddRow>(csv, {
@@ -114,7 +127,7 @@ export function parseEpddCsv(csv: string): ParseEpddResult {
 
   for (const row of data) {
     const style = EMPTY(row["STYLE#"]).toUpperCase();
-    if (!style || !CURATED_STYLE_SET.has(style)) continue;
+    if (!style || !allowStyle(style)) continue;
 
     let entry = byStyle.get(style);
     if (!entry) {
@@ -133,7 +146,7 @@ export function parseEpddCsv(csv: string): ParseEpddResult {
         backModelUrl: firstNonEmpty(row.BACK_MODEL_IMAGE_URL),
         frontFlatUrl: firstNonEmpty(row.FRONT_FLAT_IMAGE_URL),
         backFlatUrl: firstNonEmpty(row.BACK_FLAT_IMAGE_URL),
-        specSheetUrl: firstNonEmpty(row.DECORATION_SPEC_SHEET),
+        specSheetUrl: firstNonEmpty(row.SPEC_SHEET, row.DECORATION_SPEC_SHEET),
         colors: [],
         sizes: [],
       };
@@ -141,7 +154,9 @@ export function parseEpddCsv(csv: string): ParseEpddResult {
     }
 
     const catalogColor =
-      EMPTY(row.SANMAR_MAINFRAME_COLOR) || EMPTY(row.COLOR_NAME);
+      EMPTY(row.CATALOG_COLOR) ||
+      EMPTY(row.SANMAR_MAINFRAME_COLOR) ||
+      EMPTY(row.COLOR_NAME);
     const displayColor = EMPTY(row.COLOR_NAME);
     if (
       catalogColor &&
@@ -150,7 +165,10 @@ export function parseEpddCsv(csv: string): ParseEpddResult {
       entry.colors.push({
         catalogColor,
         displayColor: displayColor || catalogColor,
-        swatchImageUrl: firstNonEmpty(row.COLOR_SQUARE_IMAGE),
+        swatchImageUrl: firstNonEmpty(
+          row.COLOR_SQUARE_IMAGE,
+          row.COLOR_SWATCH_IMAGE
+        ),
         colorProductUrl: firstNonEmpty(row.COLOR_PRODUCT_IMAGE),
         pmsColor: firstNonEmpty(row.PMS_COLOR),
         sortOrder: entry.colors.length,

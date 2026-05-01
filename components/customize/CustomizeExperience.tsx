@@ -8,15 +8,14 @@ import {
   LogoCompositor,
   downloadCanvasPreview,
 } from "@/components/customize/LogoCompositor";
-import { SANMAR_SEED_PRODUCTS, type SanMarSeedCategory, type SanMarSeedProduct } from "@/lib/data/sanmar-seed";
+import type { CustomizeProduct } from "@/lib/customize/types";
 import { colorNameToHex } from "@/lib/catalog/color-map";
-import { getGarmentImageUrls, getGarmentMockupUrl } from "@/lib/catalog/garment-images";
 import { buildGarmentPlaceholderDataUrl } from "@/lib/catalog/garment-placeholder";
 import {
   FONT_OPTIONS,
   INK_SWATCHES,
-  seedCategoryToGarmentKind,
   type DesignElement,
+  type GarmentSvgKind,
 } from "@/lib/customize/design-types";
 import { printZoneOnCanvas } from "@/lib/customize/canvas-print-zone";
 import { useToast } from "@/components/ui/use-toast";
@@ -38,27 +37,70 @@ import {
 } from "@/components/ui/dialog";
 import { Eye, EyeOff, Trash2, GripVertical, ChevronUp, ChevronDown, Copy } from "lucide-react";
 
-const UI_CATEGORIES: { label: string; seed: SanMarSeedCategory; slug: string }[] = [
+type UiCategory = "T-Shirts" | "Hoodies" | "Polos" | "Jerseys" | "Hats" | "Other";
+
+function uiCategoryFromSanMar(sanmarCategory: string): UiCategory {
+  const s = sanmarCategory.toLowerCase();
+  if (s.includes("hat") || s.includes("cap") || s.includes("headwear")) return "Hats";
+  if (s.includes("hood") || s.includes("sweat") || s.includes("fleece")) return "Hoodies";
+  if (s.includes("polo")) return "Polos";
+  if (s.includes("jersey")) return "Jerseys";
+  if (s.includes("tee") || s.includes("t-shirt") || s.includes("knit")) return "T-Shirts";
+  return "Other";
+}
+
+function uiCategoryToGarmentKind(cat: UiCategory): GarmentSvgKind {
+  switch (cat) {
+    case "Hoodies":
+      return "hoodie";
+    case "Polos":
+      return "polo";
+    case "Jerseys":
+      return "jersey";
+    case "Hats":
+      return "cap";
+    default:
+      return "tshirt";
+  }
+}
+
+function displayColorNames(p: CustomizeProduct): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const c of p.colors) {
+    const d = c.display_color?.trim();
+    if (d && !seen.has(d)) {
+      seen.add(d);
+      out.push(d);
+    }
+  }
+  return out.length ? out : ["Black"];
+}
+
+const UI_CATEGORIES: { label: string; seed: UiCategory; slug: string }[] = [
   { label: "T-Shirts", seed: "T-Shirts", slug: "t-shirts" },
   { label: "Hoodies", seed: "Hoodies", slug: "hoodies-sweatshirts" },
   { label: "Polos", seed: "Polos", slug: "polos" },
   { label: "Jerseys", seed: "Jerseys", slug: "jerseys" },
   { label: "Hats", seed: "Hats", slug: "hats" },
+  { label: "Other", seed: "Other", slug: "other" },
 ];
 
 const ACCEPT = ".png,.jpg,.jpeg,.svg,.webp";
 const MAX_BYTES = 5 * 1024 * 1024;
 
 function styleCardThumbSrc(
-  p: SanMarSeedProduct,
+  p: CustomizeProduct,
   selectedStyle: string | null,
   colorNameForSelection: string
 ): string {
-  const urls = getGarmentImageUrls(p.style_number);
-  if (urls.front) return urls.front;
-  const kind = seedCategoryToGarmentKind(p.category);
+  const primary = p.front_flat_url ?? p.back_flat_url;
+  if (primary) return primary;
+  const uiCat = uiCategoryFromSanMar(p.sanmar_category);
+  const kind = uiCategoryToGarmentKind(uiCat);
   const active = p.style_number.toUpperCase() === (selectedStyle ?? "").toUpperCase();
-  const colorName = active ? colorNameForSelection : p.available_colors[0] ?? "Black";
+  const colors = displayColorNames(p);
+  const colorName = active ? colorNameForSelection : colors[0] ?? "Black";
   const fill = colorNameToHex(colorName || "Black");
   return buildGarmentPlaceholderDataUrl(kind, "front", fill, true);
 }
@@ -134,21 +176,40 @@ function slugFromGarmentCategory(cat: string | null | undefined): string | null 
   return hit?.slug ?? null;
 }
 
-export function CustomizeExperience() {
+export function CustomizeExperience({ products }: { products: CustomizeProduct[] }) {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const compositorCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [categorySlug, setCategorySlug] = useState<string>(UI_CATEGORIES[0].slug);
+  const categoriesWithProducts = useMemo(
+    () =>
+      UI_CATEGORIES.filter((c) =>
+        products.some((p) => uiCategoryFromSanMar(p.sanmar_category) === c.seed)
+      ),
+    [products]
+  );
+
+  const [categorySlug, setCategorySlug] = useState<string>(
+    () => categoriesWithProducts[0]?.slug ?? UI_CATEGORIES[0].slug
+  );
+
+  useEffect(() => {
+    const first = categoriesWithProducts[0]?.slug;
+    if (first && !categoriesWithProducts.some((c) => c.slug === categorySlug)) {
+      setCategorySlug(first);
+    }
+  }, [categoriesWithProducts, categorySlug]);
+
   const seedCategory = useMemo(
     () => UI_CATEGORIES.find((c) => c.slug === categorySlug)?.seed ?? "T-Shirts",
     [categorySlug]
   );
 
   const stylesInCategory = useMemo(
-    () => SANMAR_SEED_PRODUCTS.filter((p) => p.category === seedCategory),
-    [seedCategory]
+    () =>
+      products.filter((p) => uiCategoryFromSanMar(p.sanmar_category) === seedCategory),
+    [products, seedCategory]
   );
 
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
@@ -201,17 +262,17 @@ export function CustomizeExperience() {
   useEffect(() => {
     const style = searchParams.get("style");
     const cat = searchParams.get("category");
-    if (cat && UI_CATEGORIES.some((c) => c.slug === cat)) {
+    if (cat && categoriesWithProducts.some((c) => c.slug === cat)) {
       setCategorySlug(cat);
     }
     if (style) {
       setSelectedStyle(style.trim().toUpperCase());
     }
-  }, [searchParams]);
+  }, [searchParams, categoriesWithProducts]);
 
   useEffect(() => {
     if (!selectedProduct) return;
-    const first = selectedProduct.available_colors[0] ?? "Black";
+    const first = displayColorNames(selectedProduct)[0] ?? "Black";
     setColorName(first);
   }, [selectedProduct]);
 
@@ -243,17 +304,14 @@ export function CustomizeExperience() {
 
   const fillHex = colorNameToHex(colorName || "Black");
   const garmentSvgKind = selectedProduct
-    ? seedCategoryToGarmentKind(selectedProduct.category)
+    ? uiCategoryToGarmentKind(uiCategoryFromSanMar(selectedProduct.sanmar_category))
     : "tshirt";
 
-  const urls = selectedProduct
-    ? getGarmentImageUrls(selectedProduct.style_number)
-    : { front: null, back: null };
-  const mockup =
-    selectedProduct && colorName
-      ? getGarmentMockupUrl(selectedProduct.category, view, colorName)
-      : null;
-  const raster = mockup ?? (view === "front" ? urls.front : urls.back);
+  const flatFront = selectedProduct?.front_flat_url ?? null;
+  const flatBack = selectedProduct?.back_flat_url ?? null;
+  const frontRaster = flatFront ?? flatBack;
+  const backRaster = flatBack ?? flatFront;
+  const raster = view === "front" ? frontRaster : backRaster;
 
   const zone = useMemo(
     () => printZoneOnCanvas(garmentSvgKind, view, canvasW, canvasH),
@@ -606,7 +664,7 @@ export function CustomizeExperience() {
                 <div className="mb-6 space-y-3 lg:hidden">
           <p className="text-xs font-semibold uppercase tracking-wide text-[#8A94A6]">Category</p>
           <div className="-mx-1 flex gap-2 overflow-x-auto pb-2">
-            {UI_CATEGORIES.map((c) => {
+            {categoriesWithProducts.map((c) => {
               const active = c.slug === categorySlug;
               return (
                 <button
@@ -655,7 +713,7 @@ export function CustomizeExperience() {
                     <div className="min-w-0">
                       <span className="block font-mono text-[10px] text-[#8A94A6]">{p.style_number}</span>
                       <span className="mt-0.5 block max-w-[140px] truncate text-xs font-semibold text-white">
-                        {p.name}
+                        {p.product_title}
                       </span>
                     </div>
                   </div>
@@ -669,7 +727,7 @@ export function CustomizeExperience() {
           <aside className="hidden w-full shrink-0 lg:block lg:max-w-sm">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#8A94A6]">Category</p>
             <div className="-mx-1 flex gap-2 overflow-x-auto pb-2 md:mx-0 md:flex-wrap">
-              {UI_CATEGORIES.map((c) => {
+              {categoriesWithProducts.map((c) => {
                 const active = c.slug === categorySlug;
                 return (
                   <button
@@ -718,8 +776,8 @@ export function CustomizeExperience() {
                       />
                       <div className="min-w-0">
                         <p className="font-mono text-xs text-[#8A94A6]">{p.style_number}</p>
-                        <p className="mt-1 font-display text-sm font-semibold text-white">{p.name}</p>
-                        <p className="mt-1 text-xs text-[#8A94A6]">{p.brand}</p>
+                        <p className="mt-1 font-display text-sm font-semibold text-white">{p.product_title}</p>
+                        <p className="mt-1 text-xs text-[#8A94A6]">{p.brand_name}</p>
                       </div>
                     </div>
                   </button>
@@ -816,7 +874,7 @@ export function CustomizeExperience() {
                   <>
                     <p className="text-xs font-semibold uppercase tracking-wide text-[#8A94A6]">Garment color</p>
                     <div className="flex flex-wrap gap-2">
-                      {selectedProduct.available_colors.map((c) => {
+                      {displayColorNames(selectedProduct).map((c) => {
                         const active = c === colorName;
                         return (
                           <button
@@ -960,11 +1018,13 @@ export function CustomizeExperience() {
 
                 <div className="rounded-xl border border-[#2A3347] bg-[#1C2333] p-6">
                   <p className="font-display text-lg font-semibold text-white">
-                    {selectedProduct ? `Ready to order ${selectedProduct.name}?` : "Ready to start your order?"}
+                    {selectedProduct
+                      ? `Ready to order ${selectedProduct.product_title}?`
+                      : "Ready to start your order?"}
                   </p>
                   {selectedProduct ? (
                     <p className="mt-2 text-sm text-[#8A94A6]">
-                      Style #{selectedProduct.style_number} — {selectedProduct.brand}
+                      Style #{selectedProduct.style_number} — {selectedProduct.brand_name}
                     </p>
                   ) : null}
                   <div className="mt-6 flex flex-col gap-3 sm:flex-row">

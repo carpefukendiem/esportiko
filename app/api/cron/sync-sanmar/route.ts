@@ -1,9 +1,10 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { downloadSanMarFile, SANMAR_EPDD_PATH } from "@/lib/catalog/sanmar-ftp";
 import { parseEpddCsv } from "@/lib/catalog/sanmar-parser";
 import { recordSyncRun, upsertStyles } from "@/lib/catalog/sanmar-upsert";
+import { CUSTOMIZE_STYLE_NUMBERS } from "@/lib/customize/skus";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,6 +27,12 @@ export async function GET(req: NextRequest) {
   try {
     const csv = await downloadSanMarFile(SANMAR_EPDD_PATH);
     const { styles, rowCount } = parseEpddCsv(csv);
+    const styleNums = new Set(styles.map((s) => s.styleNumber));
+    for (const sn of CUSTOMIZE_STYLE_NUMBERS) {
+      if (!styleNums.has(sn.toUpperCase())) {
+        console.warn(`[sanmar sync] Customize SKU not in catalog: ${sn}`);
+      }
+    }
     const n = await upsertStyles(styles);
     const finishedAt = new Date().toISOString();
     await recordSyncRun({
@@ -35,7 +42,7 @@ export async function GET(req: NextRequest) {
       rowsParsed: rowCount,
       stylesUpserted: n,
     });
-    revalidateTag("sanmar-catalog");
+    revalidatePath("/customize");
     return NextResponse.json({
       ok: true,
       parsedRows: rowCount,
