@@ -22,6 +22,17 @@ export async function downloadSanMarFile(remotePath: string): Promise<string> {
       username: SFTP_USER,
       password: SFTP_PASSWORD,
       readyTimeout: 30_000,
+      algorithms: {
+        serverHostKey: [
+          "ssh-rsa",
+          "ssh-dss",
+          "rsa-sha2-256",
+          "rsa-sha2-512",
+          "ecdsa-sha2-nistp256",
+          "ecdsa-sha2-nistp384",
+          "ecdsa-sha2-nistp521",
+        ],
+      },
     });
     const buf = (await client.get(remotePath)) as Buffer;
     return buf.toString("utf8");
