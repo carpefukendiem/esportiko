@@ -37,9 +37,10 @@ export interface EpddRow {
   PRODUCT_STATUS?: string;
   MSRP?: string;
   FRONT_MODEL_IMAGE_URL?: string;
+  BACK_MODEL_IMAGE?: string;
   BACK_MODEL_IMAGE_URL?: string;
-  FRONT_FLAT_IMAGE_URL?: string;
-  BACK_FLAT_IMAGE_URL?: string;
+  FRONT_FLAT_IMAGE?: string;
+  BACK_FLAT_IMAGE?: string;
   SPEC_SHEET?: string;
   DECORATION_SPEC_SHEET?: string;
 }
@@ -103,6 +104,29 @@ function firstNonEmpty(...vals: (string | null | undefined)[]): string | null {
   return null;
 }
 
+const SANMAR_CDNM_BASE = "https://cdnm.sanmar.com/imglib/mresjpg";
+
+function buildColorProductUrl(
+  filename: string | undefined | null
+): string | null {
+  if (!filename) return null;
+  const trimmed = filename.trim();
+  if (!trimmed) return null;
+  return `${SANMAR_CDNM_BASE}/${trimmed}`;
+}
+
+function pickFrontImageUrl(row: EpddRow): string | null {
+  return (
+    buildColorProductUrl(firstNonEmpty(row.COLOR_PRODUCT_IMAGE)) ??
+    firstNonEmpty(row.FRONT_MODEL_IMAGE_URL) ??
+    null
+  );
+}
+
+function pickBackImageUrl(): string | null {
+  return null;
+}
+
 export interface ParseEpddResult {
   styles: ParsedStyle[];
   rowCount: number;
@@ -143,9 +167,12 @@ export function parseEpddCsv(csv: string): ParseEpddResult {
         sanmarSubcategory: EMPTY(row.SUBCATEGORY_NAME),
         availableSizes: EMPTY(row.AVAILABLE_SIZES),
         frontModelUrl: firstNonEmpty(row.FRONT_MODEL_IMAGE_URL),
-        backModelUrl: firstNonEmpty(row.BACK_MODEL_IMAGE_URL),
-        frontFlatUrl: firstNonEmpty(row.FRONT_FLAT_IMAGE_URL),
-        backFlatUrl: firstNonEmpty(row.BACK_FLAT_IMAGE_URL),
+        backModelUrl: firstNonEmpty(
+          row.BACK_MODEL_IMAGE_URL,
+          row.BACK_MODEL_IMAGE
+        ),
+        frontFlatUrl: pickFrontImageUrl(row),
+        backFlatUrl: pickBackImageUrl(),
         specSheetUrl: firstNonEmpty(row.SPEC_SHEET, row.DECORATION_SPEC_SHEET),
         colors: [],
         sizes: [],
