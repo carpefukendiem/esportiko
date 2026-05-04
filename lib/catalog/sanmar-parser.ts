@@ -1,6 +1,7 @@
 import "server-only";
 import Papa from "papaparse";
 import { CURATED_STYLE_SET } from "@/lib/catalog/curated";
+import { getImageOverride } from "@/lib/customize/sanmar-image-overrides";
 import { CUSTOMIZE_STYLE_NUMBERS } from "@/lib/customize/skus";
 
 /** Styles synced to Supabase: apparel curated list plus /customize allowlist. */
@@ -115,16 +116,51 @@ function buildColorProductUrl(
   return `${SANMAR_CDNM_BASE}/${trimmed}`;
 }
 
-function pickFrontImageUrl(row: EpddRow): string | null {
-  return (
-    buildColorProductUrl(firstNonEmpty(row.COLOR_PRODUCT_IMAGE)) ??
-    firstNonEmpty(row.FRONT_MODEL_IMAGE_URL) ??
-    null
-  );
+function pickFrontImageUrl(
+  row: EpddRow,
+  styleNumber: string,
+  catalogColor: string
+): string | null {
+  const override = getImageOverride(styleNumber, catalogColor);
+  if (override?.front) return override.front;
+
+  const constructed = buildColorProductUrl(firstNonEmpty(row.COLOR_PRODUCT_IMAGE));
+  if (constructed) return constructed;
+
+  return firstNonEmpty(row.FRONT_MODEL_IMAGE_URL) ?? null;
 }
 
-function pickBackImageUrl(): string | null {
-  return null;
+/**
+ * `sanmar_products` stores one front/back URL per style. Prefer the first
+ * catalog color with a curated flat-lay override; otherwise the first color's
+ * resolved preview (folded shot or model fallbacks from `pickFrontImageUrl`).
+ */
+function finalizeProductPreviewUrls(entry: ParsedStyle) {
+  let front: string | null = null;
+  for (const c of entry.colors) {
+    const o = getImageOverride(entry.styleNumber, c.catalogColor);
+    if (o?.front) {
+      front = o.front;
+      break;
+    }
+  }
+  if (!front) {
+    front = entry.colors[0]?.colorProductUrl ?? null;
+  }
+  if (!front) {
+    front = entry.frontModelUrl;
+  }
+  entry.frontFlatUrl = front;
+
+  let back: string | null = null;
+  for (const c of entry.colors) {
+    const o = getImageOverride(entry.styleNumber, c.catalogColor);
+    if (o?.back) {
+      back = o.back;
+      break;
+    }
+  }
+  entry.backFlatUrl = back;
 }
 
 export interface ParseEpddResult {
@@ -153,6 +189,11 @@ export function parseEpddCsv(csv: string): ParseEpddResult {
     const style = EMPTY(row["STYLE#"]).toUpperCase();
     if (!style || !allowStyle(style)) continue;
 
+    const catalogColor =
+      EMPTY(row.CATALOG_COLOR) ||
+      EMPTY(row.SANMAR_MAINFRAME_COLOR) ||
+      EMPTY(row.COLOR_NAME);
+
     let entry = byStyle.get(style);
     if (!entry) {
       const catRaw = EMPTY(row.CATEGORY_NAME);
@@ -171,8 +212,8 @@ export function parseEpddCsv(csv: string): ParseEpddResult {
           row.BACK_MODEL_IMAGE_URL,
           row.BACK_MODEL_IMAGE
         ),
-        frontFlatUrl: pickFrontImageUrl(row),
-        backFlatUrl: pickBackImageUrl(),
+        frontFlatUrl: null,
+        backFlatUrl: null,
         specSheetUrl: firstNonEmpty(row.SPEC_SHEET, row.DECORATION_SPEC_SHEET),
         colors: [],
         sizes: [],
@@ -180,10 +221,6 @@ export function parseEpddCsv(csv: string): ParseEpddResult {
       byStyle.set(style, entry);
     }
 
-    const catalogColor =
-      EMPTY(row.CATALOG_COLOR) ||
-      EMPTY(row.SANMAR_MAINFRAME_COLOR) ||
-      EMPTY(row.COLOR_NAME);
     const displayColor = EMPTY(row.COLOR_NAME);
     if (
       catalogColor &&
@@ -196,7 +233,7 @@ export function parseEpddCsv(csv: string): ParseEpddResult {
           row.COLOR_SQUARE_IMAGE,
           row.COLOR_SWATCH_IMAGE
         ),
-        colorProductUrl: firstNonEmpty(row.COLOR_PRODUCT_IMAGE),
+        colorProductUrl: pickFrontImageUrl(row, style, catalogColor),
         pmsColor: firstNonEmpty(row.PMS_COLOR),
         sortOrder: entry.colors.length,
       });
@@ -217,5 +254,10 @@ export function parseEpddCsv(csv: string): ParseEpddResult {
     }
   }
 
-  return { styles: Array.from(byStyle.values()), rowCount };
+  const styles = Array.from(byStyle.values());
+  for (const s of styles) {
+    finalizeProductPreviewUrls(s);
+  }
+
+  return { styles, rowCount };
 }
