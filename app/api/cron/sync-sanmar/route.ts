@@ -8,7 +8,7 @@ import { CUSTOMIZE_STYLE_NUMBERS } from "@/lib/customize/skus";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 300;
+export const maxDuration = 600; // up from 300 — recent syncs run 240-280s, need headroom
 
 function unauthorized() {
   return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });

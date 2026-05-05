@@ -116,18 +116,24 @@ function buildColorProductUrl(
   return `${SANMAR_CDNM_BASE}/${trimmed}`;
 }
 
-function pickFrontImageUrl(
-  row: EpddRow,
-  styleNumber: string,
-  catalogColor: string
-): string | null {
+function pickFrontImageUrl(row: EpddRow, styleNumber: string, catalogColor: string): string | null {
+  // 1. Manual override map for true flat-lay URLs (highest quality, manually curated)
   const override = getImageOverride(styleNumber, catalogColor);
   if (override?.front) return override.front;
 
+  // 2. FRONT_MODEL_IMAGE_URL — SanMar provides this as a full working URL
+  //    with year/folder prefix (e.g., /2020/f18/...). Use directly.
+  const modelUrl = firstNonEmpty(row.FRONT_MODEL_IMAGE_URL);
+  if (modelUrl && modelUrl.startsWith("http")) return modelUrl;
+
+  // 3. Last-ditch fallback: constructing from COLOR_PRODUCT_IMAGE.
+  //    This pattern works for some legacy products (e.g., OGIO bags
+  //    cataloged before SanMar's year-based folder structure) but
+  //    not for most modern products. Try anyway as final fallback.
   const constructed = buildColorProductUrl(firstNonEmpty(row.COLOR_PRODUCT_IMAGE));
   if (constructed) return constructed;
 
-  return firstNonEmpty(row.FRONT_MODEL_IMAGE_URL) ?? null;
+  return null;
 }
 
 /**
