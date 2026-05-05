@@ -1,9 +1,27 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
+import { proxySanmarUrl } from "./proxy-image";
 import { CUSTOMIZE_STYLE_NUMBERS } from "./skus";
 import type { CustomizeProduct } from "./types";
 
 export type { CustomizeProduct } from "./types";
+
+function deriveBackUrl(frontUrl: string | null): string | null {
+  if (!frontUrl) return null;
+  if (frontUrl.includes("FlatFront")) {
+    return frontUrl.replaceAll("FlatFront", "FlatBack");
+  }
+  if (frontUrl.includes("_model_front")) {
+    return frontUrl.replaceAll("_model_front", "_model_back");
+  }
+  return null;
+}
+
+/** Raw DB URLs before proxy (deriveBackUrl requires unproxied CDN paths). */
+type CatalogColorRowRaw = Pick<
+  CustomizeProduct["colors"][number],
+  "catalog_color" | "display_color" | "pms_color" | "swatch_image_url" | "color_product_url"
+>;
 
 export async function getCustomizeProducts(): Promise<CustomizeProduct[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -35,13 +53,13 @@ export async function getCustomizeProducts(): Promise<CustomizeProduct[]> {
   const [colorsRes, sizesRes] = await Promise.all([
     supabase
       .from("sanmar_product_colors")
-      .select("style_number, catalog_color, display_color, pms_color, swatch_image_url")
+      .select("style_number, catalog_color, display_color, pms_color, swatch_image_url, color_product_url")
       .in("style_number", styles)
       .order("sort_order"),
     supabase.from("sanmar_product_sizes").select("style_number, size").in("style_number", styles),
   ]);
 
-  const colorsByStyle = new Map<string, CustomizeProduct["colors"]>();
+  const colorsByStyle = new Map<string, CatalogColorRowRaw[]>();
   const sizesByStyle = new Map<string, Set<string>>();
 
   for (const c of colorsRes.data ?? []) {
@@ -51,6 +69,7 @@ export async function getCustomizeProducts(): Promise<CustomizeProduct[]> {
       display_color: c.display_color,
       pms_color: c.pms_color,
       swatch_image_url: c.swatch_image_url,
+      color_product_url: c.color_product_url,
     });
   }
 
@@ -70,9 +89,16 @@ export async function getCustomizeProducts(): Promise<CustomizeProduct[]> {
       product_description: p.product_description,
       sanmar_category: p.sanmar_category,
       available_sizes: p.available_sizes,
-      front_flat_url: p.front_flat_url,
-      back_flat_url: p.back_flat_url,
-      colors: colorsByStyle.get(p.style_number) ?? [],
+      front_flat_url: proxySanmarUrl(p.front_flat_url),
+      back_flat_url: proxySanmarUrl(p.back_flat_url),
+      colors: (colorsByStyle.get(p.style_number) ?? []).map((c) => ({
+        catalog_color: c.catalog_color,
+        display_color: c.display_color,
+        pms_color: c.pms_color,
+        swatch_image_url: proxySanmarUrl(c.swatch_image_url),
+        color_product_url: proxySanmarUrl(c.color_product_url),
+        color_product_back_url: proxySanmarUrl(deriveBackUrl(c.color_product_url)),
+      })),
       sizes: Array.from(sizesByStyle.get(p.style_number) ?? []).sort(),
     }));
 }

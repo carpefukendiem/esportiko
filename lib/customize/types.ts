@@ -12,6 +12,8 @@ export interface CustomizeProduct {
     display_color: string;
     pms_color: string | null;
     swatch_image_url: string | null;
+    color_product_url: string | null;
+    color_product_back_url: string | null;
   }>;
   sizes: string[];
 }
