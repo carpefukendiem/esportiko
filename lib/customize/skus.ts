@@ -19,6 +19,11 @@ export const CUSTOMIZE_STYLE_NUMBERS = [
   "1567", // Richardson
   "1717", // Richardson
   "9360", // Ogio
+  "K500", // Port Authority Silk Touch Polo
+  "ST650", // Sport-Tek Micropique Sport-Wick Polo
+  "K540", // Port Authority Silk Touch Performance Polo
+  "F281", // Sport-Tek Super Heavyweight Pullover Hoodie
+  "PC78H", // Port & Co Core Fleece Pullover Hoodie
 ] as const;
 
 export type CustomizeStyleNumber = (typeof CUSTOMIZE_STYLE_NUMBERS)[number];

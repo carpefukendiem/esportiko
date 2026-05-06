@@ -2,7 +2,8 @@ export type FormType =
   | "team-order"
   | "business-order"
   | "contact"
-  | "team-roster-details";
+  | "team-roster-details"
+  | "custom-inquiry";
 
 const CONTACT_IDENTITY_KEYS = [
   "firstName",
@@ -123,6 +124,7 @@ function formatFormSummary(formType: FormType, data: Record<string, unknown>): s
     "business-order": "Business / Brand Apparel Request",
     contact: "Contact Form Submission",
     "team-roster-details": "Team Roster Details",
+    "custom-inquiry": "General / Custom Inquiry",
   };
 
   lines.push(`=== ${labels[formType]} ===`);
