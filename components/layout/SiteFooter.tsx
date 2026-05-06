@@ -53,7 +53,7 @@ export function SiteFooter() {
               ))}
               <li className="pt-2">
                 <Link
-                  href="/admin/login"
+                  href="/login?next=/admin"
                   className="text-sm text-slate-400 hover:text-white transition-colors"
                 >
                   Admin

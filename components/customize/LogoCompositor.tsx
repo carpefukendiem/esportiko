@@ -1,11 +1,17 @@
 "use client";
 
+import { X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildGarmentPlaceholderDataUrl } from "@/lib/catalog/garment-placeholder";
 import type { DesignElement } from "@/lib/customize/design-types";
 import type { GarmentSvgKind } from "@/lib/customize/design-types";
-import { printZoneOnCanvas } from "@/lib/customize/canvas-print-zone";
+import {
+  CUSTOMIZE_CANVAS_BUFFER,
+  letterboxedImageRect,
+  zoneInBuffer,
+} from "@/lib/customize/canvas-print-zone";
 
+const BUFFER = CUSTOMIZE_CANVAS_BUFFER;
 const HANDLE = 10;
 type Corner = "nw" | "ne" | "sw" | "se";
 
@@ -14,8 +20,6 @@ type DragState =
   | { type: "resize"; id: string; corner: Corner; anchorX: number; anchorY: number };
 
 export type LogoCompositorProps = {
-  canvasWidth: number;
-  canvasHeight: number;
   garmentSvgKind: GarmentSvgKind;
   view: "front" | "back";
   garmentColor: string;
@@ -30,6 +34,9 @@ export type LogoCompositorProps = {
   onSelectElement: (id: string | null) => void;
   onOutsidePrintZoneChange?: (outside: boolean) => void;
   onCanvasReady?: (el: HTMLCanvasElement) => void;
+  /** Fired when loaded garment (or placeholder) natural size is known — for print zone sync with parent. */
+  onGarmentNaturalSize?: (width: number, height: number) => void;
+  onDeleteElement?: (id: string) => void;
 };
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -76,6 +83,20 @@ function hitRotatedRect(
   return Math.abs(lx) <= w / 2 && Math.abs(ly) <= h / 2;
 }
 
+function topRightVertexBuffer(el: DesignElement): { bx: number; by: number } {
+  const hw = el.width / 2;
+  const hh = el.height / 2;
+  const cx = el.x + el.width / 2;
+  const cy = el.y + el.height / 2;
+  const rad = (el.rotation * Math.PI) / 180;
+  const rx = hw;
+  const ry = -hh;
+  return {
+    bx: cx + rx * Math.cos(rad) - ry * Math.sin(rad),
+    by: cy + rx * Math.sin(rad) + ry * Math.cos(rad),
+  };
+}
+
 function measureTextBox(
   ctx: CanvasRenderingContext2D,
   text: string,
@@ -94,8 +115,6 @@ function measureTextBox(
 }
 
 export function LogoCompositor({
-  canvasWidth,
-  canvasHeight,
   garmentSvgKind,
   view,
   garmentColor,
@@ -108,8 +127,11 @@ export function LogoCompositor({
   onSelectElement,
   onOutsidePrintZoneChange,
   onCanvasReady,
+  onGarmentNaturalSize,
+  onDeleteElement,
 }: LogoCompositorProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
   const baseImgRef = useRef<HTMLImageElement | null>(null);
   const imageCacheRef = useRef<Map<string, HTMLImageElement>>(new Map());
   const rafRef = useRef<number | null>(null);
@@ -117,23 +139,40 @@ export function LogoCompositor({
   const outsideRef = useRef(false);
   const elementsRef = useRef(elements);
   elementsRef.current = elements;
+  const [baseNatural, setBaseNatural] = useState({ w: 300, h: 400 });
   const [baseImageEpoch, setBaseImageEpoch] = useState(0);
+  const [, setLayoutNonce] = useState(0);
 
   const zone = useMemo(
-    () => printZoneOnCanvas(garmentSvgKind, view, canvasWidth, canvasHeight),
-    [canvasHeight, canvasWidth, garmentSvgKind, view]
+    () =>
+      zoneInBuffer({
+        kind: garmentSvgKind,
+        view,
+        bufferSize: BUFFER,
+        imageNaturalWidth: baseNatural.w,
+        imageNaturalHeight: baseNatural.h,
+      }),
+    [garmentSvgKind, view, baseNatural.w, baseNatural.h]
   );
 
   const garmentKey = useMemo(
     () =>
-      `${canvasWidth}x${canvasHeight}|${garmentSvgKind}|${view}|${garmentRasterUrl ?? ""}|${garmentColor}|${showGarmentPrintZone ? 1 : 0}`,
-    [canvasHeight, canvasWidth, garmentColor, garmentRasterUrl, garmentSvgKind, showGarmentPrintZone, view]
+      `${BUFFER}|${garmentSvgKind}|${view}|${garmentRasterUrl ?? ""}|${garmentColor}|${showGarmentPrintZone ? 1 : 0}`,
+    [garmentColor, garmentRasterUrl, garmentSvgKind, showGarmentPrintZone, view]
   );
 
   useEffect(() => {
     const el = canvasRef.current;
     if (el) onCanvasReady?.(el);
-  }, [onCanvasReady, canvasWidth, canvasHeight]);
+  }, [onCanvasReady]);
+
+  useEffect(() => {
+    const root = wrapRef.current;
+    if (!root || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setLayoutNonce((n) => n + 1));
+    ro.observe(root);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -143,6 +182,10 @@ export function LogoCompositor({
           const img = await loadImage(garmentRasterUrl);
           if (!cancelled) {
             baseImgRef.current = img;
+            const w = img.naturalWidth || 300;
+            const h = img.naturalHeight || 400;
+            setBaseNatural({ w, h });
+            onGarmentNaturalSize?.(w, h);
             setBaseImageEpoch((n) => n + 1);
           }
         } else {
@@ -159,11 +202,17 @@ export function LogoCompositor({
           const img = await loadImage(url);
           if (!cancelled) {
             baseImgRef.current = img;
+            const w = img.naturalWidth || 300;
+            const h = img.naturalHeight || 400;
+            setBaseNatural({ w, h });
+            onGarmentNaturalSize?.(w, h);
             setBaseImageEpoch((n) => n + 1);
           }
         } catch {
           if (!cancelled) {
             baseImgRef.current = null;
+            setBaseNatural({ w: 300, h: 400 });
+            onGarmentNaturalSize?.(300, 400);
             setBaseImageEpoch((n) => n + 1);
           }
         }
@@ -172,15 +221,7 @@ export function LogoCompositor({
     return () => {
       cancelled = true;
     };
-  }, [
-    canvasHeight,
-    canvasWidth,
-    garmentColor,
-    garmentRasterUrl,
-    garmentSvgKind,
-    showGarmentPrintZone,
-    view,
-  ]);
+  }, [garmentColor, garmentRasterUrl, garmentSvgKind, onGarmentNaturalSize, showGarmentPrintZone, view]);
 
   useEffect(() => {
     let cancelled = false;
@@ -207,10 +248,13 @@ export function LogoCompositor({
     if (!c) return;
     const ctx = c.getContext("2d");
     if (!ctx) return;
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.clearRect(0, 0, BUFFER, BUFFER);
     const base = baseImgRef.current;
     if (base && base.complete && base.naturalWidth) {
-      ctx.drawImage(base, 0, 0, canvasWidth, canvasHeight);
+      const nw = base.naturalWidth;
+      const nh = base.naturalHeight;
+      const { ox, oy, drawW, drawH } = letterboxedImageRect(BUFFER, nw, nh);
+      ctx.drawImage(base, 0, 0, nw, nh, ox, oy, drawW, drawH);
     }
 
     const els = elementsRef.current.filter((e) => e.visible && e.view === view);
@@ -288,24 +332,14 @@ export function LogoCompositor({
     }
 
     const outside =
-      Boolean(sel) &&
-      !rectFullyInside(sel!.x, sel!.y, sel!.width, sel!.height, zone);
+      Boolean(sel) && !rectFullyInside(sel!.x, sel!.y, sel!.width, sel!.height, zone);
     if (onOutsidePrintZoneChange) {
       if (outsideRef.current !== outside) {
         outsideRef.current = outside;
         onOutsidePrintZoneChange(outside);
       }
     }
-  }, [
-    canvasHeight,
-    canvasWidth,
-    onOutsidePrintZoneChange,
-    selectedElementId,
-    showSafeZoneOverlay,
-    view,
-    zone,
-  ]);
-
+  }, [onOutsidePrintZoneChange, selectedElementId, showSafeZoneOverlay, view, zone]);
 
   const scheduleDraw = useCallback(() => {
     if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
@@ -318,11 +352,10 @@ export function LogoCompositor({
   useEffect(() => {
     scheduleDraw();
   }, [draw, scheduleDraw, elements, selectedElementId]);
+
   useEffect(() => {
     scheduleDraw();
   }, [baseImageEpoch, scheduleDraw]);
-
-
 
   useEffect(() => {
     let cancelled = false;
@@ -350,8 +383,8 @@ export function LogoCompositor({
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return { mx: 0, my: 0 };
     return {
-      mx: ((clientX - rect.left) / rect.width) * canvasWidth,
-      my: ((clientY - rect.top) / rect.height) * canvasHeight,
+      mx: ((clientX - rect.left) / rect.width) * BUFFER,
+      my: ((clientY - rect.top) / rect.height) * BUFFER,
     };
   }
 
@@ -516,18 +549,49 @@ export function LogoCompositor({
     scheduleDraw();
   }
 
+  const deleteOverlayEl = useMemo(() => {
+    if (!onDeleteElement || !selectedElementId) return null;
+    const els = elements.filter((e) => e.visible && e.view === view);
+    const sel = els.find((e) => e.id === selectedElementId);
+    if (!sel || sel.locked) return null;
+    const { bx, by } = topRightVertexBuffer(sel);
+    return (
+      <button
+        type="button"
+        aria-label="Delete element"
+        className="absolute z-10 flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white text-[#0a1628] shadow-lg transition-colors hover:bg-[#FF4444] hover:text-white"
+        style={{
+          left: `${(bx / BUFFER) * 100}%`,
+          top: `${(by / BUFFER) * 100}%`,
+          transform: "translate(10px, -10px)",
+        }}
+        onMouseDown={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDeleteElement(sel.id);
+        }}
+      >
+        <X className="pointer-events-none h-4 w-4" aria-hidden />
+      </button>
+    );
+  }, [elements, onDeleteElement, selectedElementId, view]);
+
   return (
-    <canvas
-      ref={canvasRef}
-      width={canvasWidth}
-      height={canvasHeight}
-      className="max-w-full touch-none rounded-lg border border-[#2A3347] bg-[#1C2333]"
-      style={{ width: "100%", height: "auto" }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
-    />
+    <div ref={wrapRef} className="relative h-full w-full">
+      <canvas
+        ref={canvasRef}
+        width={BUFFER}
+        height={BUFFER}
+        className="h-full w-full max-h-full max-w-full touch-none rounded-lg border border-[#2A3347] bg-[#1C2333] object-contain"
+        style={{ aspectRatio: "1 / 1", width: "100%", height: "auto" }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      />
+      {deleteOverlayEl}
+    </div>
   );
 }
 

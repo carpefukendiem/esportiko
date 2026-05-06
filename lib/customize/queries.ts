@@ -14,7 +14,14 @@ function deriveBackUrl(frontUrl: string | null): string | null {
   if (frontUrl.includes("_model_front")) {
     return frontUrl.replaceAll("_model_front", "_model_back");
   }
+  // No known back derivative (e.g. hats using _hat_detail) — callers treat null as no back view.
   return null;
+}
+
+function expandSwatchUrl(raw: string | null): string | null {
+  if (!raw) return null;
+  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+  return `https://cdnm.sanmar.com/swatch/gifs/${raw}`;
 }
 
 /** Raw DB URLs before proxy (deriveBackUrl requires unproxied CDN paths). */
@@ -95,7 +102,7 @@ export async function getCustomizeProducts(): Promise<CustomizeProduct[]> {
         catalog_color: c.catalog_color,
         display_color: c.display_color,
         pms_color: c.pms_color,
-        swatch_image_url: proxySanmarUrl(c.swatch_image_url),
+        swatch_image_url: proxySanmarUrl(expandSwatchUrl(c.swatch_image_url)),
         color_product_url: proxySanmarUrl(c.color_product_url),
         color_product_back_url: proxySanmarUrl(deriveBackUrl(c.color_product_url)),
       })),

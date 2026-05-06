@@ -6,6 +6,7 @@ import { SectionContainer } from "@/components/ui/SectionContainer";
 import { Button } from "@/components/ui/button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { RequestQuoteGarmentPicker } from "@/components/portal/RequestQuoteGarmentPicker";
+import { CustomInquiryForm } from "@/components/forms/CustomInquiryForm";
 import { buildMetadata } from "@/lib/seo";
 import { media } from "@/lib/data/media";
 
@@ -133,6 +134,10 @@ export default function RequestAQuotePage() {
               </div>
             </article>
           ))}
+        </div>
+
+        <div className="mx-auto mt-10 max-w-lg">
+          <CustomInquiryForm />
         </div>
 
         <p className="mx-auto mt-10 max-w-xl text-center text-body-sm text-off-white/60">

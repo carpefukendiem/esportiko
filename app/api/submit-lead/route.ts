@@ -9,6 +9,7 @@ const WEBHOOKS: Record<string, string | undefined> = {
   "team-order": process.env.GHL_WEBHOOK_URL_TEAM_ORDER,
   "business-order": process.env.GHL_WEBHOOK_URL_BUSINESS_ORDER,
   "team-roster-details": process.env.GHL_WEBHOOK_URL_TEAM_ROSTER_DETAILS,
+  "custom-inquiry": process.env.GHL_WEBHOOK_URL_CUSTOM_INQUIRY,
 };
 
 const FORM_TYPES = new Set<FormType>([
@@ -16,6 +17,7 @@ const FORM_TYPES = new Set<FormType>([
   "team-order",
   "business-order",
   "team-roster-details",
+  "custom-inquiry",
 ]);
 
 /**
@@ -27,6 +29,7 @@ const FORM_TYPES = new Set<FormType>([
  * | `team-order`               | `GHL_WEBHOOK_URL_TEAM_ORDER`        | Raw JSON body as-is     | same                             |
  * | `business-order`           | `GHL_WEBHOOK_URL_BUSINESS_ORDER`    | Raw JSON body as-is     | same                             |
  * | `team-roster-details`      | `GHL_WEBHOOK_URL_TEAM_ROSTER_DETAILS` | Raw JSON body as-is   | same                             |
+ * | `custom-inquiry`           | `GHL_WEBHOOK_URL_CUSTOM_INQUIRY`     | Raw JSON body as-is     | same                             |
  *
  * After this change: each request is validated for `formType` + `email`, then
  * forwarded with `buildWebhookPayload()` — flattened custom fields, standard

@@ -84,13 +84,7 @@ function rasterForView(
   if (view === "front") {
     return row?.color_product_url ?? product.front_flat_url ?? product.back_flat_url ?? null;
   }
-  return (
-    row?.color_product_back_url ??
-    product.back_flat_url ??
-    product.front_flat_url ??
-    row?.color_product_url ??
-    null
-  );
+  return row?.color_product_back_url ?? null;
 }
 
 function styleCardThumbSrc(
@@ -279,6 +273,27 @@ export function CustomizeExperience({ products }: { products: CustomizeProduct[]
   }, [searchParams, categoriesWithProducts]);
 
   useEffect(() => {
+    if (products.length === 0 || selectedStyle !== null) return;
+    const first = products[0];
+    if (!first) return;
+    setSelectedStyle(first.style_number.toUpperCase());
+    const cc = first.colors[0]?.catalog_color ?? "";
+    if (cc) setSelectedColorKey(cc);
+  }, [products, selectedStyle]);
+
+  useEffect(() => {
+    if (stylesInCategory.length === 0) return;
+    const stillValid = stylesInCategory.some(
+      (p) => p.style_number.toUpperCase() === (selectedStyle ?? "").toUpperCase()
+    );
+    if (stillValid) return;
+    const next = stylesInCategory[0];
+    setSelectedStyle(next.style_number.toUpperCase());
+    const cc = next.colors[0]?.catalog_color ?? "";
+    if (cc) setSelectedColorKey(cc);
+  }, [stylesInCategory, selectedStyle]);
+
+  useEffect(() => {
     if (!selectedProduct?.colors.length) {
       setSelectedColorKey("");
       return;
@@ -347,6 +362,12 @@ export function CustomizeExperience({ products }: { products: CustomizeProduct[]
   );
 
   const selectedDisplayLabel = selectedColorRow?.display_color ?? "";
+
+  const hasBack = Boolean(selectedColorRow?.color_product_back_url);
+
+  useEffect(() => {
+    if (!hasBack && view === "back") setView("front");
+  }, [hasBack, view]);
 
   const variantStripColors = useMemo(
     () => colorsForVariantStrip(selectedProduct),
@@ -932,7 +953,7 @@ export function CustomizeExperience({ products }: { products: CustomizeProduct[]
             })}
           </div>
           <p className="text-xs font-semibold uppercase tracking-wide text-[#8A94A6]">Styles</p>
-          <div className="-mx-1 flex gap-2 overflow-x-auto pb-1">
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 py-3">
             {stylesInCategory.map((p) => {
               const active = p.style_number.toUpperCase() === (selectedStyle ?? "").toUpperCase();
               return (
@@ -942,7 +963,7 @@ export function CustomizeExperience({ products }: { products: CustomizeProduct[]
                   onClick={() => setSelectedStyle(p.style_number.toUpperCase())}
                   className={
                     active
-                      ? "w-[140px] shrink-0 rounded-lg border-2 border-[#1a2744] bg-[#3B7BF8]/10 p-2 text-left ring-2 ring-[#3B7BF8] ring-offset-2 ring-offset-[#0F1521]"
+                      ? "w-[140px] shrink-0 rounded-lg border border-transparent bg-[#3B7BF8]/10 p-2 text-left ring-2 ring-[#4A9EFF] ring-offset-2 ring-offset-[#0a1628]"
                       : "w-[140px] shrink-0 rounded-lg border border-[#2A3347] bg-[#1C2333] p-2 text-left text-[#8A94A6]"
                   }
                 >
@@ -971,7 +992,7 @@ export function CustomizeExperience({ products }: { products: CustomizeProduct[]
             <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
               {selectedProduct && variantStripColors.length > 0 ? (
                 <div
-                  className="flex max-h-24 w-full flex-row gap-2 overflow-x-auto overflow-y-hidden px-0.5 pb-1 lg:max-h-[min(72vw,640px)] lg:w-16 lg:max-w-[64px] lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden lg:pb-0"
+                  className="flex max-h-28 w-full flex-row gap-2 overflow-x-auto overflow-y-hidden px-2 py-2 lg:max-h-[min(72vw,calc(640px+1rem))] lg:w-[4.75rem] lg:max-w-[4.75rem] lg:flex-col lg:gap-3 lg:overflow-y-auto lg:overflow-x-hidden lg:px-1 lg:py-2"
                   style={{ WebkitOverflowScrolling: "touch" }}
                 >
                   {variantStripColors.map((row) => {
@@ -986,7 +1007,7 @@ export function CustomizeExperience({ products }: { products: CustomizeProduct[]
                         onClick={() => setSelectedColorKey(row.catalog_color)}
                         className={`h-14 w-14 shrink-0 rounded-lg bg-[#1C2333] bg-contain bg-center bg-no-repeat transition-transform lg:mx-auto ${
                           sel
-                            ? "scale-105 ring-2 ring-[#4A9EFF] ring-offset-2 ring-offset-[#0a1628]"
+                            ? "scale-105 border border-transparent ring-2 ring-[#4A9EFF] ring-offset-2 ring-offset-[#0a1628]"
                             : "scale-100 border border-[#2A3347]"
                         }`}
                         style={
@@ -1016,6 +1037,7 @@ export function CustomizeExperience({ products }: { products: CustomizeProduct[]
                     onSelectElement={setSelectedElementId}
                     onOutsidePrintZoneChange={setOutsideZone}
                     onGarmentNaturalSize={onGarmentNaturalSize}
+                    onDeleteElement={deleteElement}
                   />
                 </div>
 
@@ -1106,30 +1128,40 @@ export function CustomizeExperience({ products }: { products: CustomizeProduct[]
               <button type="button" onClick={addText} className={toolBtnClass}>
                 Add Text
               </button>
-              <div className="flex gap-2">
+              {hasBack ? (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setView("front")}
+                    className={
+                      view === "front"
+                        ? "flex-1 rounded-lg border border-[#3B7BF8] bg-[#3B7BF8]/10 px-3 py-2 text-sm font-semibold text-white"
+                        : "flex-1 rounded-lg border border-[#2A3347] bg-[#0F1521] px-3 py-2 text-sm font-medium text-[#8A94A6] hover:bg-[#2A3347]"
+                    }
+                  >
+                    Front
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setView("back")}
+                    className={
+                      view === "back"
+                        ? "flex-1 rounded-lg border border-[#3B7BF8] bg-[#3B7BF8]/10 px-3 py-2 text-sm font-semibold text-white"
+                        : "flex-1 rounded-lg border border-[#2A3347] bg-[#0F1521] px-3 py-2 text-sm font-medium text-[#8A94A6] hover:bg-[#2A3347]"
+                    }
+                  >
+                    Back
+                  </button>
+                </div>
+              ) : (
                 <button
                   type="button"
                   onClick={() => setView("front")}
-                  className={
-                    view === "front"
-                      ? "flex-1 rounded-lg border border-[#3B7BF8] bg-[#3B7BF8]/10 px-3 py-2 text-sm font-semibold text-white"
-                      : "flex-1 rounded-lg border border-[#2A3347] bg-[#0F1521] px-3 py-2 text-sm font-medium text-[#8A94A6] hover:bg-[#2A3347]"
-                  }
+                  className="w-full rounded-lg border border-[#3B7BF8] bg-[#3B7BF8]/10 px-3 py-2 text-sm font-semibold text-white"
                 >
                   Front
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setView("back")}
-                  className={
-                    view === "back"
-                      ? "flex-1 rounded-lg border border-[#3B7BF8] bg-[#3B7BF8]/10 px-3 py-2 text-sm font-semibold text-white"
-                      : "flex-1 rounded-lg border border-[#2A3347] bg-[#0F1521] px-3 py-2 text-sm font-medium text-[#8A94A6] hover:bg-[#2A3347]"
-                  }
-                >
-                  Back
-                </button>
-              </div>
+              )}
               <button type="button" onClick={openSaveModal} className={toolBtnPrimaryClass}>
                 Save Design
               </button>

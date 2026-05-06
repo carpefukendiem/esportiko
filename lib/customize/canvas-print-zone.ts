@@ -29,7 +29,54 @@ const ZONES: Record<
 
 const VB_W = 300;
 
+/** Internal drawing buffer edge length (square) for /customize compositor preview. */
+export const CUSTOMIZE_CANVAS_BUFFER = 1200;
+
 export type CanvasPrintZone = { x: number; y: number; w: number; h: number };
+
+/**
+ * Letterboxes the garment bitmap into a square buffer (same geometry as composite drawImage).
+ */
+export function letterboxedImageRect(
+  bufferSize: number,
+  imageNaturalWidth: number,
+  imageNaturalHeight: number
+): { ox: number; oy: number; drawW: number; drawH: number } {
+  const nw = Math.max(1, imageNaturalWidth || 1);
+  const nh = Math.max(1, imageNaturalHeight || 1);
+  const scale = Math.min(bufferSize / nw, bufferSize / nh);
+  const drawW = nw * scale;
+  const drawH = nh * scale;
+  const ox = (bufferSize - drawW) / 2;
+  const oy = (bufferSize - drawH) / 2;
+  return { ox, oy, drawW, drawH };
+}
+
+/**
+ * Print zone in buffer pixel coords, scaled to match the fitted (letterboxed) garment image.
+ */
+export function zoneInBuffer(params: {
+  kind: GarmentSvgKind;
+  view: "front" | "back";
+  bufferSize: number;
+  imageNaturalWidth: number;
+  imageNaturalHeight: number;
+}): CanvasPrintZone {
+  const { ox, oy, drawW, drawH } = letterboxedImageRect(
+    params.bufferSize,
+    params.imageNaturalWidth,
+    params.imageNaturalHeight
+  );
+  const z = ZONES[params.kind][params.view];
+  const sx = drawW / VB_W;
+  const sy = drawH / z.vbH;
+  return {
+    x: ox + z.x * sx,
+    y: oy + z.y * sy,
+    w: z.w * sx,
+    h: z.h * sy,
+  };
+}
 
 export function printZoneOnCanvas(
   kind: GarmentSvgKind,
