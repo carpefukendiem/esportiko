@@ -6,9 +6,13 @@ import { parseEpddCsv } from "@/lib/catalog/sanmar-parser";
 import { recordSyncRun, upsertStyles } from "@/lib/catalog/sanmar-upsert";
 import { CUSTOMIZE_STYLE_NUMBERS } from "@/lib/customize/skus";
 
+// Manual fallback only. The scheduled sync runs in GitHub Actions —
+// see .github/workflows/sanmar-sync.yml. This route exists so an admin
+// can trigger a sync from a curl/wget without waiting for the Sunday cron.
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 600; // up from 300 — recent syncs run 240-280s, need headroom
+export const maxDuration = 60; // manual fallback only — real sync runs in .github/workflows/sanmar-sync.yml
 
 function unauthorized() {
   return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });

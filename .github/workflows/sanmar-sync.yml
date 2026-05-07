@@ -1,13 +1,15 @@
 name: SanMar one-shot sync
 
-# Manual trigger only - no schedule. Run from the Actions tab.
+# Manual trigger + weekly schedule (Sunday 07:00 UTC).
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 0'  # Sundays 07:00 UTC
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 

@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/cron/sync-sanmar",
-      "schedule": "0 7 * * 0"
-    }
-  ]
-}
