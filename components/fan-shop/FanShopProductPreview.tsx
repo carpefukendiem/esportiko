@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useRef, useState } from "react";
 import {
   detectProductImageLayout,
   logoOverlayRect,
@@ -13,6 +13,8 @@ type Props = {
   productTitle: string;
   garmentKind: GarmentSvgKind;
   garmentRasterUrl: string | null;
+  /** Raw SanMar URL (before proxy) for layout detection */
+  imageSourceUrl: string | null;
   logoUrl: string | null;
   logoPlacement: LogoPlacement;
   logoMaxWidthInches: number;
@@ -31,25 +33,16 @@ export function FanShopProductPreview({
   productTitle,
   garmentKind,
   garmentRasterUrl,
+  imageSourceUrl,
   logoUrl,
   logoPlacement,
   logoMaxWidthInches,
   retailPriceCents,
 }: Props) {
-  const [garmentSize, setGarmentSize] = useState({ w: 0, h: 0 });
-  const [logoAspect, setLogoAspect] = useState(1);
+  const garmentRef = useRef<HTMLImageElement>(null);
+  const [imgFailed, setImgFailed] = useState(false);
 
-  const onGarmentLoad = useCallback((el: HTMLImageElement) => {
-    setGarmentSize({ w: el.clientWidth, h: el.clientHeight });
-  }, []);
-
-  const onLogoLoad = useCallback((el: HTMLImageElement) => {
-    const w = el.naturalWidth || 1;
-    const h = el.naturalHeight || 1;
-    setLogoAspect(h / w);
-  }, []);
-
-  const imageLayout = detectProductImageLayout(garmentRasterUrl);
+  const imageLayout = detectProductImageLayout(imageSourceUrl ?? garmentRasterUrl);
   const overlay = logoOverlayRect({
     kind: garmentKind,
     placement: logoPlacement,
@@ -58,36 +51,43 @@ export function FanShopProductPreview({
     styleNumber,
   });
 
-  const logoWidthPx =
-    garmentSize.w > 0 ? (garmentSize.w * overlay.widthPercent) / 100 : undefined;
-  const logoHeightPx =
-    logoWidthPx != null ? logoWidthPx * logoAspect : undefined;
+  const isHat = garmentKind === "cap" || imageLayout === "hat_detail";
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-[#2A3347] bg-[#1C2333]">
       <div className="relative aspect-square w-full bg-[#0F1521]">
-        <div className="absolute inset-0 flex items-center justify-center p-3">
-          {garmentRasterUrl ? (
-            <div className="relative inline-block max-h-full max-w-full leading-none">
+        <div className="absolute inset-0 flex items-start justify-center p-3 pt-4">
+          {garmentRasterUrl && !imgFailed ? (
+            <div
+              className={
+                isHat
+                  ? "relative inline-block max-h-full max-w-[72%] leading-none"
+                  : "relative inline-block max-h-full max-w-full leading-none"
+              }
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
+                ref={garmentRef}
                 src={garmentRasterUrl}
                 alt=""
-                className="block max-h-[min(100%,280px)] max-w-full object-contain"
-                onLoad={(e) => onGarmentLoad(e.currentTarget)}
+                onError={() => setImgFailed(true)}
+                className={
+                  isHat
+                    ? "block h-auto w-full object-contain object-top"
+                    : "block max-h-[min(100%,260px)] w-auto max-w-full object-contain"
+                }
               />
-              {logoUrl && garmentSize.w > 0 ? (
+              {logoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={logoUrl}
                   alt=""
                   className="pointer-events-none absolute object-contain"
-                  onLoad={(e) => onLogoLoad(e.currentTarget)}
                   style={{
                     left: `${overlay.leftPercent}%`,
                     top: `${overlay.topPercent}%`,
-                    width: logoWidthPx,
-                    height: logoHeightPx,
+                    width: `${overlay.widthPercent}%`,
+                    height: "auto",
                     maxWidth: "none",
                     transform: "translate(-50%, -50%)",
                   }}
@@ -95,10 +95,12 @@ export function FanShopProductPreview({
               ) : null}
             </div>
           ) : (
-            <div className="text-xs text-[#8A94A6]">No preview</div>
+            <div className="flex h-full items-center px-4 text-center text-xs text-[#8A94A6]">
+              {imgFailed ? "Product photo unavailable" : "No preview"}
+            </div>
           )}
         </div>
-        {!logoUrl && garmentRasterUrl ? (
+        {!logoUrl && garmentRasterUrl && !imgFailed ? (
           <div className="absolute inset-x-0 bottom-3 flex justify-center px-3">
             <p className="rounded-lg bg-[#0F1521]/90 px-3 py-1.5 text-center font-sans text-[10px] font-medium text-[#8A94A6]">
               Upload a logo to preview

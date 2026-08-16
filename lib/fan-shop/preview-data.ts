@@ -6,6 +6,7 @@ import type { GarmentSvgKind } from "@/lib/customize/design-types";
 import type { LogoPlacement } from "./types";
 import { DEFAULT_FAN_SHOP_STYLES, defaultPriceCents } from "./default-catalog";
 import { garmentKindForStyle } from "./garment-kind";
+import { pickFanShopRasterUrl } from "./pick-raster";
 import { getFanShopForOwner, getFanShopSkusForShop } from "./queries";
 
 export type FanShopPreviewItem = {
@@ -13,6 +14,7 @@ export type FanShopPreviewItem = {
   productTitle: string;
   garmentKind: GarmentSvgKind;
   garmentRasterUrl: string | null;
+  imageSourceUrl: string | null;
   garmentColor: string;
   logoPlacement: LogoPlacement;
   logoMaxWidthInches: number;
@@ -91,14 +93,14 @@ export async function getFanShopPreviewBundle(params: {
       .order("sort_order"),
   ]);
 
-  const firstColorByStyle = new Map<string, { url: string | null; display: string | null }>();
-  for (const c of colors ?? []) {
-    if (!firstColorByStyle.has(c.style_number)) {
-      firstColorByStyle.set(c.style_number, {
-        url: c.color_product_url,
-        display: c.display_color,
-      });
-    }
+  const bestColorUrlByStyle = new Map<string, string>();
+  for (const sn of styleNumbers) {
+    const product = (products ?? []).find((p) => p.style_number === sn);
+    const flat = product?.front_flat_url ?? null;
+    const colorRows = (colors ?? []).filter((c) => c.style_number === sn);
+    const kind = garmentKindForStyle(sn, product?.sanmar_category ?? "");
+    const picked = pickFanShopRasterUrl({ garmentKind: kind, flatUrl: flat, colorRows });
+    if (picked) bestColorUrlByStyle.set(sn, picked);
   }
 
   const configByStyle = new Map(
@@ -116,13 +118,19 @@ export async function getFanShopPreviewBundle(params: {
     .map((p) => {
       const key = p.style_number.toUpperCase();
       const cfg = configByStyle.get(key);
-      const colorRow = firstColorByStyle.get(p.style_number);
-      const rawRaster = colorRow?.url ?? p.front_flat_url;
+      const rawRaster =
+        bestColorUrlByStyle.get(p.style_number) ??
+        pickFanShopRasterUrl({
+          garmentKind: garmentKindForStyle(p.style_number, p.sanmar_category ?? ""),
+          flatUrl: p.front_flat_url,
+          colorRows: (colors ?? []).filter((c) => c.style_number === p.style_number),
+        });
       return {
         styleNumber: p.style_number,
         productTitle: p.product_title,
         garmentKind: garmentKindForStyle(p.style_number, p.sanmar_category ?? ""),
         garmentRasterUrl: proxySanmarUrl(rawRaster),
+        imageSourceUrl: rawRaster,
         garmentColor: "#4b5563",
         logoPlacement: (cfg?.logo_placement ?? "chest_center") as LogoPlacement,
         logoMaxWidthInches: Number(cfg?.logo_max_width_inches ?? 4),

@@ -142,7 +142,11 @@ export async function savePortalDraft(
   }
 
   if (Object.keys(patch).length) {
-    await supabase.from("orders").update(patch).eq("id", orderId);
+    const { error: orderErr } = await supabase.from("orders").update(patch).eq("id", orderId);
+    if (orderErr) {
+      console.error("savePortalDraft order patch", orderErr);
+      throw new Error(orderErr.message || "Could not save order");
+    }
   }
 
   if (values.roster_skip) {
@@ -492,20 +496,22 @@ export async function updateAccountProfile(payload: {
 export async function updateDefaultRoster(payload: {
   default_roster: import("@/types/portal").DefaultRosterJson;
   use_default_roster_for_new_orders: boolean;
-}): Promise<void> {
+}): Promise<{ ok: true }> {
   const { supabase, account } = await requireAccount();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("accounts")
     .update({
       default_roster: payload.default_roster,
       use_default_roster_for_new_orders: payload.use_default_roster_for_new_orders,
     })
-    .eq("id", account.id);
+    .eq("id", account.id)
+    .select("id, default_roster")
+    .single();
 
-  if (error) {
+  if (error || !data) {
     console.error("updateDefaultRoster", error);
     const detail =
-      typeof error.message === "string" && error.message.trim()
+      typeof error?.message === "string" && error.message.trim()
         ? error.message
         : "Could not save roster. Please try again.";
     throw new Error(detail);
@@ -513,6 +519,7 @@ export async function updateDefaultRoster(payload: {
 
   revalidatePath("/portal/roster");
   revalidatePath("/portal/dashboard");
+  return { ok: true };
 }
 
 export async function registerArtworkAsset(filename: string, storagePath: string): Promise<void> {

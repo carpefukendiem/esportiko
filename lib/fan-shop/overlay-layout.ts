@@ -14,25 +14,48 @@ export type ProductImageLayout =
   | "flat_front"
   | "unknown";
 
+function normalizeImageUrl(url: string): string {
+  const raw = url.trim();
+  if (!raw.includes("url=")) return raw.toLowerCase();
+  try {
+    const parsed = new URL(raw, "http://localhost");
+    const inner = parsed.searchParams.get("url");
+    if (inner) return decodeURIComponent(inner).toLowerCase();
+  } catch {
+    /* ignore */
+  }
+  return raw.toLowerCase();
+}
+
 /** Infer SanMar photo type from CDN filename — drives placement presets. */
 export function detectProductImageLayout(url: string | null | undefined): ProductImageLayout {
   if (!url) return "unknown";
-  const u = url.toLowerCase();
+  const u = normalizeImageUrl(url);
   if (u.includes("hat_detail") || u.includes("_hat_")) return "hat_detail";
-  if (u.includes("flatfront") || u.includes("_flat_front") || u.includes("_flat.")) {
+  if (
+    u.includes("flatfront") ||
+    u.includes("_flat_front") ||
+    u.includes("_flat.") ||
+    u.includes("flat_front")
+  ) {
     return "flat_front";
   }
-  if (u.includes("model_front") || u.includes("_front.jpg")) return "model_front";
+  if (u.includes("model_front") || u.includes("_front.jpg") || u.includes("_front.")) {
+    return "model_front";
+  }
   return "unknown";
 }
 
-/** Per-style fine tuning (mostly structured caps). */
-const STYLE_OVERRIDES: Record<string, LogoOverlayRect> = {
-  "112": { leftPercent: 50, topPercent: 28, widthPercent: 7.5 },
-  "355": { leftPercent: 50, topPercent: 29, widthPercent: 7.5 },
-  "356": { leftPercent: 50, topPercent: 29, widthPercent: 7.5 },
-  "1567": { leftPercent: 50, topPercent: 28, widthPercent: 7 },
-  "1717": { leftPercent: 50, topPercent: 28, widthPercent: 7 },
+/**
+ * Hat_detail shots (1200×1800) show the cap in the upper ~35% with empty space below.
+ * Coordinates are tuned against actual SanMar art — front panel center ≈ 19% from top.
+ */
+const HAT_STYLE_OVERRIDES: Record<string, LogoOverlayRect> = {
+  "112": { leftPercent: 46, topPercent: 19, widthPercent: 10.5 },
+  "355": { leftPercent: 46, topPercent: 19, widthPercent: 10.5 },
+  "356": { leftPercent: 46, topPercent: 19, widthPercent: 10.5 },
+  "1567": { leftPercent: 46, topPercent: 19, widthPercent: 10 },
+  "1717": { leftPercent: 46, topPercent: 19, widthPercent: 10 },
 };
 
 /**
@@ -48,16 +71,12 @@ export function logoOverlayRect(params: {
 }): LogoOverlayRect {
   const { kind, placement, maxWidthInches, imageLayout, styleNumber } = params;
   const styleKey = styleNumber?.trim().toUpperCase() ?? "";
-  if (styleKey && STYLE_OVERRIDES[styleKey]) {
-    return STYLE_OVERRIDES[styleKey];
+  if (styleKey && HAT_STYLE_OVERRIDES[styleKey]) {
+    return HAT_STYLE_OVERRIDES[styleKey];
   }
 
   if (kind === "cap" || imageLayout === "hat_detail") {
     return capOverlay(placement, maxWidthInches);
-  }
-
-  if (imageLayout === "model_front") {
-    return modelFrontOverlay(kind, placement, maxWidthInches);
   }
 
   if (imageLayout === "flat_front") {
@@ -68,14 +87,14 @@ export function logoOverlayRect(params: {
 }
 
 function capOverlay(placement: LogoPlacement, maxWidthInches: number): LogoOverlayRect {
-  const widthPercent = clamp(6.5, 9.5, 7.5 * (maxWidthInches / 2.25));
+  const widthPercent = clamp(9, 13, 10.5 * (maxWidthInches / 2.25));
   if (placement === "left_chest") {
-    return { leftPercent: 46, topPercent: 27, widthPercent: widthPercent * 0.9 };
+    return { leftPercent: 43, topPercent: 18, widthPercent: widthPercent * 0.92 };
   }
   if (placement === "right_chest") {
-    return { leftPercent: 54, topPercent: 27, widthPercent: widthPercent * 0.9 };
+    return { leftPercent: 49, topPercent: 18, widthPercent: widthPercent * 0.92 };
   }
-  return { leftPercent: 50, topPercent: 28, widthPercent };
+  return { leftPercent: 46, topPercent: 19, widthPercent };
 }
 
 function modelFrontOverlay(
@@ -84,35 +103,35 @@ function modelFrontOverlay(
   maxWidthInches: number
 ): LogoOverlayRect {
   if (kind === "polo") {
-    const widthPercent = clamp(10, 14, 12 * (maxWidthInches / 3.5));
+    const widthPercent = clamp(9, 13, 11 * (maxWidthInches / 3.5));
     if (placement === "left_chest") {
-      return { leftPercent: 39, topPercent: 41, widthPercent };
+      return { leftPercent: 38, topPercent: 38, widthPercent };
     }
     if (placement === "right_chest") {
-      return { leftPercent: 61, topPercent: 41, widthPercent };
+      return { leftPercent: 62, topPercent: 38, widthPercent };
     }
-    return { leftPercent: 50, topPercent: 42, widthPercent };
+    return { leftPercent: 50, topPercent: 39, widthPercent };
   }
 
   if (kind === "hoodie") {
-    const widthPercent = clamp(14, 20, 17 * (maxWidthInches / 4));
+    const widthPercent = clamp(12, 18, 15 * (maxWidthInches / 4));
     if (placement === "left_chest") {
-      return { leftPercent: 40, topPercent: 43, widthPercent: widthPercent * 0.88 };
+      return { leftPercent: 39, topPercent: 40, widthPercent: widthPercent * 0.88 };
     }
     if (placement === "right_chest") {
-      return { leftPercent: 60, topPercent: 43, widthPercent: widthPercent * 0.88 };
+      return { leftPercent: 61, topPercent: 40, widthPercent: widthPercent * 0.88 };
     }
-    return { leftPercent: 50, topPercent: 44, widthPercent };
+    return { leftPercent: 50, topPercent: 41, widthPercent };
   }
 
-  const widthPercent = clamp(13, 22, 17 * (maxWidthInches / 4));
+  const widthPercent = clamp(11, 18, 14 * (maxWidthInches / 4));
   if (placement === "left_chest") {
-    return { leftPercent: 40, topPercent: 44, widthPercent: widthPercent * 0.85 };
+    return { leftPercent: 39, topPercent: 40, widthPercent: widthPercent * 0.85 };
   }
   if (placement === "right_chest") {
-    return { leftPercent: 60, topPercent: 44, widthPercent: widthPercent * 0.85 };
+    return { leftPercent: 61, topPercent: 40, widthPercent: widthPercent * 0.85 };
   }
-  return { leftPercent: 50, topPercent: 45, widthPercent };
+  return { leftPercent: 50, topPercent: 41, widthPercent };
 }
 
 function flatFrontOverlay(
@@ -122,33 +141,33 @@ function flatFrontOverlay(
 ): LogoOverlayRect {
   if (kind === "cap") return capOverlay(placement, maxWidthInches);
   if (kind === "polo") {
-    const widthPercent = clamp(11, 18, 13.5 * (maxWidthInches / 3.5));
+    const widthPercent = clamp(10, 15, 12 * (maxWidthInches / 3.5));
     if (placement === "left_chest") {
-      return { leftPercent: 36, topPercent: 31, widthPercent };
+      return { leftPercent: 36, topPercent: 28, widthPercent };
     }
     if (placement === "right_chest") {
-      return { leftPercent: 64, topPercent: 31, widthPercent };
+      return { leftPercent: 64, topPercent: 28, widthPercent };
     }
-    return { leftPercent: 50, topPercent: 32, widthPercent };
+    return { leftPercent: 50, topPercent: 29, widthPercent };
   }
   if (kind === "hoodie") {
-    const widthPercent = clamp(14, 24, 18 * (maxWidthInches / 4));
+    const widthPercent = clamp(13, 20, 16 * (maxWidthInches / 4));
     if (placement === "left_chest") {
-      return { leftPercent: 38, topPercent: 34, widthPercent: widthPercent * 0.9 };
+      return { leftPercent: 38, topPercent: 32, widthPercent: widthPercent * 0.9 };
     }
     if (placement === "right_chest") {
-      return { leftPercent: 62, topPercent: 34, widthPercent: widthPercent * 0.9 };
+      return { leftPercent: 62, topPercent: 32, widthPercent: widthPercent * 0.9 };
     }
-    return { leftPercent: 50, topPercent: 35, widthPercent };
+    return { leftPercent: 50, topPercent: 33, widthPercent };
   }
-  const widthPercent = clamp(14, 26, 20 * (maxWidthInches / 4));
+  const widthPercent = clamp(13, 22, 17 * (maxWidthInches / 4));
   if (placement === "left_chest") {
-    return { leftPercent: 38, topPercent: 30, widthPercent: widthPercent * 0.85 };
+    return { leftPercent: 38, topPercent: 28, widthPercent: widthPercent * 0.85 };
   }
   if (placement === "right_chest") {
-    return { leftPercent: 62, topPercent: 30, widthPercent: widthPercent * 0.85 };
+    return { leftPercent: 62, topPercent: 28, widthPercent: widthPercent * 0.85 };
   }
-  return { leftPercent: 50, topPercent: 31, widthPercent };
+  return { leftPercent: 50, topPercent: 29, widthPercent };
 }
 
 function clamp(min: number, max: number, value: number): number {

@@ -41,7 +41,9 @@ export function PortalTeamProfileGate({
     pathname.startsWith("/portal/fan-shop/") ||
     pathname === "/portal/onboarding" ||
     pathname === "/portal/roster" ||
-    pathname.startsWith("/portal/roster/");
+    pathname.startsWith("/portal/roster/") ||
+    pathname === "/portal/orders" ||
+    pathname.startsWith("/portal/orders/");
   const skipTeamSetup =
     isAdmin || (userEmail != null && userEmail !== "" && isPublicAdminEmail(userEmail));
   const mustRedirect = Boolean(

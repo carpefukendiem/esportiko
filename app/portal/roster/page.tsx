@@ -4,6 +4,8 @@ import { ensureAccount } from "@/lib/portal/ensureAccount";
 import { RosterManager } from "@/components/portal/RosterManager";
 import type { DefaultRosterJson } from "@/types/portal";
 
+export const dynamic = "force-dynamic";
+
 export default async function RosterPage() {
   const supabase = createClient();
   const {
