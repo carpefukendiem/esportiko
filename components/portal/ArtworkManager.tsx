@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { registerArtworkAsset } from "@/lib/actions/portal";
 import type { ArtworkAssetRow } from "@/types/portal";
 import { DeleteArtworkForm } from "@/components/portal/DeleteArtworkForm";
+import { ArtworkUploader } from "@/components/portal/ArtworkUploader";
 
 type AssetWithUrl = ArtworkAssetRow & { signedUrl: string | null };
 
@@ -18,42 +19,59 @@ export function ArtworkManager({
 }) {
   const router = useRouter();
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
     setUploading(true);
+    setError(null);
     try {
       const supabase = createClient();
-      const safeName = file.name.replace(/[^\w.\-]+/g, "_");
-      const path = `accounts/${accountId}/artwork/${crypto.randomUUID()}-${safeName}`;
-      const { error } = await supabase.storage.from("artwork").upload(path, file);
-      if (error) {
-        alert(error.message);
-        return;
+      let failed = 0;
+      for (const file of files) {
+        const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+        const path = `accounts/${accountId}/artwork/${crypto.randomUUID()}-${safeName}`;
+        const { error: upErr } = await supabase.storage.from("artwork").upload(path, file);
+        if (upErr) {
+          failed += 1;
+          continue;
+        }
+        await registerArtworkAsset(safeName, path);
       }
-      await registerArtworkAsset(safeName, path);
       router.refresh();
+      if (failed) setError(`${failed} file(s) could not be uploaded.`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Upload failed");
     } finally {
       setUploading(false);
+      e.target.value = "";
     }
   };
 
-  const isRaster = (name: string) => /\.(png|jpg|jpeg|webp)$/i.test(name);
+  const isRaster = (name: string) => /\.(png|jpg|jpeg|webp|svg)$/i.test(name);
 
   return (
     <div className="space-y-6">
-      <div>
-        <label className="inline-flex cursor-pointer rounded-lg bg-[#3B7BF8] px-4 py-2 font-sans text-sm font-semibold text-white hover:opacity-90">
+      <ArtworkUploader accountId={accountId} />
+
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="inline-flex cursor-pointer rounded-lg border border-[#2A3347] bg-[#0F1521] px-4 py-2 font-sans text-sm font-semibold text-[#8A94A6] hover:border-[#3B7BF8] hover:text-white">
           <input
             type="file"
             className="sr-only"
-            accept=".pdf,.ai,.eps,.png,.jpg,.jpeg,.svg"
+            accept=".pdf,.ai,.eps,.png,.jpg,.jpeg,.svg,.webp"
+            multiple
             disabled={uploading}
             onChange={(ev) => void onUpload(ev)}
           />
-          {uploading ? "Uploading…" : "Upload artwork"}
+          {uploading ? "Uploading…" : "Add more files"}
         </label>
+        {error ? (
+          <p className="font-sans text-sm font-medium text-red-400" role="alert">
+            {error}
+          </p>
+        ) : null}
       </div>
 
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -82,13 +100,6 @@ export function ArtworkManager({
             <p className="mt-1 font-sans text-xs font-medium text-[#8A94A6]">
               {new Date(a.created_at).toLocaleString()}
             </p>
-            {a.signedUrl && (
-              <input
-                readOnly
-                value={a.signedUrl}
-                className="mt-2 w-full truncate rounded border border-[#2A3347] bg-[#0F1521] px-2 py-1 font-mono text-[10px] text-[#8A94A6]"
-              />
-            )}
             <DeleteArtworkForm assetId={a.id} />
           </li>
         ))}
@@ -96,7 +107,7 @@ export function ArtworkManager({
 
       {initialAssets.length === 0 && (
         <p className="font-sans text-sm font-medium text-[#8A94A6]">
-          No files yet. Upload vector or raster artwork for your orders.
+          No files yet. Upload vector or raster artwork for your orders and fan shop previews.
         </p>
       )}
     </div>

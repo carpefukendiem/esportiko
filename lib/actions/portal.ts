@@ -482,6 +482,8 @@ export async function registerArtworkAsset(filename: string, storagePath: string
     storage_path: storagePath,
   });
   revalidatePath("/portal/artwork");
+  revalidatePath("/portal/dashboard");
+  revalidatePath("/portal/fan-shop");
 }
 
 export async function removeArtworkAsset(assetId: string): Promise<void> {
@@ -498,6 +500,8 @@ export async function removeArtworkAsset(assetId: string): Promise<void> {
   await supabase.storage.from("artwork").remove([row.storage_path]);
   await supabase.from("artwork_assets").delete().eq("id", assetId);
   revalidatePath("/portal/artwork");
+  revalidatePath("/portal/dashboard");
+  revalidatePath("/portal/fan-shop");
 }
 
 

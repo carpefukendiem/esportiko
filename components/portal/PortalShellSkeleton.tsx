@@ -34,7 +34,7 @@ export function PortalShellSkeleton() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col pb-20 md:pb-0">
+      <div className="flex min-w-0 flex-1 flex-col pb-24 md:pb-0">
         <main className="flex-1 p-4 md:p-8">
           <div className="mx-auto max-w-4xl space-y-8">
             <div className="h-9 w-64 animate-pulse rounded-lg bg-[#2A3347]" />

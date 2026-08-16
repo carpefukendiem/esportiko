@@ -9,13 +9,21 @@ import { cn } from "@/lib/utils/cn";
 import { PortalShellCollapsedProvider } from "@/components/portal/PortalShellContext";
 
 const nav = [
-  { href: "/portal/dashboard", label: "Dashboard", icon: IconHome },
-  { href: "/portal/orders", label: "My Orders", icon: IconOrders },
-  { href: "/portal/new-order", label: "New Order", icon: IconPlus },
-  { href: "/portal/fan-shop", label: "Fan Shop", icon: IconStore },
-  { href: "/portal/roster", label: "Roster", icon: IconUsers },
-  { href: "/portal/artwork", label: "Artwork", icon: IconImage },
-  { href: "/portal/settings", label: "Account Settings", icon: IconGear },
+  { href: "/portal/dashboard", label: "Dashboard", icon: IconHome, mobileLabel: "Home" },
+  { href: "/portal/orders", label: "My Orders", icon: IconOrders, mobileLabel: "Orders" },
+  { href: "/portal/new-order", label: "New Order", icon: IconPlus, mobileLabel: "New" },
+  { href: "/portal/fan-shop", label: "Fan Shop", icon: IconStore, mobileLabel: "Shop" },
+  { href: "/portal/roster", label: "Roster", icon: IconUsers, mobileLabel: "Roster" },
+  { href: "/portal/artwork", label: "Artwork", icon: IconImage, mobileLabel: "Art" },
+  { href: "/portal/settings", label: "Account Settings", icon: IconGear, mobileLabel: "Settings" },
+] as const;
+
+const mobileNav = [
+  nav[0],
+  nav[1],
+  nav[2],
+  nav[5],
+  nav[3],
 ] as const;
 
 /**
@@ -119,12 +127,12 @@ export function PortalShell({
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col pb-24 md:pb-24">
+        <div className="flex min-w-0 flex-1 flex-col pb-24 md:pb-0">
           <main className="flex-1 p-4 md:p-8">{children}</main>
         </div>
 
         <nav className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-[#2A3347] bg-[#0F1521] px-1 py-2 md:hidden">
-          {nav.slice(0, 5).map(({ href, label, icon: Icon }) => {
+          {mobileNav.map(({ href, mobileLabel, icon: Icon }) => {
             const active =
               href === "/portal/dashboard"
                 ? pathname === href
@@ -139,7 +147,7 @@ export function PortalShell({
                 )}
               >
                 <Icon className="h-5 w-5" />
-                <span className="truncate">{label.split(" ")[0]}</span>
+                <span className="truncate">{mobileLabel}</span>
               </Link>
             );
           })}

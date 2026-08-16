@@ -30,9 +30,21 @@ export function PortalTeamProfileGate({
 
   const onSettings =
     pathname === "/portal/settings" || pathname.startsWith("/portal/settings/");
+  const allowedWithoutProfile =
+    onSettings ||
+    pathname === "/portal/dashboard" ||
+    pathname === "/portal/artwork" ||
+    pathname.startsWith("/portal/artwork/") ||
+    pathname === "/portal/new-order" ||
+    pathname.startsWith("/portal/new-order/") ||
+    pathname === "/portal/fan-shop" ||
+    pathname.startsWith("/portal/fan-shop/") ||
+    pathname === "/portal/onboarding";
   const skipTeamSetup =
     isAdmin || (userEmail != null && userEmail !== "" && isPublicAdminEmail(userEmail));
-  const mustRedirect = Boolean(needsTeamProfile && !skipTeamSetup && !onSettings);
+  const mustRedirect = Boolean(
+    needsTeamProfile && !skipTeamSetup && !allowedWithoutProfile
+  );
 
   useLayoutEffect(() => {
     if (!mustRedirect) return;
