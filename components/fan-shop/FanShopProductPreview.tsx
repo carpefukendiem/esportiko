@@ -1,9 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LogoCompositor } from "@/components/customize/LogoCompositor";
 import type { GarmentSvgKind } from "@/lib/customize/design-types";
-import { CUSTOMIZE_CANVAS_BUFFER, zoneInBuffer } from "@/lib/customize/canvas-print-zone";
 import type { LogoPlacement } from "@/lib/fan-shop/types";
 import { buildLogoElement } from "@/lib/fan-shop/logo-element";
 
@@ -26,6 +25,20 @@ function fmtPrice(cents: number) {
   }).format(cents / 100);
 }
 
+function loadImageSize(src: string): Promise<{ w: number; h: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () =>
+      resolve({
+        w: img.naturalWidth || 400,
+        h: img.naturalHeight || 400,
+      });
+    img.onerror = () => reject(new Error("image load failed"));
+    img.src = src;
+  });
+}
+
 export function FanShopProductPreview({
   styleNumber,
   productTitle,
@@ -37,44 +50,70 @@ export function FanShopProductPreview({
   logoMaxWidthInches,
   retailPriceCents,
 }: Props) {
-  const [natural, setNatural] = useState({ w: 400, h: 400 });
+  const [garmentNatural, setGarmentNatural] = useState({ w: 400, h: 400 });
+  const [logoNatural, setLogoNatural] = useState<{ w: number; h: number } | null>(null);
+
+  useEffect(() => {
+    if (!logoUrl) {
+      setLogoNatural(null);
+      return;
+    }
+    let cancelled = false;
+    void loadImageSize(logoUrl)
+      .then((size) => {
+        if (!cancelled) setLogoNatural(size);
+      })
+      .catch(() => {
+        if (!cancelled) setLogoNatural({ w: 400, h: 400 });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [logoUrl]);
 
   const elements = useMemo(() => {
-    if (!logoUrl) return [];
-    const zone = zoneInBuffer({
-      kind: garmentKind,
-      view: "front",
-      bufferSize: CUSTOMIZE_CANVAS_BUFFER,
-      imageNaturalWidth: natural.w,
-      imageNaturalHeight: natural.h,
-    });
+    if (!logoUrl || !logoNatural) return [];
     return [
       buildLogoElement({
         logoUrl,
+        logoNaturalWidth: logoNatural.w,
+        logoNaturalHeight: logoNatural.h,
         placement: logoPlacement,
-        zone,
+        garmentKind,
         maxWidthInches: logoMaxWidthInches,
+        imageNaturalWidth: garmentNatural.w,
+        imageNaturalHeight: garmentNatural.h,
       }),
     ];
-  }, [garmentKind, logoMaxWidthInches, logoPlacement, logoUrl, natural.h, natural.w]);
+  }, [
+    garmentKind,
+    garmentNatural.h,
+    garmentNatural.w,
+    logoMaxWidthInches,
+    logoNatural,
+    logoPlacement,
+    logoUrl,
+  ]);
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-[#2A3347] bg-[#1C2333]">
       <div className="relative aspect-square w-full overflow-hidden bg-[#0F1521]">
-        <div className="absolute left-1/2 top-1/2 h-[1200px] w-[1200px] -translate-x-1/2 -translate-y-1/2 scale-[0.26] pointer-events-none">
-          <LogoCompositor
-            garmentSvgKind={garmentKind}
-            view="front"
-            garmentColor={garmentColor}
-            garmentRasterUrl={garmentRasterUrl}
-            showGarmentPrintZone={false}
-            showSafeZoneOverlay={false}
-            elements={elements}
-            selectedElementId={null}
-            onElementsChange={() => {}}
-            onSelectElement={() => {}}
-            onGarmentNaturalSize={(w, h) => setNatural({ w, h })}
-          />
+        <div className="absolute inset-0 flex items-center justify-center p-2">
+          <div className="h-full w-full max-h-full max-w-full">
+            <LogoCompositor
+              garmentSvgKind={garmentKind}
+              view="front"
+              garmentColor={garmentColor}
+              garmentRasterUrl={garmentRasterUrl}
+              showGarmentPrintZone={false}
+              showSafeZoneOverlay={false}
+              elements={elements}
+              selectedElementId={null}
+              onElementsChange={() => {}}
+              onSelectElement={() => {}}
+              onGarmentNaturalSize={(w, h) => setGarmentNatural({ w, h })}
+            />
+          </div>
         </div>
         {!logoUrl ? (
           <div className="absolute inset-0 flex items-center justify-center bg-[#0F1521]/80 px-4 text-center">

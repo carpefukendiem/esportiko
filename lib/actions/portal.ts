@@ -464,14 +464,21 @@ export async function updateDefaultRoster(payload: {
   use_default_roster_for_new_orders: boolean;
 }): Promise<void> {
   const { supabase, account } = await requireAccount();
-  await supabase
+  const { error } = await supabase
     .from("accounts")
     .update({
       default_roster: payload.default_roster,
       use_default_roster_for_new_orders: payload.use_default_roster_for_new_orders,
     })
     .eq("id", account.id);
+
+  if (error) {
+    console.error("updateDefaultRoster", error);
+    throw new Error("Could not save roster. Please try again.");
+  }
+
   revalidatePath("/portal/roster");
+  revalidatePath("/portal/dashboard");
 }
 
 export async function registerArtworkAsset(filename: string, storagePath: string): Promise<void> {

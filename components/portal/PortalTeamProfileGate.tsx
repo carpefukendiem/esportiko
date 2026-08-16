@@ -39,7 +39,9 @@ export function PortalTeamProfileGate({
     pathname.startsWith("/portal/new-order/") ||
     pathname === "/portal/fan-shop" ||
     pathname.startsWith("/portal/fan-shop/") ||
-    pathname === "/portal/onboarding";
+    pathname === "/portal/onboarding" ||
+    pathname === "/portal/roster" ||
+    pathname.startsWith("/portal/roster/");
   const skipTeamSetup =
     isAdmin || (userEmail != null && userEmail !== "" && isPublicAdminEmail(userEmail));
   const mustRedirect = Boolean(

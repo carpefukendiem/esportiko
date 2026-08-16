@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
 import { updateDefaultRoster } from "@/lib/actions/portal";
@@ -20,6 +21,10 @@ export function RosterManager({
   initialRoster: DefaultRosterJson;
 }) {
   const router = useRouter();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
   const form = useForm<FormValues>({
     defaultValues: {
       use_default_roster_for_new_orders:
@@ -47,19 +52,29 @@ export function RosterManager({
     <form
       className="space-y-6 rounded-xl border border-[#2A3347] bg-[#1C2333] p-6"
       onSubmit={form.handleSubmit(async (data) => {
-        const roster: DefaultRosterJson = data.players
-          .filter((p) => p.name.trim())
-          .map((p) => ({
-            name: p.name.trim(),
-            number: p.number.trim(),
-            preferred_size: p.preferred_size.trim(),
-          }));
-        await updateDefaultRoster({
-          default_roster: roster,
-          use_default_roster_for_new_orders:
-            data.use_default_roster_for_new_orders,
-        });
-        router.refresh();
+        setSaving(true);
+        setError(null);
+        setSaved(false);
+        try {
+          const roster: DefaultRosterJson = data.players
+            .filter((p) => p.name.trim())
+            .map((p) => ({
+              name: p.name.trim(),
+              number: p.number.trim(),
+              preferred_size: p.preferred_size.trim(),
+            }));
+          await updateDefaultRoster({
+            default_roster: roster,
+            use_default_roster_for_new_orders:
+              data.use_default_roster_for_new_orders,
+          });
+          setSaved(true);
+          router.refresh();
+        } catch (e) {
+          setError(e instanceof Error ? e.message : "Could not save roster");
+        } finally {
+          setSaving(false);
+        }
       })}
     >
       <label className="flex items-center gap-2 font-sans text-sm font-medium text-[#8A94A6]">
@@ -72,9 +87,7 @@ export function RosterManager({
 
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-sans text-sm font-semibold text-white">
-            Players
-          </span>
+          <span className="font-sans text-sm font-semibold text-white">Players</span>
           <button
             type="button"
             onClick={() =>
@@ -126,11 +139,23 @@ export function RosterManager({
         </div>
       </div>
 
+      {error ? (
+        <p className="font-sans text-sm font-medium text-red-400" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {saved ? (
+        <p className="font-sans text-sm font-medium text-emerald-400" role="status">
+          Roster saved.
+        </p>
+      ) : null}
+
       <button
         type="submit"
-        className="rounded-lg bg-[#3B7BF8] px-5 py-2.5 font-sans text-sm font-semibold text-white hover:opacity-90"
+        disabled={saving}
+        className="rounded-lg bg-[#3B7BF8] px-5 py-2.5 font-sans text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60"
       >
-        Save roster
+        {saving ? "Saving…" : "Save roster"}
       </button>
     </form>
   );
