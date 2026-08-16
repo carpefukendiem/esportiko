@@ -50,6 +50,7 @@ export function RosterManager({
 
   return (
     <form
+      noValidate
       className="space-y-6 rounded-xl border border-[#2A3347] bg-[#1C2333] p-6"
       onSubmit={form.handleSubmit(async (data) => {
         setSaving(true);
@@ -66,6 +67,7 @@ export function RosterManager({
 
           if (roster.length === 0) {
             setError("Add at least one player with a name before saving.");
+            setSaving(false);
             return;
           }
 
@@ -78,11 +80,14 @@ export function RosterManager({
           form.reset({
             use_default_roster_for_new_orders:
               data.use_default_roster_for_new_orders,
-            players: roster.map((p) => ({
-              name: p.name,
-              number: p.number,
-              preferred_size: p.preferred_size,
-            })),
+            players: [
+              ...roster.map((p) => ({
+                name: p.name,
+                number: p.number,
+                preferred_size: p.preferred_size,
+              })),
+              { name: "", number: "", preferred_size: "" },
+            ],
           });
           setSaved(true);
           router.refresh();
@@ -130,7 +135,7 @@ export function RosterManager({
                   <td className="py-2 pr-2">
                     <input
                       className={inputClass}
-                      required={idx === 0}
+                      placeholder="Player name"
                       {...form.register(`players.${idx}.name`)}
                     />
                   </td>

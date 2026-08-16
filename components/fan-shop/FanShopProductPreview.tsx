@@ -1,6 +1,10 @@
 "use client";
 
-import { logoOverlayRect } from "@/lib/fan-shop/overlay-layout";
+import { useCallback, useState } from "react";
+import {
+  detectProductImageLayout,
+  logoOverlayRect,
+} from "@/lib/fan-shop/overlay-layout";
 import type { GarmentSvgKind } from "@/lib/customize/design-types";
 import type { LogoPlacement } from "@/lib/fan-shop/types";
 
@@ -32,7 +36,32 @@ export function FanShopProductPreview({
   logoMaxWidthInches,
   retailPriceCents,
 }: Props) {
-  const overlay = logoOverlayRect(garmentKind, logoPlacement, logoMaxWidthInches);
+  const [garmentSize, setGarmentSize] = useState({ w: 0, h: 0 });
+  const [logoAspect, setLogoAspect] = useState(1);
+
+  const onGarmentLoad = useCallback((el: HTMLImageElement) => {
+    setGarmentSize({ w: el.clientWidth, h: el.clientHeight });
+  }, []);
+
+  const onLogoLoad = useCallback((el: HTMLImageElement) => {
+    const w = el.naturalWidth || 1;
+    const h = el.naturalHeight || 1;
+    setLogoAspect(h / w);
+  }, []);
+
+  const imageLayout = detectProductImageLayout(garmentRasterUrl);
+  const overlay = logoOverlayRect({
+    kind: garmentKind,
+    placement: logoPlacement,
+    maxWidthInches: logoMaxWidthInches,
+    imageLayout,
+    styleNumber,
+  });
+
+  const logoWidthPx =
+    garmentSize.w > 0 ? (garmentSize.w * overlay.widthPercent) / 100 : undefined;
+  const logoHeightPx =
+    logoWidthPx != null ? logoWidthPx * logoAspect : undefined;
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-[#2A3347] bg-[#1C2333]">
@@ -45,18 +74,21 @@ export function FanShopProductPreview({
                 src={garmentRasterUrl}
                 alt=""
                 className="block max-h-[min(100%,280px)] max-w-full object-contain"
+                onLoad={(e) => onGarmentLoad(e.currentTarget)}
               />
-              {logoUrl ? (
+              {logoUrl && garmentSize.w > 0 ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={logoUrl}
                   alt=""
                   className="pointer-events-none absolute object-contain"
+                  onLoad={(e) => onLogoLoad(e.currentTarget)}
                   style={{
                     left: `${overlay.leftPercent}%`,
                     top: `${overlay.topPercent}%`,
-                    width: `${overlay.widthPercent}%`,
-                    height: "auto",
+                    width: logoWidthPx,
+                    height: logoHeightPx,
+                    maxWidth: "none",
                     transform: "translate(-50%, -50%)",
                   }}
                 />

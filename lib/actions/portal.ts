@@ -152,7 +152,7 @@ export async function savePortalDraft(
       .eq("order_id", orderId);
     if (delErr) {
       console.error("savePortalDraft delete items", delErr);
-      throw new Error("Could not save roster");
+      throw new Error(delErr.message || "Could not save roster");
     }
     const { error: updErr } = await supabase
       .from("orders")
@@ -169,7 +169,7 @@ export async function savePortalDraft(
       .eq("order_id", orderId);
     if (delErr) {
       console.error("savePortalDraft delete items", delErr);
-      throw new Error("Could not save roster");
+      throw new Error(delErr.message || "Could not save roster");
     }
     const rows = values.roster
       .filter((r) => r.player_name?.trim() || r.player_number?.trim() || r.size?.trim())
@@ -184,7 +184,7 @@ export async function savePortalDraft(
       const { error: insErr } = await supabase.from("order_items").insert(rows);
       if (insErr) {
         console.error("savePortalDraft insert items", insErr);
-        throw new Error("Could not save roster");
+        throw new Error(insErr.message || "Could not save roster");
       }
     }
     const { error: rosterFlagErr } = await supabase
@@ -504,7 +504,11 @@ export async function updateDefaultRoster(payload: {
 
   if (error) {
     console.error("updateDefaultRoster", error);
-    throw new Error("Could not save roster. Please try again.");
+    const detail =
+      typeof error.message === "string" && error.message.trim()
+        ? error.message
+        : "Could not save roster. Please try again.";
+    throw new Error(detail);
   }
 
   revalidatePath("/portal/roster");

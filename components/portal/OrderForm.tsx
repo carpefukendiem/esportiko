@@ -160,7 +160,7 @@ export function OrderForm({
       setStep(nextStep);
     } catch (e) {
       console.error(e);
-      setStepError("Could not save draft. Try again.");
+      setStepError(e instanceof Error ? e.message : "Could not save draft. Try again.");
     }
   };
 
