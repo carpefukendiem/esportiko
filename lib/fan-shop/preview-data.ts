@@ -117,13 +117,12 @@ export async function getFanShopPreviewBundle(params: {
       const key = p.style_number.toUpperCase();
       const cfg = configByStyle.get(key);
       const colorRow = firstColorByStyle.get(p.style_number);
-      const raster =
-        colorRow?.url ?? p.front_flat_url;
+      const rawRaster = colorRow?.url ?? p.front_flat_url;
       return {
         styleNumber: p.style_number,
         productTitle: p.product_title,
         garmentKind: garmentKindForStyle(p.style_number, p.sanmar_category ?? ""),
-        garmentRasterUrl: proxySanmarUrl(raster),
+        garmentRasterUrl: proxySanmarUrl(rawRaster),
         garmentColor: "#4b5563",
         logoPlacement: (cfg?.logo_placement ?? "chest_center") as LogoPlacement,
         logoMaxWidthInches: Number(cfg?.logo_max_width_inches ?? 4),

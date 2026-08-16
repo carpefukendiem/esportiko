@@ -63,10 +63,26 @@ export function RosterManager({
               number: p.number.trim(),
               preferred_size: p.preferred_size.trim(),
             }));
+
+          if (roster.length === 0) {
+            setError("Add at least one player with a name before saving.");
+            return;
+          }
+
           await updateDefaultRoster({
             default_roster: roster,
             use_default_roster_for_new_orders:
               data.use_default_roster_for_new_orders,
+          });
+
+          form.reset({
+            use_default_roster_for_new_orders:
+              data.use_default_roster_for_new_orders,
+            players: roster.map((p) => ({
+              name: p.name,
+              number: p.number,
+              preferred_size: p.preferred_size,
+            })),
           });
           setSaved(true);
           router.refresh();
@@ -112,7 +128,11 @@ export function RosterManager({
               {fields.map((f, idx) => (
                 <tr key={f.id} className="border-t border-[#2A3347]">
                   <td className="py-2 pr-2">
-                    <input className={inputClass} {...form.register(`players.${idx}.name`)} />
+                    <input
+                      className={inputClass}
+                      required={idx === 0}
+                      {...form.register(`players.${idx}.name`)}
+                    />
                   </td>
                   <td className="py-2 pr-2">
                     <input className={inputClass} {...form.register(`players.${idx}.number`)} />
@@ -127,7 +147,8 @@ export function RosterManager({
                     <button
                       type="button"
                       onClick={() => remove(idx)}
-                      className="font-sans text-xs font-semibold text-red-400"
+                      disabled={fields.length <= 1}
+                      className="font-sans text-xs font-semibold text-red-400 disabled:opacity-40"
                     >
                       Remove
                     </button>

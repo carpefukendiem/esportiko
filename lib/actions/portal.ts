@@ -146,24 +146,54 @@ export async function savePortalDraft(
   }
 
   if (values.roster_skip) {
-    await supabase.from("order_items").delete().eq("order_id", orderId);
-    await supabase
+    const { error: delErr } = await supabase
+      .from("order_items")
+      .delete()
+      .eq("order_id", orderId);
+    if (delErr) {
+      console.error("savePortalDraft delete items", delErr);
+      throw new Error("Could not save roster");
+    }
+    const { error: updErr } = await supabase
       .from("orders")
       .update({ roster_incomplete: true })
       .eq("id", orderId);
+    if (updErr) {
+      console.error("savePortalDraft roster skip", updErr);
+      throw new Error("Could not save roster");
+    }
   } else if (values.roster !== undefined) {
-    await supabase.from("order_items").delete().eq("order_id", orderId);
+    const { error: delErr } = await supabase
+      .from("order_items")
+      .delete()
+      .eq("order_id", orderId);
+    if (delErr) {
+      console.error("savePortalDraft delete items", delErr);
+      throw new Error("Could not save roster");
+    }
     const rows = values.roster
-      .filter((r) => r.player_name || r.player_number || r.size)
+      .filter((r) => r.player_name?.trim() || r.player_number?.trim() || r.size?.trim())
       .map((r) => ({
         order_id: orderId,
-        player_name: r.player_name || null,
-        player_number: r.player_number || null,
-        size: r.size || null,
-        quantity: r.quantity,
+        player_name: r.player_name?.trim() || null,
+        player_number: r.player_number?.trim() || null,
+        size: r.size?.trim() || null,
+        quantity: Number.isFinite(r.quantity) && r.quantity >= 1 ? r.quantity : 1,
       }));
     if (rows.length) {
-      await supabase.from("order_items").insert(rows);
+      const { error: insErr } = await supabase.from("order_items").insert(rows);
+      if (insErr) {
+        console.error("savePortalDraft insert items", insErr);
+        throw new Error("Could not save roster");
+      }
+    }
+    const { error: rosterFlagErr } = await supabase
+      .from("orders")
+      .update({ roster_incomplete: rows.length === 0 })
+      .eq("id", orderId);
+    if (rosterFlagErr) {
+      console.error("savePortalDraft roster flag", rosterFlagErr);
+      throw new Error("Could not save roster");
     }
   }
 

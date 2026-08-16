@@ -45,12 +45,24 @@ export const step2Schema = z
     roster_skip: z.boolean(),
   })
   .superRefine((data, ctx) => {
-    if (!data.roster_skip && data.roster.length === 0) {
+    if (data.roster_skip) return;
+    const filled = data.roster.filter((r) => r.player_name?.trim());
+    if (filled.length === 0) {
       ctx.addIssue({
         code: "custom",
-        message: "Add at least one player or check “I'll add this later”",
+        message: "Add at least one player name or check “I'll add this later”",
         path: ["roster"],
       });
+    }
+    for (let i = 0; i < data.roster.length; i++) {
+      const q = data.roster[i]?.quantity;
+      if (q != null && (!Number.isFinite(q) || q < 1)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Each row needs quantity of at least 1",
+          path: ["roster", i, "quantity"],
+        });
+      }
     }
   });
 
